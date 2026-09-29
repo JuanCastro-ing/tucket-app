@@ -1,0 +1,108 @@
+<div class="view" id="view-register">
+
+<div class="reg-wrap">
+
+  <header class="reg-top">
+    <div class="container">
+      <div class="brand"><span class="brand-mark" style="font-size:19px;">TUCK<span>E</span>T</span></div>
+      <a href="#" onclick="return nav('login')" class="btn-ghost" style="color:var(--muted-lt); font-size:13.5px;">← Volver a inicio de sesión</a>
+    </div>
+  </header>
+
+  <main class="reg-main">
+    <div class="reg-box">
+      <div class="reg-head">
+        <span class="kicker">CREAR CUENTA</span>
+        <h2>Regístrate en TUCKET</h2>
+        <div class="type-switch">
+          <div class="type-card active" onclick="setRegType(this)">
+            <div class="t">Cliente</div>
+            <div class="d">Explora eventos y reserva entradas</div>
+          </div>
+          <div class="type-card" onclick="setRegType(this)">
+            <div class="t">Agente</div>
+            <div class="d">Publica eventos y gestiona reservas</div>
+          </div>
+        </div>
+      </div>
+
+      <form class="reg-form">
+        <div class="section-label"><span>DATOS DE LA PERSONA</span><span class="rule"></span></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="doc">Número de identificación</label>
+            <input id="doc" type="text" placeholder="Cédula o pasaporte">
+          </div>
+          <div class="field">
+            <label for="name">Nombre completo</label>
+            <input id="name" type="text" placeholder="Nombre y apellidos">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="mail">Correo electrónico</label>
+          <input id="mail" type="email" placeholder="nombre@correo.com">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="dep">Departamento</label>
+            <select id="dep">
+              <option>Valle del Cauca</option>
+              <option>Antioquia</option>
+              <option>Cundinamarca</option>
+              <option>Atlántico</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="city">Ciudad</label>
+            <select id="city">
+              <option>Cali</option>
+              <option>Palmira</option>
+              <option>Buenaventura</option>
+              <option>Tuluá</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="addr">Dirección</label>
+          <input id="addr" type="text" placeholder="Calle 5 # 23-10">
+        </div>
+
+        <div class="field">
+          <label>Números de teléfono</label>
+          <div class="phone-row">
+            <input type="tel" placeholder="+57 300 000 0000">
+            <button type="button" class="btn btn-outline btn-sm">Quitar</button>
+          </div>
+          <a href="#" class="add-phone">+ Agregar otro número</a>
+        </div>
+
+        <div class="section-label"><span>DATOS DE LA CUENTA</span><span class="rule"></span></div>
+        <div class="field-row">
+          <div class="field">
+            <label for="pw">Contraseña</label>
+            <input id="pw" type="password" placeholder="Mínimo 8 caracteres">
+          </div>
+          <div class="field">
+            <label for="pw2">Confirmar contraseña</label>
+            <input id="pw2" type="password" placeholder="Repite la contraseña">
+          </div>
+        </div>
+
+        <label class="check-row" style="margin-bottom:24px;">
+          <input type="checkbox"> Acepto los términos de uso y el tratamiento de datos personales
+        </label>
+
+        <a href="#" onclick="return completeRegistration()" class="btn btn-gold btn-block">Crear mi cuenta</a>
+        <p style="text-align:center; margin-top:18px; font-size:13.5px; color:var(--muted);">
+          ¿Ya tienes cuenta? <a href="#" onclick="return nav('login')" style="color:var(--gold-dark); font-weight:700;">Inicia sesión</a>
+        </p>
+      </form>
+    </div>
+  </main>
+</div>
+
+</div>

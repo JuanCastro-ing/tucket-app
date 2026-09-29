@@ -1,0 +1,191 @@
+<div class="view" id="view-agent-events">
+
+<div class="app-shell">
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-mark">TUCK<span>E</span>T</span></div>
+      <nav class="nav-role">
+        <a href="#" onclick="return nav('agent-events')" class="active">Panel de agente</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">AGENTE</span><div class="avatar">JD</div><a href="#" onclick="return logout()" class="btn-ghost" style="color:var(--muted-lt); font-size:12.5px;">Salir</a></div>
+    </div>
+  </div>
+
+  <main class="app-body">
+    <div class="container">
+      <div class="with-sidebar">
+
+        <aside class="sidebar">
+          <div class="sidebar-title">PANEL DE AGENTE</div>
+          <a href="#" onclick="return nav('agent-events')" class="active">Eventos</a>
+          <a href="#" onclick="return nav('agent-reservations')">Reservas</a>
+          <a href="#" onclick="return logout()">Cerrar sesión</a>
+        </aside>
+
+        <div class="content-col">
+
+          <div class="page-head">
+            <div>
+              <div class="eyebrow-line"><span class="rule"></span><span>GESTIÓN DE EVENTOS</span></div>
+              <h1>Mis eventos publicados</h1>
+              <p>Registra nuevos espectáculos y controla su estado desde que se programan hasta que finalizan.</p>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-label">EVENTOS ACTIVOS</div><div class="stat-value">7</div><div class="stat-delta">+2 este mes</div></div>
+            <div class="stat-card alt"><div class="stat-label">EN BOLETERÍA</div><div class="stat-value">3</div></div>
+            <div class="stat-card alt"><div class="stat-label">FINALIZADOS</div><div class="stat-value">14</div></div>
+            <div class="stat-card alt"><div class="stat-label">COMISIÓN DEL MES</div><div class="stat-value">$1.8M</div></div>
+          </div>
+
+          <div class="layout-main">
+
+            <div>
+              <div class="panel">
+                <div class="panel-head">
+                  <h3>Eventos registrados</h3>
+                  <span class="hint">9 en total</span>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>Evento</th><th>Ciudad</th><th>Fecha</th><th>Aforo</th><th>Estado</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><div class="cell-strong">Noche de Salsa — Grupo Niche Tributo</div><div class="cell-muted">EVT-2026-0184</div></td>
+                        <td>Cali</td>
+                        <td>14 nov 2026</td>
+                        <td>864 / 1200</td>
+                        <td><span class="badge badge-boleteria">En Boletería</span></td>
+                        <td class="row-actions"><a href="#" class="btn-ghost btn-sm">Editar</a></td>
+                      </tr>
+                      <tr>
+                        <td><div class="cell-strong">Romeo y Julieta</div><div class="cell-muted">EVT-2026-0201</div></td>
+                        <td>Cali</td>
+                        <td>02 dic 2026</td>
+                        <td>210 / 480</td>
+                        <td><span class="badge badge-programado">Programado</span></td>
+                        <td class="row-actions"><a href="#" class="btn-ghost btn-sm">Editar</a></td>
+                      </tr>
+                      <tr>
+                        <td><div class="cell-strong">Festival Rock a la Cañada</div><div class="cell-muted">EVT-2026-0176</div></td>
+                        <td>Cali</td>
+                        <td>07 sep 2026</td>
+                        <td>3,020 / 3,500</td>
+                        <td><span class="badge badge-vivo">En Vivo</span></td>
+                        <td class="row-actions"><a href="#" class="btn-ghost btn-sm">Editar</a></td>
+                      </tr>
+                      <tr>
+                        <td><div class="cell-strong">Concierto de Fin de Año</div><div class="cell-muted">EVT-2026-0219</div></td>
+                        <td>Cali</td>
+                        <td>20 dic 2026</td>
+                        <td>95 / 600</td>
+                        <td><span class="badge badge-programado">Programado</span></td>
+                        <td class="row-actions"><a href="#" class="btn-ghost btn-sm">Editar</a></td>
+                      </tr>
+                      <tr>
+                        <td><div class="cell-strong">Stand Up Comedy Night</div><div class="cell-muted">EVT-2026-0163</div></td>
+                        <td>Bogotá</td>
+                        <td>28 nov 2026</td>
+                        <td>140 / 220</td>
+                        <td><span class="badge badge-boleteria">En Boletería</span></td>
+                        <td class="row-actions"><a href="#" class="btn-ghost btn-sm">Editar</a></td>
+                      </tr>
+                      <tr>
+                        <td><div class="cell-strong">Feria de Cali — Salsódromo</div><div class="cell-muted">EVT-2026-0098</div></td>
+                        <td>Cali</td>
+                        <td>03 sep 2026</td>
+                        <td>4,800 / 4,800</td>
+                        <td><span class="badge badge-finalizado">Finalizado</span></td>
+                        <td class="row-actions"><a href="#" class="btn-ghost btn-sm">Ver</a></td>
+                      </tr>
+                      <tr>
+                        <td><div class="cell-strong">Jazz en el Bulevar</div><div class="cell-muted">EVT-2026-0142</div></td>
+                        <td>Cali</td>
+                        <td>18 ago 2026</td>
+                        <td>310 / 310</td>
+                        <td><span class="badge badge-cancelado">Cancelado</span></td>
+                        <td class="row-actions"><a href="#" class="btn-ghost btn-sm">Ver</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="new-event-panel">
+              <div class="panel">
+                <div class="panel-head"><h3>Registrar nuevo evento</h3></div>
+                <form>
+                  <div class="field">
+                    <label for="ename">Nombre del evento</label>
+                    <input id="ename" type="text" placeholder="Ej: Noche de Boleros">
+                  </div>
+                  <div class="field">
+                    <label for="edesc">Descripción</label>
+                    <textarea id="edesc" placeholder="Breve descripción del espectáculo…"></textarea>
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="etheatre">Teatro / recinto</label>
+                      <input id="etheatre" type="text" placeholder="Teatro Los Cristales">
+                    </div>
+                    <div class="field">
+                      <label for="ecity">Ciudad</label>
+                      <select id="ecity"><option>Cali</option><option>Bogotá</option><option>Medellín</option></select>
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="estart">Inicio</label>
+                      <input id="estart" type="datetime-local">
+                    </div>
+                    <div class="field">
+                      <label for="eend">Fin estimado</label>
+                      <input id="eend" type="datetime-local">
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="ecap">Capacidad total</label>
+                      <input id="ecap" type="number" placeholder="1200">
+                    </div>
+                    <div class="field">
+                      <label for="eprice">Precio base</label>
+                      <input id="eprice" type="number" placeholder="85000">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="estatus">Estado inicial</label>
+                    <select id="estatus">
+                      <option>Programado</option>
+                      <option>En Boletería</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="eobs">Observaciones</label>
+                    <textarea id="eobs" placeholder="Restricciones de edad, requisitos especiales…"></textarea>
+                  </div>
+                  <a href="#" onclick="return nav('agent-events')" class="btn btn-gold btn-block">Publicar evento</a>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span><strong>TUCKET</strong> — Proyecto Integrador · Programación en Ambiente Web I</span>
+      <span>UCEVA · Facultad de Ingeniería de Sistemas</span>
+    </div>
+  </footer>
+</div>
+
+</div>

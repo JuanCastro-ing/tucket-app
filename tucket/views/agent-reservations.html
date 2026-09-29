@@ -1,0 +1,150 @@
+<div class="view" id="view-agent-reservations">
+
+<div class="app-shell">
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-mark">TUCK<span>E</span>T</span></div>
+      <nav class="nav-role">
+        <a href="#" onclick="return nav('agent-events')">Panel de agente</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">AGENTE</span><div class="avatar">JD</div><a href="#" onclick="return logout()" class="btn-ghost" style="color:var(--muted-lt); font-size:12.5px;">Salir</a></div>
+    </div>
+  </div>
+
+  <main class="app-body">
+    <div class="container">
+      <div class="with-sidebar">
+
+        <aside class="sidebar">
+          <div class="sidebar-title">PANEL DE AGENTE</div>
+          <a href="#" onclick="return nav('agent-events')">Eventos</a>
+          <a href="#" onclick="return nav('agent-reservations')" class="active">Reservas</a>
+          <a href="#" onclick="return logout()">Cerrar sesión</a>
+        </aside>
+
+        <div class="content-col">
+
+          <div class="page-head">
+            <div>
+              <div class="eyebrow-line"><span class="rule"></span><span>ADMINISTRACIÓN DE RESERVAS</span></div>
+              <h1>Reservas solicitadas</h1>
+              <p>Revisa las reservas de tus eventos y actualiza su estado a medida que se confirma el pago o se cancela.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Todas las reservas</h3>
+              <div class="filters-inline">
+                <select><option>Todos los eventos</option><option>Noche de Salsa</option><option>Romeo y Julieta</option></select>
+                <select><option>Todos los estados</option><option>Reservada</option><option>Confirmada</option><option>Cancelada</option></select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Reserva</th><th>Cliente</th><th>Evento</th><th>Entradas</th><th>Valor</th><th>Fecha</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="cell-strong">RES-00842</td>
+                    <td>Valentina Ríos</td>
+                    <td>Noche de Salsa</td>
+                    <td>2</td>
+                    <td>$170.000</td>
+                    <td class="cell-muted">02 oct 2026</td>
+                    <td><select class="status-select"><option>Reservada</option><option selected>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00851</td>
+                    <td>Mateo Gómez</td>
+                    <td>Romeo y Julieta</td>
+                    <td>4</td>
+                    <td>$208.000</td>
+                    <td class="cell-muted">28 sep 2026</td>
+                    <td><select class="status-select" id="sel-RES00851"><option selected>Reservada</option><option>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00860</td>
+                    <td>Laura Castaño</td>
+                    <td>Noche de Salsa</td>
+                    <td>3</td>
+                    <td>$255.000</td>
+                    <td class="cell-muted">27 sep 2026</td>
+                    <td><select class="status-select"><option>Reservada</option><option selected>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00879</td>
+                    <td>Valentina Ríos</td>
+                    <td>Festival Rock a la Cañada</td>
+                    <td>1</td>
+                    <td>$120.000</td>
+                    <td class="cell-muted">05 sep 2026</td>
+                    <td><select class="status-select"><option selected>Reservada</option><option>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00711</td>
+                    <td>Andrés Felipe Soto</td>
+                    <td>Feria de Cali</td>
+                    <td>2</td>
+                    <td>$190.000</td>
+                    <td class="cell-muted">21 ago 2026</td>
+                    <td><select class="status-select"><option>Reservada</option><option>Confirmada</option><option selected>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00790</td>
+                    <td>Camila Rentería</td>
+                    <td>Concierto de Fin de Año</td>
+                    <td>3</td>
+                    <td>$195.000</td>
+                    <td class="cell-muted">30 ago 2026</td>
+                    <td><select class="status-select"><option>Reservada</option><option selected>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Reserva RES-00851 · Detalle</h3><span class="hint">Vista de una reserva individual</span></div>
+            <div class="field-row" style="margin-bottom:0;">
+              <div>
+                <div class="cell-muted" style="margin-bottom:4px;">CLIENTE</div>
+                <div class="cell-strong">Mateo Gómez · C.C. 1 130 512 044</div>
+              </div>
+              <div>
+                <div class="cell-muted" style="margin-bottom:4px;">CONTACTO</div>
+                <div class="cell-strong">mateo.gomez@correo.com</div>
+              </div>
+            </div>
+            <div class="divider-dash"></div>
+            <div class="field-row" style="margin-bottom:0;">
+              <div>
+                <div class="cell-muted" style="margin-bottom:4px;">OBSERVACIONES DEL CLIENTE</div>
+                <div class="cell-strong" style="font-weight:500;">Silla de ruedas — acceso preferencial en fila A.</div>
+              </div>
+              <div>
+                <div class="cell-muted" style="margin-bottom:8px;">ACTUALIZAR ESTADO</div>
+                <div class="row-actions">
+                  <button class="btn btn-outline btn-sm" onclick="setSelectValue('sel-RES00851','Confirmada')">Confirmar</button>
+                  <button class="btn btn-danger btn-sm" onclick="setSelectValue('sel-RES00851','Cancelada')">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span><strong>TUCKET</strong> — Proyecto Integrador · Programación en Ambiente Web I</span>
+      <span>UCEVA · Facultad de Ingeniería de Sistemas</span>
+    </div>
+  </footer>
+</div>
+
+</div>

@@ -1,0 +1,115 @@
+<div class="view" id="view-event-detail">
+
+<div class="app-shell">
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-mark">TUCK<span>E</span>T</span></div>
+      <nav class="nav-role">
+        <a href="#" onclick="return nav('events')">Eventos</a>
+        <a href="#" onclick="return requireAuth('reservations')">Mis reservas</a>
+      </nav>
+      <div class="nav-user">
+        <span class="auth-out">
+          <a href="#" onclick="return nav('login')" class="btn-ghost" style="color:var(--muted-lt); font-size:13.5px;">Iniciar sesión</a>
+          <a href="#" onclick="return goRegisterAs('cliente')" class="btn btn-gold btn-sm">Crear cuenta</a>
+        </span>
+        <span class="auth-in">
+          <span class="role-pill">CLIENTE</span>
+          <div class="avatar">VR</div>
+          <a href="#" onclick="return logout()" class="btn-ghost" style="color:var(--muted-lt); font-size:12.5px;">Salir</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero-event">
+    <div class="container">
+      <div class="crumb"><a href="#" onclick="return nav('events')">Eventos</a> / Noche de Salsa — Grupo Niche Tributo</div>
+      <div class="badges-row"><span class="badge badge-boleteria">En Boletería</span></div>
+      <h1>Noche de Salsa — Grupo Niche Tributo</h1>
+      <div class="venue">Teatro Los Cristales · Cali, Valle del Cauca</div>
+
+      <div class="hero-meta">
+        <div class="hm-item"><div class="l">FECHA DE INICIO</div><div class="v">14 nov 2026, 8:00 PM</div></div>
+        <div class="hm-item"><div class="l">FINALIZACIÓN ESTIMADA</div><div class="v">14 nov 2026, 11:00 PM</div></div>
+        <div class="hm-item"><div class="l">CAPACIDAD TOTAL</div><div class="v">1,200 personas</div></div>
+        <div class="hm-item"><div class="l">CÓDIGO DE EVENTO</div><div class="v">EVT-2026-0184</div></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="app-body" style="padding-top:0;">
+    <div class="container">
+      <div class="detail-grid">
+
+        <div>
+          <div class="info-panel">
+            <h3>Sobre el evento</h3>
+            <p class="desc">
+              Una velada dedicada al repertorio de salsa clásica caleña, con banda en vivo de doce músicos
+              rindiendo tributo a Grupo Niche. Incluye acceso a zona general y servicio de guardarropa.
+              Puertas abren una hora antes del inicio.
+            </p>
+
+            <div class="divider-dash"></div>
+
+            <h3>Disponibilidad</h3>
+            <div class="capacity-bar"><span></span></div>
+            <div class="cap-label"><span>864 entradas vendidas</span><span>336 disponibles</span></div>
+
+            <div class="divider-dash"></div>
+
+            <h3>Observaciones</h3>
+            <p class="desc">Evento apto para mayores de 14 años. No se permite el ingreso de cámaras profesionales.</p>
+          </div>
+
+          <div class="panel" style="margin-top:20px;">
+            <div class="panel-head"><h3>Ubicación</h3></div>
+            <p class="cell-muted">Cra. 4 # 3-45, Barrio San Antonio, Cali — Teatro Los Cristales</p>
+          </div>
+        </div>
+
+        <aside class="book-card">
+          <span class="tag-tech" style="margin-bottom:14px; display:inline-block;">RESERVAR ENTRADAS</span>
+          <div class="price-line">
+            <div><span class="amt">$85.000</span></div>
+            <span class="u">POR ENTRADA</span>
+          </div>
+
+          <div class="field">
+            <label>Número de entradas</label>
+            <div class="qty-row">
+              <button type="button" class="qty-btn" onclick="changeQty(-1)">–</button>
+              <span class="qty-val" id="qty-val">2</span>
+              <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="obs">Observaciones (opcional)</label>
+            <textarea id="obs" placeholder="Ej: silla de ruedas, acceso preferencial…"></textarea>
+          </div>
+
+          <div class="total-row">
+            <span>Total a pagar</span>
+            <strong id="total-val">$170.000</strong>
+          </div>
+
+          <a href="#" onclick="return requireAuth('reservations')" class="btn btn-gold btn-block" style="margin-top:18px;">Confirmar reserva</a>
+          <p class="hint" style="text-align:center; margin-top:10px;">Tu reserva queda en estado <em>Reservada</em> hasta el pago en taquilla.</p>
+        </aside>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span><strong>TUCKET</strong> — Proyecto Integrador · Programación en Ambiente Web I</span>
+      <span>UCEVA · Facultad de Ingeniería de Sistemas</span>
+    </div>
+  </footer>
+</div>
+
+</div>

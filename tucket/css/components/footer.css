@@ -1,0 +1,8 @@
+/* TUCKET — Pie de página */
+
+/* ---------- Footer ---------- */
+.site-footer{
+  background:var(--navy); color:var(--muted-lt); padding:30px 0; font-size:12.5px;
+}
+.site-footer .container{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+.site-footer strong{ color:var(--paper); font-family:var(--display); font-weight:600; }

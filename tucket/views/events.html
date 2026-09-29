@@ -1,0 +1,153 @@
+<div class="view" id="view-events">
+
+<div class="app-shell">
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <div class="brand">
+        <span class="brand-mark">TUCK<span>E</span>T</span>
+        <span class="brand-tag">BOLETERÍA · GESTIÓN DE EVENTOS</span>
+      </div>
+      <nav class="nav-role">
+        <a href="#" onclick="return nav('home')">Inicio</a>
+        <a href="#" onclick="return nav('events')" class="active">Eventos</a>
+        <a href="#" onclick="return requireAuth('reservations')">Mis reservas</a>
+      </nav>
+      <div class="nav-user">
+        <span class="auth-out">
+          <a href="#" onclick="return nav('login')" class="btn-ghost" style="color:var(--muted-lt); font-size:13.5px;">Iniciar sesión</a>
+          <a href="#" onclick="return goRegisterAs('cliente')" class="btn btn-gold btn-sm">Crear cuenta</a>
+        </span>
+        <span class="auth-in">
+          <span class="role-pill">CLIENTE</span>
+          <div class="avatar">VR</div>
+          <a href="#" onclick="return logout()" class="btn-ghost" style="color:var(--muted-lt); font-size:12.5px;">Salir</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <main class="app-body">
+    <div class="container">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>CARTELERA 2026</span></div>
+          <h1>Eventos disponibles</h1>
+          <p>Conciertos, teatro y festivales en cartelera. Filtra por ciudad o fecha y aparta tu entrada.</p>
+        </div>
+      </div>
+
+      <div class="filters">
+        <input type="search" id="event-search" oninput="filterEvents(this.value)" placeholder="Buscar por nombre de evento o teatro…">
+        <select><option>Todas las ciudades</option><option>Cali</option><option>Bogotá</option><option>Medellín</option></select>
+        <select><option>Cualquier fecha</option><option>Este mes</option><option>Próximo mes</option></select>
+        <select><option>Todos los estados</option><option>Programado</option><option>En Boletería</option><option>En Vivo</option></select>
+      </div>
+
+      <div class="events-grid">
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-boleteria">En Boletería</span>
+            <span class="ev-date">14 NOV · 8:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Noche de Salsa — Grupo Niche Tributo</h3>
+            <div class="ev-loc">Teatro Los Cristales · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$85.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-programado">Programado</span>
+            <span class="ev-date">02 DIC · 7:30 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Romeo y Julieta — Compañía Nacional de Teatro</h3>
+            <div class="ev-loc">Teatro Municipal Enrique Buenaventura · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$52.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-vivo">En Vivo</span>
+            <span class="ev-date">HOY · 9:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Festival Rock a la Cañada</h3>
+            <div class="ev-loc">Parque de la Salsa · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$120.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-programado">Programado</span>
+            <span class="ev-date">20 DIC · 6:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Concierto de Fin de Año — Orquesta Filarmónica</h3>
+            <div class="ev-loc">Teatro Jorge Isaacs · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$65.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-boleteria">En Boletería</span>
+            <span class="ev-date">28 NOV · 8:30 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Stand Up Comedy Night</h3>
+            <div class="ev-loc">Sala Beethoven · Bogotá</div>
+            <div class="ev-meta">
+              <div class="ev-price">$40.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-finalizado">Finalizado</span>
+            <span class="ev-date">03 SEP · 7:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Feria de Cali — Show de Salsódromo</h3>
+            <div class="ev-loc">Autódromo de Palmaseca · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$95.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span><strong>TUCKET</strong> — Proyecto Integrador · Programación en Ambiente Web I</span>
+      <span>UCEVA · Facultad de Ingeniería de Sistemas</span>
+    </div>
+  </footer>
+
+</div>
+
+</div>

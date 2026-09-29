@@ -1,0 +1,5 @@
+/* TUCKET — Mostrar/ocultar vistas (.view / .view.active) */
+
+/* ===== view switching + page-specific styles merged ===== */
+.view{ display:none; }
+.view.active{ display:block; }

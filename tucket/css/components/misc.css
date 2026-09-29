@@ -1,0 +1,15 @@
+/* TUCKET — Estilos varios (estados vacíos, etc.) */
+
+/* ---------- misc ---------- */
+.divider-dash{
+  height:0; border-top:1px dashed var(--line); margin:26px 0;
+}
+.tag-tech{
+  font-family:var(--mono); font-size:10px; letter-spacing:.4px; color:var(--muted);
+  border:1px solid var(--line); padding:3px 8px; border-radius:20px;
+}
+.empty-state{
+  text-align:center; padding:60px 20px; color:var(--muted);
+}
+.empty-state h4{ color:var(--navy); font-size:17px; margin-bottom:8px; }
+.empty-state p{ font-size:13.5px; max-width:38ch; margin:0 auto; }

@@ -1,0 +1,8 @@
+/* TUCKET — Vista: Reservas del agente */
+
+.status-select{
+  border:1px solid var(--line); border-radius:20px; padding:6px 12px; font-size:12px;
+  font-family:var(--mono); letter-spacing:.3px; background:var(--white); color:var(--navy);
+}
+.filters-inline{ display:flex; gap:10px; flex-wrap:wrap; }
+.filters-inline select{ border:1px solid var(--line); border-radius:3px; padding:8px 10px; font-size:12.5px; background:var(--white); }

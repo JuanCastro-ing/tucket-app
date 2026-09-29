@@ -1,0 +1,19 @@
+/* TUCKET — Etiquetas de estado */
+
+/* ---------- Status badges ---------- */
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.4px;
+  padding:5px 10px; border-radius:20px; border:1px solid transparent;
+  white-space:nowrap;
+}
+.badge::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+.badge-programado{ color:#4C5D8A; background:#EAEDF6; }
+.badge-boleteria{ color:var(--gold-dark); background:#FBF0D9; }
+.badge-vivo{ color:var(--red); background:#FBE7E5; }
+.badge-vivo::before{ animation:pulse 1.4s infinite; }
+.badge-finalizado{ color:var(--muted); background:#EDECE6; }
+.badge-cancelado{ color:var(--red); background:#FBE7E5; }
+.badge-reservada{ color:var(--gold-dark); background:#FBF0D9; }
+.badge-confirmada{ color:var(--teal); background:#E4F3EF; }
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.25;} }

@@ -1,0 +1,71 @@
+<div class="view" id="view-login">
+
+
+<div class="split">
+
+  <!-- Panel de marca / marquesina -->
+  <section class="promo">
+    <div class="promo-top">
+      <div class="brand">
+        <span class="brand-mark">TUCK<span>E</span>T</span>
+      </div>
+    </div>
+
+    <div class="promo-mid">
+      <span class="promo-eyebrow">Boletería &amp; gestión de espectáculos</span>
+      <h1>El telón sube cuando tu reserva está lista.</h1>
+      <p>Un solo lugar para publicar eventos, vender entradas y llevar el control de cada función — desde el registro de un teatro hasta el reporte de cierre de temporada.</p>
+
+      <div class="promo-stubs">
+        <div class="promo-stub"><div class="n">128</div><div class="l">EVENTOS ACTIVOS</div></div>
+        <div class="promo-stub"><div class="n">4,930</div><div class="l">RESERVAS 2026</div></div>
+        <div class="promo-stub"><div class="n">36</div><div class="l">CIUDADES</div></div>
+      </div>
+    </div>
+
+    <div class="promo-foot">
+      <span class="tag-tech">PostgreSQL</span>
+      <span class="tag-tech">Patrón MVC</span>
+      <span class="tag-tech">HTML5 · CSS · JS</span>
+    </div>
+  </section>
+
+  <!-- Panel de acceso -->
+  <section class="auth-side">
+    <div class="auth-box">
+      <span class="kicker">ACCESO A LA PLATAFORMA</span>
+      <h2>Inicia sesión</h2>
+      <span class="sub">Elige tu perfil para ver la vista correspondiente del prototipo.</span>
+
+      <div class="role-switch">
+        <button class="active" type="button" onclick="setRole(this,'cliente')">Cliente</button>
+        <button type="button" onclick="setRole(this,'agente')">Agente</button>
+        <button type="button" onclick="setRole(this,'administrador')">Administrador</button>
+      </div>
+
+      <form>
+        <div class="field">
+          <label for="email">Correo electrónico</label>
+          <input id="email" type="email" placeholder="nombre@correo.com" value="valentina.rios@correo.com">
+        </div>
+        <div class="field">
+          <div class="row-between" style="margin-bottom:7px;">
+            <label style="margin-bottom:0;" for="pass">Contraseña</label>
+            <a class="link-gold" href="#">¿Olvidaste tu contraseña?</a>
+          </div>
+          <input id="pass" type="password" placeholder="••••••••" value="••••••••">
+        </div>
+        <label class="check-row" style="margin-bottom:22px;">
+          <input type="checkbox" checked> Mantener la sesión iniciada
+        </label>
+        <a href="#" onclick="return ingresar()" class="btn btn-gold btn-block">Ingresar</a>
+      </form>
+
+      <p class="auth-foot">¿No tienes cuenta? <a class="link-gold" href="#" onclick="return nav('register')">Regístrate como cliente o agente</a></p>
+    </div>
+  </section>
+
+</div>
+
+
+</div>

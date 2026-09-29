@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<title>TUCKET — Sistema de Gestión y Reserva de Eventos y Espectáculos</title>
+
+<!-- Fuentes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@500&display=swap">
+
+<!-- Estilos: base, componentes compartidos y uno por vista -->
+<link rel="stylesheet" href="css/base/base.css">
+<link rel="stylesheet" href="css/components/marquee.css">
+<link rel="stylesheet" href="css/components/buttons.css">
+<link rel="stylesheet" href="css/components/forms.css">
+<link rel="stylesheet" href="css/components/tickets.css">
+<link rel="stylesheet" href="css/components/badges.css">
+<link rel="stylesheet" href="css/components/layout.css">
+<link rel="stylesheet" href="css/components/sidebar.css">
+<link rel="stylesheet" href="css/components/cards-tables.css">
+<link rel="stylesheet" href="css/components/footer.css">
+<link rel="stylesheet" href="css/components/misc.css">
+<link rel="stylesheet" href="css/base/view-switch.css">
+<link rel="stylesheet" href="css/components/promo.css">
+<link rel="stylesheet" href="css/views/home.css">
+<link rel="stylesheet" href="css/components/whatsapp.css">
+<link rel="stylesheet" href="css/views/login.css">
+<link rel="stylesheet" href="css/views/register.css">
+<link rel="stylesheet" href="css/views/events.css">
+<link rel="stylesheet" href="css/views/event-detail.css">
+<link rel="stylesheet" href="css/views/reservations.css">
+<link rel="stylesheet" href="css/views/agent-events.css">
+<link rel="stylesheet" href="css/views/agent-reservations.css">
+<link rel="stylesheet" href="css/views/admin-dashboard.css">
+</head>
+<body>
+
+<!-- Aquí se insertan las vistas de /views (ver js/loader.js) -->
+<div id="app"></div>
+
+<a class="whatsapp-float" href="https://wa.me/573000000000?text=Hola%20TUCKET%2C%20tengo%20una%20pregunta" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.48-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.53.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.91-2.2-.24-.58-.49-.5-.67-.5-.17-.01-.37-.01-.57-.01-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.22 1.36.19 1.87.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/><path d="M12.02 2C6.5 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.08-1.33A9.96 9.96 0 0 0 12.02 22C17.53 22 22 17.52 22 12S17.53 2 12.02 2zm0 18.1c-1.66 0-3.2-.46-4.52-1.25l-.32-.19-3.02.79.8-2.94-.21-.3A8.07 8.07 0 0 1 3.93 12c0-4.46 3.63-8.09 8.09-8.09 4.46 0 8.08 3.63 8.08 8.09 0 4.46-3.62 8.1-8.08 8.1z"/></svg>
+</a>
+
+<!-- Lógica: un archivo por sección -->
+<script src="js/navigation.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/login.js"></script>
+<script src="js/register.js"></script>
+<script src="js/event-detail.js"></script>
+<script src="js/events.js"></script>
+<script src="js/reservations.js"></script>
+<script src="js/agent-reservations.js"></script>
+<script src="js/loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<div class="view" id="view-reservations">
+
+<div class="app-shell">
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-mark">TUCK<span>E</span>T</span></div>
+      <nav class="nav-role">
+        <a href="#" onclick="return nav('events')">Eventos</a>
+        <a href="#" onclick="return nav('reservations')" class="active">Mis reservas</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">CLIENTE</span><div class="avatar">VR</div><a href="#" onclick="return logout()" class="btn-ghost" style="color:var(--muted-lt); font-size:12.5px;">Salir</a></div>
+    </div>
+  </div>
+
+  <main class="app-body">
+    <div class="container">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>HISTORIAL PERSONAL</span></div>
+          <h1>Mis reservas</h1>
+          <p>Consulta el estado de cada reserva. Puedes ver el detalle o cancelar mientras esté en estado Reservada.</p>
+        </div>
+        <div>
+          <div class="stat-card alt" style="min-width:150px;">
+            <div class="stat-label">PUNTOS ACUMULADOS</div>
+            <div class="stat-value">1,240</div>
+            <div class="stat-delta">Cliente frecuente</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a href="#" class="active">Todas (5)</a>
+        <a href="#">Reservadas (2)</a>
+        <a href="#">Confirmadas (2)</a>
+        <a href="#">Canceladas (1)</a>
+      </div>
+
+      <div class="res-list">
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-confirmada" style="margin-bottom:8px;">Confirmada</span>
+              <h3>Noche de Salsa — Grupo Niche Tributo</h3>
+              <div class="venue">Teatro Los Cristales · Cali · 14 nov 2026, 8:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">2</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$170.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">02 oct 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00842</span><span class="stub-date">14 NOV</span></div>
+        </div>
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-reservada" style="margin-bottom:8px;">Reservada</span>
+              <h3>Romeo y Julieta — Compañía Nacional de Teatro</h3>
+              <div class="venue">Teatro Municipal Enrique Buenaventura · Cali · 02 dic 2026, 7:30 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">4</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$208.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">28 sep 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+              <a href="#" class="btn btn-danger btn-sm" onclick="return cancelReserva(this)">Cancelar</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00851</span><span class="stub-date">02 DIC</span></div>
+        </div>
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-reservada" style="margin-bottom:8px;">Reservada</span>
+              <h3>Festival Rock a la Cañada</h3>
+              <div class="venue">Parque de la Salsa · Cali · Hoy, 9:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">1</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$120.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">05 sep 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+              <a href="#" class="btn btn-danger btn-sm" onclick="return cancelReserva(this)">Cancelar</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00879</span><span class="stub-date">HOY</span></div>
+        </div>
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-confirmada" style="margin-bottom:8px;">Confirmada</span>
+              <h3>Concierto de Fin de Año — Orquesta Filarmónica</h3>
+              <div class="venue">Teatro Jorge Isaacs · Cali · 20 dic 2026, 6:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">3</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$195.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">30 ago 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00790</span><span class="stub-date">20 DIC</span></div>
+        </div>
+
+        <div class="ticket res-ticket" style="opacity:.6;">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-cancelado" style="margin-bottom:8px;">Cancelada</span>
+              <h3>Feria de Cali — Show de Salsódromo</h3>
+              <div class="venue">Autódromo de Palmaseca · Cali · 03 sep 2026, 7:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">2</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$190.000</div></div>
+              <div class="rf"><div class="l">MOTIVO</div><div class="v" style="font-size:12.5px;">Cambio de plan</div></div>
+            </div>
+            <div class="res-actions">
+              <span class="btn btn-outline btn-sm" style="pointer-events:none; opacity:.5;">No disponible</span>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00711</span><span class="stub-date">03 SEP</span></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span><strong>TUCKET</strong> — Proyecto Integrador · Programación en Ambiente Web I</span>
+      <span>UCEVA · Facultad de Ingeniería de Sistemas</span>
+    </div>
+  </footer>
+</div>
+
+</div>

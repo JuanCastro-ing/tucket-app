@@ -1,0 +1,69 @@
+/* TUCKET — Barra superior (marquesina) y estado sesión */
+
+/* ---------- Marquee top bar ---------- */
+.marquee-bar{
+  background:var(--navy);
+  border-bottom:1px solid var(--navy-3);
+  position:sticky; top:0; z-index:100;
+  padding-top:env(safe-area-inset-top, 0px);
+  width:100%;
+}
+.marquee-bar::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:-5px; height:3px;
+  background-image:radial-gradient(circle, var(--gold) 1.5px, transparent 1.6px);
+  background-size:14px 3px;
+  opacity:.55;
+}
+.marquee-inner{
+  max-width:1180px; margin:0 auto; padding:0 32px;
+  height:72px; display:flex; align-items:center; justify-content:space-between;
+  gap:10px;
+}
+@media (max-width:480px){
+  .marquee-inner{ padding:0 16px; height:60px; gap:6px; }
+}
+.brand{ display:flex; align-items:baseline; gap:10px; flex-shrink:0; }
+.brand-mark{
+  font-family:var(--display); font-size:24px; font-weight:700;
+  color:var(--paper); letter-spacing:.5px; white-space:nowrap;
+}
+@media (max-width:380px){ .brand-mark{ font-size:19px; } }
+.brand-mark span{ color:var(--gold); }
+.brand-tag{
+  font-family:var(--mono); font-size:10.5px; color:var(--muted-lt);
+  letter-spacing:.4px; display:none;
+}
+@media (min-width:720px){ .brand-tag{ display:block; } }
+
+.nav-role{ display:flex; align-items:center; gap:28px; }
+.nav-role a{
+  font-size:14.5px; color:var(--muted-lt); font-weight:500;
+  padding:6px 2px; border-bottom:2px solid transparent;
+  transition:color .15s ease, border-color .15s ease;
+}
+.nav-role a:hover{ color:var(--paper); }
+.nav-role a.active{ color:var(--gold); border-bottom-color:var(--gold); }
+.nav-role{ display:none; }
+@media (min-width:860px){ .nav-role{ display:flex; } }
+
+.nav-user{ display:flex; align-items:center; gap:14px; flex-shrink:0; min-width:0; }
+.nav-user .auth-out,
+.nav-user .auth-in{ display:flex; align-items:center; gap:10px; min-width:0; }
+html:not([data-auth="in"]) .auth-in{ display:none !important; }
+html[data-auth="in"] .auth-out{ display:none !important; }
+.role-pill{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.4px;
+  color:var(--navy); background:var(--gold); padding:5px 10px;
+  border-radius:20px; font-weight:500; white-space:nowrap;
+}
+.avatar{
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  background:var(--navy-3); border:1px solid var(--navy-3);
+  color:var(--paper); font-family:var(--display); font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+}
+@media (max-width:380px){
+  .role-pill{ display:none; }
+  .nav-user .auth-out a.btn-ghost{ font-size:12.5px !important; padding:6px 2px !important; }
+}

@@ -1,0 +1,16 @@
+/* TUCKET — Vista: Mis reservas (cliente) */
+
+.res-list{ display:flex; flex-direction:column; gap:16px; }
+.res-ticket .ticket-main{ display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; align-items:center; }
+.res-info h3{ font-size:16px; margin-bottom:5px; }
+.res-info .venue{ font-size:12.5px; color:var(--muted); }
+.res-figures{ display:flex; gap:30px; flex-wrap:wrap; }
+.rf .l{ font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:.4px; }
+.rf .v{ font-family:var(--display); font-size:15.5px; color:var(--navy); margin-top:3px; }
+.res-actions{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+.tabs{ display:flex; gap:6px; margin-bottom:26px; }
+.tabs a{
+  padding:9px 16px; border-radius:20px; font-size:13px; font-weight:700; color:var(--muted);
+  border:1px solid var(--line);
+}
+.tabs a.active{ background:var(--navy); color:var(--gold); border-color:var(--navy); }

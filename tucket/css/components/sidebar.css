@@ -1,0 +1,22 @@
+/* TUCKET — Menú lateral (agente/admin) */
+
+/* ---------- Sidebar (agente/admin) ---------- */
+.with-sidebar{ display:grid; grid-template-columns:220px 1fr; gap:0; }
+.with-sidebar > *{ min-width:0; }
+@media (max-width:860px){ .with-sidebar{ grid-template-columns:1fr; } }
+.sidebar{
+  border-right:1px solid var(--line);
+  padding:36px 22px 40px 0;
+}
+@media (max-width:860px){ .sidebar{ border-right:none; border-bottom:1px solid var(--line); padding:20px 0; display:flex; gap:6px; overflow-x:auto; } }
+.sidebar-title{ font-family:var(--mono); font-size:10.5px; color:var(--muted); letter-spacing:.5px; margin-bottom:14px; }
+@media (max-width:860px){ .sidebar-title{ display:none; } }
+.sidebar a{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:var(--radius); font-size:14px; font-weight:500;
+  color:var(--ink); margin-bottom:3px; white-space:nowrap;
+}
+.sidebar a:hover{ background:var(--paper-2); }
+.sidebar a.active{ background:var(--navy); color:var(--gold); }
+.content-col{ padding-left:0; }
+@media (min-width:860px){ .content-col{ padding-left:38px; } }

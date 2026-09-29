@@ -1,0 +1,36 @@
+/* TUCKET — Vista: Explorar eventos */
+
+.filters{
+  display:flex; gap:12px; flex-wrap:wrap; align-items:center;
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 16px; margin-bottom:28px;
+}
+.filters input[type="search"]{
+  flex:1; min-width:180px; border:none; background:transparent; font-size:14.5px; padding:6px 4px;
+}
+.filters input[type="search"]:focus{ outline:none; }
+.filters select{
+  border:1px solid var(--line); border-radius:3px; padding:9px 10px; font-size:13px; background:var(--white);
+}
+.events-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+@media (max-width:960px){ .events-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:660px){ .events-grid{ grid-template-columns:1fr; } }
+
+.ev-card{
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+  overflow:hidden; display:flex; flex-direction:column; box-shadow:0 10px 24px -18px rgba(18,23,43,.3);
+}
+.ev-media{
+  height:118px; position:relative; display:flex; align-items:flex-end; padding:14px;
+  background:linear-gradient(135deg,var(--navy),var(--navy-3));
+}
+.ev-media .badge{ position:absolute; top:12px; right:12px; background:rgba(255,255,255,.92); }
+.ev-media .ev-date{
+  font-family:var(--mono); color:var(--gold); font-size:11px; letter-spacing:.5px;
+}
+.ev-#view-events{ padding:16px 18px 18px; flex:1; display:flex; flex-direction:column; }
+.ev-body h3{ font-size:16.5px; margin-bottom:4px; }
+.ev-loc{ font-size:12.5px; color:var(--muted); margin-bottom:12px; }
+.ev-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:12px; border-top:1px dashed var(--line); }
+.ev-price{ font-family:var(--display); font-size:17px; color:var(--navy); }
+.ev-price span{ font-family:var(--mono); font-size:10px; color:var(--muted); display:block; }

@@ -1,0 +1,14 @@
+/* TUCKET — Contenedores y estructura general */
+
+/* ---------- Layout shells ---------- */
+.app-shell{ min-height:100vh; display:flex; flex-direction:column; }
+.app-body{ flex:1; padding:44px 0 80px; }
+.page-head{
+  display:flex; justify-content:space-between; align-items:flex-end;
+  margin-bottom:34px; gap:20px; flex-wrap:wrap;
+}
+.eyebrow-line{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.eyebrow-line .rule{ width:26px; height:2px; background:var(--gold-dark); }
+.eyebrow-line span{ font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:.5px; }
+.page-head h1{ font-size:30px; }
+.page-head p{ color:var(--muted); font-size:14.5px; margin-top:6px; max-width:46ch; }

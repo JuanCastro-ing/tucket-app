@@ -1,0 +1,221 @@
+<div class="view" id="view-admin-dashboard">
+
+<div class="app-shell">
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-mark">TUCK<span>E</span>T</span></div>
+      <nav class="nav-role">
+        <a href="#" onclick="return nav('admin-dashboard')" class="active">Panel administrativo</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">ADMINISTRADOR</span><div class="avatar">SP</div><a href="#" onclick="return logout()" class="btn-ghost" style="color:var(--muted-lt); font-size:12.5px;">Salir</a></div>
+    </div>
+  </div>
+
+  <main class="app-body">
+    <div class="container">
+      <div class="with-sidebar">
+
+        <aside class="sidebar">
+          <div class="sidebar-title">PANEL ADMINISTRATIVO</div>
+          <a href="#" onclick="return nav('admin-dashboard')" class="active">Resumen general</a>
+          <a href="#reportes-comerciales">Reportes comerciales</a>
+          <a href="#cobertura">Cobertura geográfica</a>
+          <a href="#operacion">Reservas y operación</a>
+          <a href="#" onclick="return logout()">Cerrar sesión</a>
+        </aside>
+
+        <div class="content-col">
+
+          <div class="page-head">
+            <div>
+              <div class="eyebrow-line"><span class="rule"></span><span>REPORTES DEL SISTEMA</span></div>
+              <h1>Panel administrativo</h1>
+              <p>Registros del sistema, ingresos, cobertura geográfica y estado de la operación en tiempo real.</p>
+            </div>
+            <select style="border:1px solid var(--line); border-radius:3px; padding:9px 12px; font-size:13px;">
+              <option>Año 2026</option>
+              <option>Año 2025</option>
+            </select>
+          </div>
+
+          <!-- Reporte general de registros -->
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-label">CLIENTES REGISTRADOS</div><div class="stat-value">2,148</div><div class="stat-delta">+64 este mes</div></div>
+            <div class="stat-card alt"><div class="stat-label">AGENTES REGISTRADOS</div><div class="stat-value">37</div></div>
+            <div class="stat-card alt"><div class="stat-label">ADMINISTRADORES</div><div class="stat-value">5</div></div>
+            <div class="stat-card alt"><div class="stat-label">EVENTOS REGISTRADOS</div><div class="stat-value">128</div></div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <h3>Ingresos totales por mes — 2026</h3>
+              <span class="hint">Suma del valor de reservas confirmadas, en pesos colombianos</span>
+              <svg class="chart-svg" viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg">
+                <line x1="30" y1="10" x2="30" y2="180" stroke="#EFE7D3" stroke-width="1"/>
+                <line x1="30" y1="180" x2="450" y2="180" stroke="#EFE7D3" stroke-width="1"/>
+                <polyline points="30,138 76,124 122,116 168,98 214,92 260,74 306,58 352,46 398,26"
+                          fill="none" stroke="#E8B44C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <polygon points="30,138 76,124 122,116 168,98 214,92 260,74 306,58 352,46 398,26 398,180 30,180"
+                         fill="#E8B44C" opacity="0.12"/>
+                <g fill="#12172B">
+                  <circle cx="30" cy="138" r="3.5"/><circle cx="76" cy="124" r="3.5"/><circle cx="122" cy="116" r="3.5"/>
+                  <circle cx="168" cy="98" r="3.5"/><circle cx="214" cy="92" r="3.5"/><circle cx="260" cy="74" r="3.5"/>
+                  <circle cx="306" cy="58" r="3.5"/><circle cx="352" cy="46" r="3.5"/><circle cx="398" cy="26" r="3.5"/>
+                </g>
+                <g font-family="JetBrains Mono, monospace" font-size="9.5" fill="#6D7290">
+                  <text x="30" y="198" text-anchor="middle">ENE</text><text x="76" y="198" text-anchor="middle">FEB</text>
+                  <text x="122" y="198" text-anchor="middle">MAR</text><text x="168" y="198" text-anchor="middle">ABR</text>
+                  <text x="214" y="198" text-anchor="middle">MAY</text><text x="260" y="198" text-anchor="middle">JUN</text>
+                  <text x="306" y="198" text-anchor="middle">JUL</text><text x="352" y="198" text-anchor="middle">AGO</text>
+                  <text x="398" y="198" text-anchor="middle">SEP</text>
+                  <text x="20" y="142" text-anchor="end">$42M</text>
+                  <text x="20" y="30" text-anchor="end">$82M</text>
+                </g>
+              </svg>
+            </div>
+            <div class="chart-card">
+              <h3>Reservas por mes</h3>
+              <span class="hint">Número de reservas registradas · 2026</span>
+              <svg class="chart-svg" viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg">
+                <line x1="24" y1="180" x2="336" y2="180" stroke="#EFE7D3" stroke-width="1"/>
+                <g fill="#12172B">
+                  <rect x="26"  y="93"  width="22" height="87" rx="2"/>
+                  <rect x="60"  y="82"  width="22" height="98" rx="2"/>
+                  <rect x="94"  y="72"  width="22" height="108" rx="2"/>
+                  <rect x="128" y="58"  width="22" height="122" rx="2"/>
+                  <rect x="162" y="50"  width="22" height="130" rx="2"/>
+                  <rect x="196" y="42"  width="22" height="138" rx="2"/>
+                  <rect x="230" y="32"  width="22" height="148" rx="2"/>
+                  <rect x="264" y="16"  width="22" height="164" rx="2" fill="#E8B44C"/>
+                  <rect x="298" y="8"   width="22" height="172" rx="2" fill="#E8B44C"/>
+                </g>
+                <g font-family="JetBrains Mono, monospace" font-size="9.5" fill="#6D7290">
+                  <text x="37" y="196" text-anchor="middle">E</text><text x="71" y="196" text-anchor="middle">F</text>
+                  <text x="105" y="196" text-anchor="middle">M</text><text x="139" y="196" text-anchor="middle">A</text>
+                  <text x="173" y="196" text-anchor="middle">M</text><text x="207" y="196" text-anchor="middle">J</text>
+                  <text x="241" y="196" text-anchor="middle">J</text><text x="275" y="196" text-anchor="middle">A</text>
+                  <text x="309" y="196" text-anchor="middle">S</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div id="reportes-comerciales" class="charts-grid-2">
+            <div class="chart-card">
+              <h3>Promedio de ingresos por agente</h3>
+              <span class="hint">Top 5 agentes por comisión generada</span>
+              <svg class="chart-svg" viewBox="0 0 380 190" xmlns="http://www.w3.org/2000/svg">
+                <g font-family="Karla, sans-serif" font-size="12" fill="#1D2238">
+                  <text x="0" y="20">J. Delgado</text>
+                  <text x="0" y="56">M. Ospina</text>
+                  <text x="0" y="92">C. Vidal</text>
+                  <text x="0" y="128">R. Estrada</text>
+                  <text x="0" y="164">A. Muñoz</text>
+                </g>
+                <g fill="#2E9C82">
+                  <rect x="86" y="8"   width="266" height="16" rx="2"/>
+                  <rect x="86" y="44"  width="238" height="16" rx="2"/>
+                  <rect x="86" y="80"  width="203" height="16" rx="2"/>
+                  <rect x="86" y="116" width="182" height="16" rx="2"/>
+                  <rect x="86" y="152" width="154" height="16" rx="2"/>
+                </g>
+                <g font-family="JetBrains Mono, monospace" font-size="11" fill="#12172B">
+                  <text x="358" y="20">$3.8M</text><text x="330" y="56">$3.4M</text><text x="295" y="92">$2.9M</text>
+                  <text x="274" y="128">$2.6M</text><text x="246" y="164">$2.2M</text>
+                </g>
+              </svg>
+            </div>
+            <div class="chart-card">
+              <h3>Eventos creados por ciudad</h3>
+              <span class="hint">Distribución de eventos publicados</span>
+              <div style="display:flex; align-items:center; gap:26px; flex-wrap:wrap;">
+                <svg width="160" height="160" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+                  <g transform="rotate(-90 90 90)">
+                    <circle cx="90" cy="90" r="70" fill="none" stroke="#12172B" stroke-width="26" stroke-dasharray="288.5 439.8" stroke-dashoffset="0"/>
+                    <circle cx="90" cy="90" r="70" fill="none" stroke="#E8B44C" stroke-width="26" stroke-dasharray="75.7 439.8" stroke-dashoffset="-288.5"/>
+                    <circle cx="90" cy="90" r="70" fill="none" stroke="#2E9C82" stroke-width="26" stroke-dasharray="47.9 439.8" stroke-dashoffset="-364.2"/>
+                    <circle cx="90" cy="90" r="70" fill="none" stroke="#A6ABC4" stroke-width="26" stroke-dasharray="17.2 439.8" stroke-dashoffset="-412.1"/>
+                    <circle cx="90" cy="90" r="70" fill="none" stroke="#C7473F" stroke-width="26" stroke-dasharray="10.1 439.8" stroke-dashoffset="-429.3"/>
+                  </g>
+                  <text x="90" y="86" text-anchor="middle" font-family="Oswald, sans-serif" font-size="26" fill="#12172B">128</text>
+                  <text x="90" y="104" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#6D7290">EVENTOS</text>
+                </svg>
+                <div class="legend-row" style="flex-direction:column; gap:9px;">
+                  <span class="legend-item"><span class="legend-dot" style="background:#12172B;"></span>Cali — 84</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#E8B44C;"></span>Bogotá — 22</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#2E9C82;"></span>Medellín — 14</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#A6ABC4;"></span>Palmira — 5</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:#C7473F;"></span>Barranquilla — 3</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="cobertura">
+            <div class="panel-head">
+              <h3>Cobertura de eventos por ubicación</h3>
+              <span class="hint">País · Departamento · Ciudad</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>País</th><th>Departamento</th><th>Ciudad</th><th>Eventos</th><th>Reservas asociadas</th></tr></thead>
+                <tbody>
+                  <tr><td>Colombia</td><td>Valle del Cauca</td><td class="cell-strong">Cali</td><td>84</td><td>3,210</td></tr>
+                  <tr><td>Colombia</td><td>Cundinamarca</td><td class="cell-strong">Bogotá</td><td>22</td><td>980</td></tr>
+                  <tr><td>Colombia</td><td>Antioquia</td><td class="cell-strong">Medellín</td><td>14</td><td>540</td></tr>
+                  <tr><td>Colombia</td><td>Valle del Cauca</td><td class="cell-strong">Palmira</td><td>5</td><td>140</td></tr>
+                  <tr><td>Colombia</td><td>Atlántico</td><td class="cell-strong">Barranquilla</td><td>3</td><td>60</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" id="operacion">
+            <div class="panel-head">
+              <h3>Reservas canceladas y su causa</h3>
+              <span class="hint">Últimas 30 reservas canceladas</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Reserva</th><th>Cliente</th><th>Evento</th><th>Fecha cancelación</th><th>Causa</th></tr></thead>
+                <tbody>
+                  <tr><td class="cell-strong">RES-00711</td><td>Andrés Felipe Soto</td><td>Feria de Cali</td><td>21 ago 2026</td><td><span class="cause-tag">Cambio de plan</span></td></tr>
+                  <tr><td class="cell-strong">RES-00688</td><td>Diana Marcela Ruiz</td><td>Jazz en el Bulevar</td><td>15 ago 2026</td><td><span class="cause-tag">No pagó a tiempo</span></td></tr>
+                  <tr><td class="cell-strong">RES-00654</td><td>Julián Herrera</td><td>Noche de Salsa</td><td>02 ago 2026</td><td><span class="cause-tag">Evento reprogramado</span></td></tr>
+                  <tr><td class="cell-strong">RES-00601</td><td>Paula Andrea Vidal</td><td>Stand Up Comedy Night</td><td>28 jul 2026</td><td><span class="cause-tag">Duplicidad de compra</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Eventos cancelados y su causa</h3>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Evento</th><th>Ciudad</th><th>Fecha</th><th>Causa</th></tr></thead>
+                <tbody>
+                  <tr><td class="cell-strong">Jazz en el Bulevar</td><td>Cali</td><td>18 ago 2026</td><td><span class="cause-tag">Baja demanda de entradas</span></td></tr>
+                  <tr><td class="cell-strong">Teatro al Parque — Verano</td><td>Bogotá</td><td>04 jul 2026</td><td><span class="cause-tag">Condiciones climáticas</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span><strong>TUCKET</strong> — Proyecto Integrador · Programación en Ambiente Web I</span>
+      <span>UCEVA · Facultad de Ingeniería de Sistemas</span>
+    </div>
+  </footer>
+</div>
+
+
+</div>

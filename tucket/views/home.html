@@ -1,0 +1,238 @@
+<div class="view active" id="view-home">
+<div class="app-shell">
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <div class="brand">
+        <span class="brand-mark">TUCK<span>E</span>T</span>
+        <span class="brand-tag">BOLETERÍA · GESTIÓN DE EVENTOS</span>
+      </div>
+      <nav class="nav-role">
+        <a href="#" onclick="return nav('home')" class="active">Inicio</a>
+        <a href="#" onclick="return nav('events')">Explorar eventos</a>
+        <a href="#" onclick="return goRegisterAs('agente')">Para organizadores</a>
+      </nav>
+      <div class="nav-user">
+        <span class="auth-out">
+          <a href="#" onclick="return nav('login')" class="btn-ghost" style="color:var(--muted-lt); font-size:13.5px;">Iniciar sesión</a>
+          <a href="#" onclick="return goRegisterAs('cliente')" class="btn btn-gold btn-sm">Crear cuenta</a>
+        </span>
+        <span class="auth-in">
+          <span class="role-pill">CLIENTE</span>
+          <div class="avatar">VR</div>
+          <a href="#" onclick="return logout()" class="btn-ghost" style="color:var(--muted-lt); font-size:12.5px;">Salir</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <section class="home-hero">
+    <div class="container home-hero-inner">
+      <div class="home-hero-copy">
+        <span class="promo-eyebrow">VIVE CADA FUNCIÓN</span>
+        <h1>Encuentra tu próximo gran show.</h1>
+        <p>Conciertos, teatro, festivales y comedia en un solo lugar. Explora la cartelera y reserva tu entrada en minutos — sin necesidad de cuenta.</p>
+        <form class="home-search" onsubmit="return nav('events')">
+          <input type="search" placeholder="Busca artistas, eventos o teatros…">
+          <select><option>Todas las ciudades</option><option>Cali</option><option>Bogotá</option><option>Medellín</option></select>
+          <button type="submit" class="btn btn-gold">Buscar eventos</button>
+        </form>
+        <div class="home-chip-row">
+          <a href="#" onclick="return nav('events')" class="home-chip">Conciertos</a>
+          <a href="#" onclick="return nav('events')" class="home-chip">Teatro</a>
+          <a href="#" onclick="return nav('events')" class="home-chip">Festivales</a>
+          <a href="#" onclick="return nav('events')" class="home-chip">Comedia</a>
+          <a href="#" onclick="return nav('events')" class="home-chip">Orquesta</a>
+        </div>
+      </div>
+      <div class="home-hero-stats">
+        <div class="promo-stub"><div class="n">128</div><div class="l">EVENTOS ACTIVOS</div></div>
+        <div class="promo-stub"><div class="n">4,930</div><div class="l">RESERVAS 2026</div></div>
+        <div class="promo-stub"><div class="n">36</div><div class="l">CIUDADES</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-it-works">
+    <div class="container">
+      <div class="eyebrow-line"><span class="rule"></span><span>PASO A PASO</span></div>
+      <h1>¿Cómo funciona TUCKET?</h1>
+      <div class="how-grid">
+
+        <div class="how-card">
+          <div class="how-step">PASO 01</div>
+          <div class="how-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <h4>Busca tu evento</h4>
+          <p>Explora la cartelera por ciudad, artista o categoría: conciertos, teatro, festivales y comedia.</p>
+        </div>
+
+        <div class="how-card">
+          <div class="how-step">PASO 02</div>
+          <div class="how-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="12" rx="2"></rect><path d="M3 11h18"></path><path d="M8 15h4"></path></svg>
+          </div>
+          <h4>Elige tus boletos</h4>
+          <p>Selecciona la función, la cantidad de entradas y la localidad que prefieras.</p>
+        </div>
+
+        <div class="how-card">
+          <div class="how-step">PASO 03</div>
+          <div class="how-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          </div>
+          <h4>Reserva y paga</h4>
+          <p>Confirma tu reserva de forma segura y recibe la confirmación al instante.</p>
+        </div>
+
+        <div class="how-card">
+          <div class="how-step">PASO 04</div>
+          <div class="how-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V6a2 2 0 0 1 2-2h2"></path><path d="M4 15v3a2 2 0 0 0 2 2h2"></path><path d="M20 9V6a2 2 0 0 0-2-2h-2"></path><path d="M20 15v3a2 2 0 0 1-2 2h-2"></path><rect x="9" y="9" width="6" height="6"></rect></svg>
+          </div>
+          <h4>Presenta tu boleto</h4>
+          <p>Llega el día del evento y muestra tu boleto digital en la entrada. Así de fácil.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <main class="app-body" style="padding-top:44px;">
+    <div class="container">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>DESTACADOS ESTA SEMANA</span></div>
+          <h1>Eventos que no te puedes perder</h1>
+        </div>
+        <a href="#" onclick="return nav('events')" class="btn btn-outline btn-sm">Ver toda la cartelera →</a>
+      </div>
+
+      <div class="events-grid">
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-boleteria">En Boletería</span>
+            <span class="ev-date">14 NOV · 8:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Noche de Salsa — Grupo Niche Tributo</h3>
+            <div class="ev-loc">Teatro Los Cristales · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$85.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-vivo">En Vivo</span>
+            <span class="ev-date">HOY · 9:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Festival Rock a la Cañada</h3>
+            <div class="ev-loc">Parque de la Salsa · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$120.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-programado">Programado</span>
+            <span class="ev-date">02 DIC · 7:30 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Romeo y Julieta — Compañía Nacional de Teatro</h3>
+            <div class="ev-loc">Teatro Municipal Enrique Buenaventura · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$52.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="home-cta-banner">
+        <div>
+          <h3>¿Organizas espectáculos?</h3>
+          <p>Publica tu evento en TUCKET y vende entradas sin complicaciones.</p>
+        </div>
+        <a href="#" onclick="return goRegisterAs('agente')" class="btn btn-gold">Publicar un evento</a>
+      </div>
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>MÁS EVENTOS</span></div>
+          <h1>Explora la cartelera completa</h1>
+        </div>
+        <a href="#" onclick="return nav('events')" class="btn btn-outline btn-sm">Ver todos →</a>
+      </div>
+
+      <div class="events-grid">
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-programado">Programado</span>
+            <span class="ev-date">20 DIC · 6:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Concierto de Fin de Año — Orquesta Filarmónica</h3>
+            <div class="ev-loc">Teatro Jorge Isaacs · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$65.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-boleteria">En Boletería</span>
+            <span class="ev-date">28 NOV · 8:30 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Stand Up Comedy Night</h3>
+            <div class="ev-loc">Sala Beethoven · Bogotá</div>
+            <div class="ev-meta">
+              <div class="ev-price">$40.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" onclick="return nav('event-detail')" class="ev-card">
+          <div class="ev-media">
+            <span class="badge badge-finalizado">Finalizado</span>
+            <span class="ev-date">03 SEP · 7:00 PM</span>
+          </div>
+          <div class="ev-body">
+            <h3>Feria de Cali — Show de Salsódromo</h3>
+            <div class="ev-loc">Autódromo de Palmaseca · Cali</div>
+            <div class="ev-meta">
+              <div class="ev-price">$95.000<span>DESDE</span></div>
+              <span class="btn btn-outline btn-sm">Ver evento</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span><strong>TUCKET</strong> — Proyecto Integrador · Programación en Ambiente Web I</span>
+      <span>UCEVA · Facultad de Ingeniería de Sistemas</span>
+    </div>
+  </footer>
+
+</div>
+</div>

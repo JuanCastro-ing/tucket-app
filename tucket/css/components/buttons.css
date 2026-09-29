@@ -1,0 +1,22 @@
+/* TUCKET — Botones */
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 22px; border-radius:var(--radius); border:1px solid transparent;
+  font-size:14.5px; font-weight:700; font-family:var(--body);
+  transition:transform .12s ease, background .15s ease, border-color .15s ease;
+}
+.btn:active{ transform:translateY(1px); }
+.btn-gold{ background:var(--gold); color:var(--navy); }
+.btn-gold:hover{ background:var(--gold-dark); }
+.btn-outline{ background:transparent; border-color:var(--navy); color:var(--navy); }
+.btn-outline:hover{ background:var(--navy); color:var(--paper); }
+.btn-outline-light{ background:transparent; border-color:rgba(247,243,234,.4); color:var(--paper); }
+.btn-outline-light:hover{ border-color:var(--gold); color:var(--gold); }
+.btn-ghost{ background:transparent; color:var(--navy); border-color:transparent; padding:12px 6px; }
+.btn-ghost:hover{ color:var(--gold-dark); }
+.btn-block{ width:100%; }
+.btn-sm{ padding:8px 14px; font-size:13px; }
+.btn-danger{ background:transparent; border-color:var(--red); color:var(--red); }
+.btn-danger:hover{ background:var(--red); color:var(--white); }
