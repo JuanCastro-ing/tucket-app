@@ -1,0 +1,227 @@
+<div class="view" id="view-agent-events">
+
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a></div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('agent-events')" class="active" aria-current="page">Panel de agente</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">AGENTE</span><div class="avatar">JD</div><a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a></div>
+    </div>
+  </header>
+
+  <main class="app-body">
+    <div class="container">
+      <div class="with-sidebar">
+
+        <aside class="sidebar" aria-label="Menú del panel">
+          <div class="sidebar-title">PANEL DE AGENTE</div>
+          <a href="#" onclick="return nav('agent-events')" class="active" aria-current="page">Eventos</a>
+          <a href="#" onclick="return nav('agent-reservations')">Reservas</a>
+          <a href="#" onclick="return logout()">Cerrar sesión</a>
+        </aside>
+
+        <div class="content-col">
+
+          <div class="page-head">
+            <div>
+              <div class="eyebrow-line"><span class="rule"></span><span>GESTIÓN DE EVENTOS</span></div>
+              <h1>Mis eventos publicados</h1>
+              <p>Registra nuevos espectáculos y controla su estado desde que se programan hasta que finalizan.</p>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-label">MIS EVENTOS</div><div class="stat-value" id="agent-event-count">0</div><div class="stat-delta" id="agent-store-note">Guardados en PostgreSQL</div></div>
+            <div class="stat-card alt"><div class="stat-label">EN BOLETERÍA</div><div class="stat-value" id="agent-ticketing-count">0</div></div>
+            <div class="stat-card alt"><div class="stat-label">PROGRAMADOS</div><div class="stat-value" id="agent-scheduled-count">0</div></div>
+            <div class="stat-card alt"><div class="stat-label">ORIGEN DE DATOS</div><div class="stat-value" id="agent-api-state" style="font-size:16px;">PostgreSQL</div></div>
+          </div>
+
+          <div class="layout-main">
+
+            <div>
+              <div class="panel">
+                <div class="panel-head">
+                  <h3>Eventos registrados</h3>
+                  <span class="hint" id="agent-event-total">Cargando eventos…</span>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>Evento</th><th>Ciudad</th><th>Inicio</th><th>Recinto</th><th>Capacidad</th><th>Precio base</th><th>Estado</th><th>Acción</th></tr>
+                    </thead>
+                    <tbody id="agent-events-body"><tr><td colspan="8" class="cell-muted">Cargando eventos del agente…</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="new-event-panel">
+              <div class="panel">
+                <div class="panel-head"><h3>Registrar nuevo evento</h3></div>
+                <form id="agent-event-form">
+                  <p id="event-form-message" class="form-message" role="status" aria-live="polite" hidden></p>
+                  <div class="field">
+                    <label for="event-code">Código único del evento</label>
+                    <input id="event-code" name="code" type="text" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,31}" placeholder="EVT-2026-0220" autocomplete="off" required aria-describedby="event-code-help">
+                    <small id="event-code-help" class="field-help">3–32 caracteres: letras, números, guion o guion bajo.</small>
+                  </div>
+                  <div class="field">
+                    <label for="event-name">Nombre del evento</label>
+                    <input id="event-name" name="name" type="text" maxlength="160" placeholder="Ej: Noche de Boleros" required>
+                  </div>
+                  <div class="field">
+                    <label for="event-description">Descripción</label>
+                    <textarea id="event-description" name="description" maxlength="5000" placeholder="Breve descripción del espectáculo…" required></textarea>
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="event-venue">Teatro / recinto</label>
+                      <input id="event-venue" name="venue" type="text" maxlength="180" placeholder="Teatro Los Cristales" required>
+                    </div>
+                    <div class="field">
+                      <label for="event-country">País</label>
+                      <select id="event-country" name="countryCode" required><option value="" selected disabled>Cargando países…</option></select>
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="event-department">Departamento</label>
+                      <select id="event-department" name="departmentCode" required disabled><option value="" selected>Selecciona primero un país</option></select>
+                    </div>
+                    <div class="field">
+                      <label for="agent-event-city">Ciudad</label>
+                      <select id="agent-event-city" name="cityId" required disabled><option value="" selected>Selecciona primero un departamento</option></select>
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="event-start">Fecha y hora de inicio</label>
+                      <input id="event-start" name="startsAt" type="datetime-local" required>
+                    </div>
+                    <div class="field">
+                      <label for="event-end">Fecha y hora de finalización</label>
+                      <input id="event-end" name="endsAt" type="datetime-local" required aria-describedby="event-date-help">
+                    </div>
+                  </div>
+                  <small id="event-date-help" class="field-help">La hora de finalización debe ser posterior a la de inicio.</small>
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="event-capacity">Capacidad total</label>
+                      <input id="event-capacity" name="totalCapacity" type="number" min="1" step="1" placeholder="1200" required>
+                    </div>
+                    <div class="field">
+                      <label for="event-price">Precio base (COP)</label>
+                      <input id="event-price" name="basePrice" type="number" min="0" step="0.01" placeholder="85000" required>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="agent-event-status">Estado inicial</label>
+                    <select id="agent-event-status" name="status" required>
+                      <option value="Programado" selected>Programado</option>
+                      <option value="En Boletería">En Boletería</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="event-observations">Observaciones</label>
+                    <textarea id="event-observations" name="observations" maxlength="3000" placeholder="Restricciones de edad, requisitos especiales…" required></textarea>
+                  </div>
+                  <button id="event-submit" type="submit" class="btn btn-gold btn-block">Publicar evento</button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="brand">
+            <span class="brand-logo" aria-hidden="true"></span>
+            <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+          </span>
+          <p class="footer-claim">Cada función empieza con una entrada.</p>
+          <p class="footer-note">Conciertos, teatro, festivales y comedia en un solo lugar. Explora la cartelera y reserva en minutos.</p>
+        </div>
+
+        <nav class="footer-cols" aria-label="Secciones del sitio">
+          <div class="footer-col">
+            <h2>Cartelera</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('events')">Todos los eventos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Concierto')">Conciertos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Teatro')">Teatro</a></li>
+              <li><a href="#" onclick="return exploreCategory('Festival')">Festivales</a></li>
+              <li><a href="#" onclick="return exploreCategory('Comedia')">Comedia</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Tu cuenta</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('login')">Iniciar sesión</a></li>
+              <li><a href="#" onclick="return goRegisterAs('cliente')">Crear cuenta</a></li>
+              <li><a href="#" onclick="return requireAuth('reservations')">Mis reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Organizadores</h2>
+            <ul>
+              <li><a href="#" onclick="return goRegisterAs('agente')">Ser organizador</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Publicar un evento</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Panel de agente</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-reservations')">Gestionar reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Ayuda</h2>
+            <ul>
+              <li><a href="#">Centro de ayuda</a></li>
+              <li><a href="#">Cómo reservar</a></li>
+              <li><a href="#">Preguntas frecuentes</a></li>
+              <li><a href="#">Contáctanos</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Síguenos</h2>
+            <ul>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">YouTube</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">X</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-seal">
+          <span class="seal-mark" aria-hidden="true">UCEVA</span>
+          <p><strong>Proyecto Integrador</strong><br>Programación en Ambiente Web I · Facultad de Ingeniería de Sistemas</p>
+        </div>
+        <p class="footer-copy">© 2026 TUCKET · Prototipo académico, sin transacciones reales.</p>
+        <nav class="footer-legal" aria-label="Enlaces legales">
+          <a href="#">Política de privacidad</a>
+          <a href="#">Términos de uso</a>
+          <a href="#">Tratamiento de datos</a>
+        </nav>
+      </div>
+
+    </div>
+  </footer>
+</div>
+
+</div>

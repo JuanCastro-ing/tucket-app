@@ -1,0 +1,154 @@
+<div class="view" id="view-events">
+
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+        <span class="brand-tag">BOLETERÍA · GESTIÓN DE EVENTOS</span>
+      </div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('home')">Inicio</a>
+        <a href="#" onclick="return nav('events')" class="active" aria-current="page">Eventos</a>
+        <a href="#" onclick="return requireAuth('reservations')">Mis reservas</a>
+      </nav>
+      <div class="nav-user">
+        <span class="auth-out">
+          <a href="#" onclick="return nav('login')" class="btn-ghost btn-ghost-light">Iniciar sesión</a>
+          <a href="#" onclick="return goRegisterAs('cliente')" class="btn btn-gold btn-sm">Crear cuenta</a>
+        </span>
+        <span class="auth-in">
+          <span class="role-pill">CLIENTE</span>
+          <div class="avatar">VR</div>
+          <a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-body">
+    <div class="container">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>CARTELERA 2026</span></div>
+          <h1>Eventos disponibles</h1>
+          <p>Conciertos, teatro y festivales en cartelera. Filtra por ciudad, mes o estado de boletería y aparta tu entrada.</p>
+          <p class="events-live-line">Hora Colombia: <time id="events-live-clock">—</time> <span aria-hidden="true">·</span> cartelera sincronizada <span id="events-updated-at">al abrir</span></p>
+        </div>
+      </div>
+
+      <div class="filters" role="search">
+        <label class="sr-only" for="event-search">Buscar por evento, teatro o ciudad</label>
+        <input type="search" id="event-search" oninput="filterEvents()" placeholder="Buscar por evento, teatro o ciudad…">
+        <label class="sr-only" for="event-city">Ciudad</label>
+        <select id="event-city" onchange="selectedEventCity=this.value; filterEvents()"><option value="">Todas las ciudades</option></select>
+        <label class="sr-only" for="event-month">Mes</label>
+        <select id="event-month" onchange="filterEvents()"><option value="">Todos los meses</option></select>
+        <label class="sr-only" for="event-status">Estado de boletería</label>
+        <select id="event-status" onchange="filterEvents()">
+          <option value="">Todos los estados</option>
+          <option value="Programado">Programado</option>
+          <option value="En Boletería">En Boletería</option>
+          <option value="En Vivo">En Vivo</option>
+          <option value="Finalizado">Finalizado</option>
+        </select>
+        <button type="button" class="btn btn-outline btn-sm" onclick="clearEventFilters()">Limpiar filtros</button>
+      </div>
+
+      <p id="event-results-count" class="event-results-count" aria-live="polite">Cargando cartelera…</p>
+
+      <div class="events-grid" id="events-grid" aria-live="polite" aria-busy="true">
+        <div class="events-loading" role="status" aria-label="Cargando eventos"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando eventos…</span></div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="brand">
+            <span class="brand-logo" aria-hidden="true"></span>
+            <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+          </span>
+          <p class="footer-claim">Cada función empieza con una entrada.</p>
+          <p class="footer-note">Conciertos, teatro, festivales y comedia en un solo lugar. Explora la cartelera y reserva en minutos.</p>
+        </div>
+
+        <nav class="footer-cols" aria-label="Secciones del sitio">
+          <div class="footer-col">
+            <h2>Cartelera</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('events')">Todos los eventos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Concierto')">Conciertos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Teatro')">Teatro</a></li>
+              <li><a href="#" onclick="return exploreCategory('Festival')">Festivales</a></li>
+              <li><a href="#" onclick="return exploreCategory('Comedia')">Comedia</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Tu cuenta</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('login')">Iniciar sesión</a></li>
+              <li><a href="#" onclick="return goRegisterAs('cliente')">Crear cuenta</a></li>
+              <li><a href="#" onclick="return requireAuth('reservations')">Mis reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Organizadores</h2>
+            <ul>
+              <li><a href="#" onclick="return goRegisterAs('agente')">Ser organizador</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Publicar un evento</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Panel de agente</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-reservations')">Gestionar reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Ayuda</h2>
+            <ul>
+              <li><a href="#">Centro de ayuda</a></li>
+              <li><a href="#">Cómo reservar</a></li>
+              <li><a href="#">Preguntas frecuentes</a></li>
+              <li><a href="#">Contáctanos</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Síguenos</h2>
+            <ul>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">YouTube</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">X</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-seal">
+          <span class="seal-mark" aria-hidden="true">UCEVA</span>
+          <p><strong>Proyecto Integrador</strong><br>Programación en Ambiente Web I · Facultad de Ingeniería de Sistemas</p>
+        </div>
+        <p class="footer-copy">© 2026 TUCKET · Prototipo académico, sin transacciones reales.</p>
+        <nav class="footer-legal" aria-label="Enlaces legales">
+          <a href="#">Política de privacidad</a>
+          <a href="#">Términos de uso</a>
+          <a href="#">Tratamiento de datos</a>
+        </nav>
+      </div>
+
+    </div>
+  </footer>
+
+</div>
+
+</div>

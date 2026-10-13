@@ -1,0 +1,226 @@
+<div class="view" id="view-agent-reservations">
+
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a></div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('agent-events')">Panel de agente</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">AGENTE</span><div class="avatar">JD</div><a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a></div>
+    </div>
+  </header>
+
+  <main class="app-body">
+    <div class="container">
+      <div class="with-sidebar">
+
+        <aside class="sidebar" aria-label="Menú del panel">
+          <div class="sidebar-title">PANEL DE AGENTE</div>
+          <a href="#" onclick="return nav('agent-events')">Eventos</a>
+          <a href="#" onclick="return nav('agent-reservations')" class="active" aria-current="page">Reservas</a>
+          <a href="#" onclick="return logout()">Cerrar sesión</a>
+        </aside>
+
+        <div class="content-col">
+
+          <div class="page-head">
+            <div>
+              <div class="eyebrow-line"><span class="rule"></span><span>ADMINISTRACIÓN DE RESERVAS</span></div>
+              <h1>Reservas solicitadas</h1>
+              <p>Revisa las reservas de tus eventos y actualiza su estado a medida que se confirma el pago o se cancela.</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Todas las reservas</h3>
+              <div class="filters-inline">
+                <select aria-label="Filtrar por evento"><option>Todos los eventos</option><option>Noche de Salsa</option><option>Romeo y Julieta</option></select>
+                <select aria-label="Filtrar por estado"><option>Todos los estados</option><option>Reservada</option><option>Confirmada</option><option>Cancelada</option></select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Reserva</th><th>Cliente</th><th>Evento</th><th>Entradas</th><th>Valor</th><th>Fecha</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="cell-strong">RES-00842</td>
+                    <td>Valentina Ríos</td>
+                    <td>Noche de Salsa</td>
+                    <td>2</td>
+                    <td>$170.000</td>
+                    <td class="cell-muted">02 oct 2026</td>
+                    <td><select class="status-select" aria-label="Estado de la reserva"><option>Reservada</option><option selected>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00851</td>
+                    <td>Mateo Gómez</td>
+                    <td>Romeo y Julieta</td>
+                    <td>4</td>
+                    <td>$208.000</td>
+                    <td class="cell-muted">28 sep 2026</td>
+                    <td><select class="status-select" aria-label="Estado de la reserva" id="sel-RES00851"><option selected>Reservada</option><option>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00860</td>
+                    <td>Laura Castaño</td>
+                    <td>Noche de Salsa</td>
+                    <td>3</td>
+                    <td>$255.000</td>
+                    <td class="cell-muted">27 sep 2026</td>
+                    <td><select class="status-select" aria-label="Estado de la reserva"><option>Reservada</option><option selected>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00879</td>
+                    <td>Valentina Ríos</td>
+                    <td>Festival Rock a la Cañada</td>
+                    <td>1</td>
+                    <td>$120.000</td>
+                    <td class="cell-muted">05 sep 2026</td>
+                    <td><select class="status-select" aria-label="Estado de la reserva"><option selected>Reservada</option><option>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00711</td>
+                    <td>Andrés Felipe Soto</td>
+                    <td>Feria de Cali</td>
+                    <td>2</td>
+                    <td>$190.000</td>
+                    <td class="cell-muted">21 ago 2026</td>
+                    <td><select class="status-select" aria-label="Estado de la reserva"><option>Reservada</option><option>Confirmada</option><option selected>Cancelada</option></select></td>
+                  </tr>
+                  <tr>
+                    <td class="cell-strong">RES-00790</td>
+                    <td>Camila Rentería</td>
+                    <td>Concierto de Fin de Año</td>
+                    <td>3</td>
+                    <td>$195.000</td>
+                    <td class="cell-muted">30 ago 2026</td>
+                    <td><select class="status-select" aria-label="Estado de la reserva"><option>Reservada</option><option selected>Confirmada</option><option>Cancelada</option></select></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Reserva RES-00851 · Detalle</h3><span class="hint">Vista de una reserva individual</span></div>
+            <div class="field-row" style="margin-bottom:0;">
+              <div>
+                <div class="cell-muted" style="margin-bottom:4px;">CLIENTE</div>
+                <div class="cell-strong">Mateo Gómez · C.C. 1 130 512 044</div>
+              </div>
+              <div>
+                <div class="cell-muted" style="margin-bottom:4px;">CONTACTO</div>
+                <div class="cell-strong">mateo.gomez@correo.com</div>
+              </div>
+            </div>
+            <div class="divider-dash"></div>
+            <div class="field-row" style="margin-bottom:0;">
+              <div>
+                <div class="cell-muted" style="margin-bottom:4px;">OBSERVACIONES DEL CLIENTE</div>
+                <div class="cell-strong" style="font-weight:500;">Silla de ruedas — acceso preferencial en fila A.</div>
+              </div>
+              <div>
+                <div class="cell-muted" style="margin-bottom:8px;">ACTUALIZAR ESTADO</div>
+                <div class="row-actions">
+                  <button class="btn btn-outline btn-sm" onclick="setSelectValue('sel-RES00851','Confirmada')">Confirmar</button>
+                  <button class="btn btn-danger btn-sm" onclick="setSelectValue('sel-RES00851','Cancelada')">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="brand">
+            <span class="brand-logo" aria-hidden="true"></span>
+            <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+          </span>
+          <p class="footer-claim">Cada función empieza con una entrada.</p>
+          <p class="footer-note">Conciertos, teatro, festivales y comedia en un solo lugar. Explora la cartelera y reserva en minutos.</p>
+        </div>
+
+        <nav class="footer-cols" aria-label="Secciones del sitio">
+          <div class="footer-col">
+            <h2>Cartelera</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('events')">Todos los eventos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Concierto')">Conciertos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Teatro')">Teatro</a></li>
+              <li><a href="#" onclick="return exploreCategory('Festival')">Festivales</a></li>
+              <li><a href="#" onclick="return exploreCategory('Comedia')">Comedia</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Tu cuenta</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('login')">Iniciar sesión</a></li>
+              <li><a href="#" onclick="return goRegisterAs('cliente')">Crear cuenta</a></li>
+              <li><a href="#" onclick="return requireAuth('reservations')">Mis reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Organizadores</h2>
+            <ul>
+              <li><a href="#" onclick="return goRegisterAs('agente')">Ser organizador</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Publicar un evento</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Panel de agente</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-reservations')">Gestionar reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Ayuda</h2>
+            <ul>
+              <li><a href="#">Centro de ayuda</a></li>
+              <li><a href="#">Cómo reservar</a></li>
+              <li><a href="#">Preguntas frecuentes</a></li>
+              <li><a href="#">Contáctanos</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Síguenos</h2>
+            <ul>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">YouTube</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">X</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-seal">
+          <span class="seal-mark" aria-hidden="true">UCEVA</span>
+          <p><strong>Proyecto Integrador</strong><br>Programación en Ambiente Web I · Facultad de Ingeniería de Sistemas</p>
+        </div>
+        <p class="footer-copy">© 2026 TUCKET · Prototipo académico, sin transacciones reales.</p>
+        <nav class="footer-legal" aria-label="Enlaces legales">
+          <a href="#">Política de privacidad</a>
+          <a href="#">Términos de uso</a>
+          <a href="#">Tratamiento de datos</a>
+        </nav>
+      </div>
+
+    </div>
+  </footer>
+</div>
+
+</div>

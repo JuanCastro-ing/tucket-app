@@ -1,0 +1,228 @@
+<div class="view" id="view-reservations">
+
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a></div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('events')">Eventos</a>
+        <a href="#" onclick="return nav('reservations')" class="active" aria-current="page">Mis reservas</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">CLIENTE</span><div class="avatar">VR</div><a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a></div>
+    </div>
+  </header>
+
+  <main class="app-body">
+    <div class="container">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>HISTORIAL PERSONAL</span></div>
+          <h1>Mis reservas</h1>
+          <p>Consulta el estado de cada reserva. Puedes ver el detalle o cancelar mientras esté en estado Reservada.</p>
+        </div>
+        <div>
+          <div class="stat-card alt" style="min-width:150px;">
+            <div class="stat-label">PUNTOS ACUMULADOS</div>
+            <div class="stat-value">1.240</div>
+            <div class="stat-delta">Cliente frecuente</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a href="#" class="active">Todas (5)</a>
+        <a href="#">Reservadas (2)</a>
+        <a href="#">Confirmadas (2)</a>
+        <a href="#">Canceladas (1)</a>
+      </div>
+
+      <div class="res-list">
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-confirmada" style="margin-bottom:8px;">Confirmada</span>
+              <h3>Noche de Salsa — Grupo Niche Tributo</h3>
+              <div class="venue">Teatro Los Cristales · Cali · 14 nov 2026, 8:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">2</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$170.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">02 oct 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00842</span><span class="stub-date">14 NOV</span></div>
+        </div>
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-reservada" style="margin-bottom:8px;">Reservada</span>
+              <h3>Romeo y Julieta — Compañía Nacional de Teatro</h3>
+              <div class="venue">Teatro Municipal Enrique Buenaventura · Cali · 02 dic 2026, 7:30 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">4</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$208.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">28 sep 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+              <a href="#" class="btn btn-danger btn-sm" onclick="return cancelReserva(this)">Cancelar</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00851</span><span class="stub-date">02 DIC</span></div>
+        </div>
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-reservada" style="margin-bottom:8px;">Reservada</span>
+              <h3>Festival Rock a la Cañada</h3>
+              <div class="venue">Parque de la Salsa · Cali · Hoy, 9:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">1</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$120.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">05 sep 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+              <a href="#" class="btn btn-danger btn-sm" onclick="return cancelReserva(this)">Cancelar</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00879</span><span class="stub-date">HOY</span></div>
+        </div>
+
+        <div class="ticket res-ticket">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-confirmada" style="margin-bottom:8px;">Confirmada</span>
+              <h3>Concierto de Fin de Año — Orquesta Filarmónica</h3>
+              <div class="venue">Teatro Jorge Isaacs · Cali · 20 dic 2026, 6:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">3</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$195.000</div></div>
+              <div class="rf"><div class="l">RESERVADA EL</div><div class="v">30 ago 2026</div></div>
+            </div>
+            <div class="res-actions">
+              <a href="#" onclick="return nav('event-detail')" class="btn btn-outline btn-sm">Ver evento</a>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00790</span><span class="stub-date">20 DIC</span></div>
+        </div>
+
+        <div class="ticket res-ticket" style="opacity:.6;">
+          <div class="ticket-main">
+            <div class="res-info">
+              <span class="badge badge-cancelado" style="margin-bottom:8px;">Cancelada</span>
+              <h3>Feria de Cali — Show de Salsódromo</h3>
+              <div class="venue">Autódromo de Palmaseca · Cali · 03 sep 2026, 7:00 PM</div>
+            </div>
+            <div class="res-figures">
+              <div class="rf"><div class="l">ENTRADAS</div><div class="v">2</div></div>
+              <div class="rf"><div class="l">VALOR TOTAL</div><div class="v">$190.000</div></div>
+              <div class="rf"><div class="l">MOTIVO</div><div class="v" style="font-size:12.5px;">Cambio de plan</div></div>
+            </div>
+            <div class="res-actions">
+              <span class="btn btn-outline btn-sm" style="pointer-events:none; opacity:.5;">No disponible</span>
+            </div>
+          </div>
+          <div class="ticket-stub"><span class="stub-code">RES-00711</span><span class="stub-date">03 SEP</span></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="brand">
+            <span class="brand-logo" aria-hidden="true"></span>
+            <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+          </span>
+          <p class="footer-claim">Cada función empieza con una entrada.</p>
+          <p class="footer-note">Conciertos, teatro, festivales y comedia en un solo lugar. Explora la cartelera y reserva en minutos.</p>
+        </div>
+
+        <nav class="footer-cols" aria-label="Secciones del sitio">
+          <div class="footer-col">
+            <h2>Cartelera</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('events')">Todos los eventos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Concierto')">Conciertos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Teatro')">Teatro</a></li>
+              <li><a href="#" onclick="return exploreCategory('Festival')">Festivales</a></li>
+              <li><a href="#" onclick="return exploreCategory('Comedia')">Comedia</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Tu cuenta</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('login')">Iniciar sesión</a></li>
+              <li><a href="#" onclick="return goRegisterAs('cliente')">Crear cuenta</a></li>
+              <li><a href="#" onclick="return requireAuth('reservations')">Mis reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Organizadores</h2>
+            <ul>
+              <li><a href="#" onclick="return goRegisterAs('agente')">Ser organizador</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Publicar un evento</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Panel de agente</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-reservations')">Gestionar reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Ayuda</h2>
+            <ul>
+              <li><a href="#">Centro de ayuda</a></li>
+              <li><a href="#">Cómo reservar</a></li>
+              <li><a href="#">Preguntas frecuentes</a></li>
+              <li><a href="#">Contáctanos</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Síguenos</h2>
+            <ul>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">YouTube</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">X</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-seal">
+          <span class="seal-mark" aria-hidden="true">UCEVA</span>
+          <p><strong>Proyecto Integrador</strong><br>Programación en Ambiente Web I · Facultad de Ingeniería de Sistemas</p>
+        </div>
+        <p class="footer-copy">© 2026 TUCKET · Prototipo académico, sin transacciones reales.</p>
+        <nav class="footer-legal" aria-label="Enlaces legales">
+          <a href="#">Política de privacidad</a>
+          <a href="#">Términos de uso</a>
+          <a href="#">Tratamiento de datos</a>
+        </nav>
+      </div>
+
+    </div>
+  </footer>
+</div>
+
+</div>

@@ -1,0 +1,14 @@
+/* TUCKET — Mostrar/ocultar vistas (.view / .view.active) */
+
+/* ===== view switching + page-specific styles merged ===== */
+.view{ display:none; }
+/* Sin 'both': el fotograma final ya es el estado por defecto, y dejar la
+   animación rellenando mantiene cada vista como capa de composición de forma
+   permanente (origen de repintados sucios al cambiar de vista). */
+.view.active{ display:block; animation:view-in .32s var(--ease); }
+
+/* Entrada suave al cambiar de vista (transform/opacity, no top/left) */
+@keyframes view-in{
+  from{ opacity:0; transform:translate3d(0,10px,0); }
+  to  { opacity:1; transform:none; }
+}

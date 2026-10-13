@@ -1,0 +1,524 @@
+<div class="view active" id="view-home">
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+        <span class="brand-tag">BOLETERÍA · GESTIÓN DE EVENTOS</span>
+      </div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('home')" class="active" aria-current="page">Inicio</a>
+        <a href="#" onclick="return nav('events')">Explorar eventos</a>
+        <a href="#" onclick="return goRegisterAs('agente')">Para organizadores</a>
+      </nav>
+      <div class="nav-user">
+        <span class="auth-out">
+          <a href="#" onclick="return nav('login')" class="btn-ghost btn-ghost-light">Iniciar sesión</a>
+          <a href="#" onclick="return goRegisterAs('cliente')" class="btn btn-gold btn-sm">Crear cuenta</a>
+        </span>
+        <span class="auth-in">
+          <span class="role-pill">CLIENTE</span>
+          <div class="avatar" aria-label="Perfil de usuario VR" title="Perfil de usuario VR">VR</div>
+          <a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="app-body" style="padding-top:0;">
+
+    <section class="home-hero" aria-label="Eventos destacados">
+      <h1 id="hero-title" class="sr-only">TUCKET — Encuentra tu próximo gran show</h1>
+
+      <!-- Escenas de fondo dibujadas en SVG: cambian con la diapositiva -->
+      <div class="hero-bg" aria-hidden="true">
+
+        <div class="hero-bg-layer is-active" data-scene="concierto">
+          <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="cg-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1B2140"/><stop offset="1" stop-color="#12172B"/>
+              </linearGradient>
+              <linearGradient id="cg-beam" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#E8B44C" stop-opacity=".40"/>
+                <stop offset="1" stop-color="#E8B44C" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="cg-beam2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2E9C82" stop-opacity=".34"/>
+                <stop offset="1" stop-color="#2E9C82" stop-opacity="0"/>
+              </linearGradient>
+              <radialGradient id="cg-glow" cx=".5" cy="1" r=".75">
+                <stop offset="0" stop-color="#E8B44C" stop-opacity=".30"/>
+                <stop offset="1" stop-color="#E8B44C" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="1440" height="620" fill="url(#cg-sky)"/>
+            <g class="beams">
+              <polygon points="250,40 300,40 470,620 60,620"  fill="url(#cg-beam)"/>
+              <polygon points="560,40 606,40 760,620 400,620" fill="url(#cg-beam2)"/>
+              <polygon points="880,40 926,40 1090,620 720,620" fill="url(#cg-beam)"/>
+              <polygon points="1180,40 1226,40 1400,620 1010,620" fill="url(#cg-beam2)"/>
+            </g>
+            <ellipse cx="720" cy="620" rx="640" ry="240" fill="url(#cg-glow)"/>
+            <!-- truss de iluminación -->
+            <g stroke="#2A3156" stroke-width="5" fill="none">
+              <path d="M0 34H1440"/><path d="M0 56H1440"/>
+              <path d="M40 34l34 22M110 34l34 22M180 34l34 22M250 34l34 22M320 34l34 22M390 34l34 22M460 34l34 22M530 34l34 22M600 34l34 22M670 34l34 22M740 34l34 22M810 34l34 22M880 34l34 22M950 34l34 22M1020 34l34 22M1090 34l34 22M1160 34l34 22M1230 34l34 22M1300 34l34 22M1370 34l34 22"/>
+            </g>
+            <g class="lamps" fill="#E8B44C">
+              <circle cx="272" cy="66" r="7"/><circle cx="583" cy="66" r="7" fill="#2E9C82"/>
+              <circle cx="903" cy="66" r="7"/><circle cx="1203" cy="66" r="7" fill="#2E9C82"/>
+            </g>
+            <!-- público -->
+            <path fill="#0C1022" d="M0 620v-92c38-6 52-34 78-34s34 26 62 24 36-30 64-30 40 32 70 30 40-36 70-34 44 38 76 36 42-32 72-30 44 34 76 32 44-36 76-34 42 36 74 34 44-30 74-28 46 32 78 30 44-34 76-32 46 36 78 34 46-28 76-26 46 30 74 28 46-32 78-30v152Z"/>
+            <g fill="#0C1022">
+              <rect x="120" y="470" width="9" height="76" rx="4"/><rect x="134" y="452" width="9" height="94" rx="4"/>
+              <rect x="470" y="462" width="9" height="84" rx="4"/><rect x="486" y="444" width="9" height="102" rx="4"/>
+              <rect x="930" y="468" width="9" height="78" rx="4"/><rect x="944" y="450" width="9" height="96" rx="4"/>
+              <rect x="1270" y="458" width="9" height="88" rx="4"/><rect x="1284" y="440" width="9" height="106" rx="4"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="hero-bg-layer" data-scene="teatro">
+          <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="tg-fold" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#7E2B28"/><stop offset=".5" stop-color="#C7473F"/><stop offset="1" stop-color="#5E1F1E"/>
+              </linearGradient>
+              <radialGradient id="tg-spot" cx=".5" cy="0" r=".9">
+                <stop offset="0" stop-color="#F9DC9C" stop-opacity=".34"/>
+                <stop offset="1" stop-color="#F9DC9C" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="tg-floor" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2A1A24"/><stop offset="1" stop-color="#12172B"/>
+              </linearGradient>
+            </defs>
+            <rect width="1440" height="620" fill="#1A1020"/>
+            <g opacity=".92">
+              <rect x="0"    y="0" width="1440" height="470" fill="url(#tg-fold)" opacity=".30"/>
+              <g fill="#12172B" opacity=".42">
+                <rect x="36"  y="0" width="26" height="470"/><rect x="132" y="0" width="26" height="470"/>
+                <rect x="228" y="0" width="26" height="470"/><rect x="324" y="0" width="26" height="470"/>
+                <rect x="420" y="0" width="26" height="470"/><rect x="516" y="0" width="26" height="470"/>
+                <rect x="612" y="0" width="26" height="470"/><rect x="708" y="0" width="26" height="470"/>
+                <rect x="804" y="0" width="26" height="470"/><rect x="900" y="0" width="26" height="470"/>
+                <rect x="996" y="0" width="26" height="470"/><rect x="1092" y="0" width="26" height="470"/>
+                <rect x="1188" y="0" width="26" height="470"/><rect x="1284" y="0" width="26" height="470"/>
+                <rect x="1380" y="0" width="26" height="470"/>
+              </g>
+            </g>
+            <!-- bambalina superior -->
+            <path fill="#8E2F2B" d="M0 0h1440v96c-96 34-144-18-240-18S1056 118 960 118 816 60 720 60 576 118 480 118 336 60 240 60 96 118 0 96Z"/>
+            <path fill="#E8B44C" opacity=".55" d="M0 94c96 22 144-30 240-30s144 58 240 58 144-58 240-58 144 58 240 58 144-58 240-58 144 52 240 30v8c-96 22-144-30-240-30s-144 58-240 58-144-58-240-58-144 58-240 58-144-58-240-58-144 52-240 30Z"/>
+            <rect y="470" width="1440" height="150" fill="url(#tg-floor)"/>
+            <ellipse cx="720" cy="486" rx="300" ry="54" fill="#F9DC9C" opacity=".13"/>
+            <rect width="1440" height="620" fill="url(#tg-spot)"/>
+          </svg>
+        </div>
+
+        <div class="hero-bg-layer" data-scene="festival">
+          <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="fg-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#15213A"/><stop offset=".55" stop-color="#1B2140"/><stop offset="1" stop-color="#12172B"/>
+              </linearGradient>
+              <radialGradient id="fg-sun" cx=".5" cy="1" r=".8">
+                <stop offset="0" stop-color="#2E9C82" stop-opacity=".40"/>
+                <stop offset="1" stop-color="#2E9C82" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="1440" height="620" fill="url(#fg-sky)"/>
+            <g fill="#F7F3EA" opacity=".55">
+              <circle cx="180" cy="86" r="1.6"/><circle cx="420" cy="54" r="1.3"/><circle cx="650" cy="98" r="1.7"/>
+              <circle cx="900" cy="62" r="1.4"/><circle cx="1130" cy="104" r="1.6"/><circle cx="1330" cy="70" r="1.3"/>
+              <circle cx="300" cy="140" r="1.2"/><circle cx="1010" cy="150" r="1.2"/>
+            </g>
+            <ellipse cx="720" cy="640" rx="760" ry="300" fill="url(#fg-sun)"/>
+            <!-- cerros -->
+            <path fill="#16233A" d="M0 470c150-70 250 10 390-30s230-80 370-40 230 96 380 60 210-60 300-74v214H0Z"/>
+            <path fill="#101A2E" d="M0 520c170-50 260 24 420-10s250-60 390-24 240 74 380 44 170-40 250-52v142H0Z"/>
+            <!-- escenario -->
+            <path fill="#0C1022" d="M560 470h320l-40-96H600Z"/>
+            <rect x="548" y="466" width="344" height="12" rx="4" fill="#0C1022"/>
+            <!-- guirnaldas -->
+            <g class="bulbs">
+              <path d="M-20 120Q240 212 500 120T1020 120T1460 128" fill="none" stroke="#2A3156" stroke-width="3"/>
+              <path d="M-20 196Q300 300 620 196T1260 196T1460 208" fill="none" stroke="#2A3156" stroke-width="3"/>
+              <g fill="#E8B44C">
+                <circle cx="110" cy="166" r="6"/><circle cx="240" cy="186" r="6"/><circle cx="370" cy="166" r="6"/>
+                <circle cx="500" cy="124" r="6"/><circle cx="630" cy="168" r="6"/><circle cx="760" cy="188" r="6"/>
+                <circle cx="890" cy="168" r="6"/><circle cx="1020" cy="124" r="6"/><circle cx="1150" cy="162" r="6"/>
+                <circle cx="1280" cy="180" r="6"/><circle cx="1400" cy="150" r="6"/>
+                <circle cx="180" cy="252" r="5"/><circle cx="420" cy="282" r="5"/><circle cx="700" cy="258" r="5"/>
+                <circle cx="960" cy="276" r="5"/><circle cx="1200" cy="256" r="5"/>
+              </g>
+            </g>
+            <!-- público -->
+            <path fill="#080C1C" d="M0 620v-74c40-4 54-26 82-26s32 20 60 20 36-24 64-24 40 26 70 24 40-28 70-26 44 30 76 28 42-26 72-24 44 28 76 26 44-28 76-26 42 28 74 26 44-24 74-22 46 26 78 24 44-26 76-24 46 28 78 26 46-22 76-20v92Z"/>
+          </svg>
+        </div>
+
+        <div class="hero-bg-layer" data-scene="comedia">
+          <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="kg-cone" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#F7F3EA" stop-opacity=".30"/>
+                <stop offset="1" stop-color="#F7F3EA" stop-opacity=".02"/>
+              </linearGradient>
+              <radialGradient id="kg-pool" cx=".5" cy=".5" r=".5">
+                <stop offset="0" stop-color="#E8B44C" stop-opacity=".46"/>
+                <stop offset="1" stop-color="#E8B44C" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="1440" height="620" fill="#171B2E"/>
+            <!-- pared de ladrillo insinuada -->
+            <g stroke="#1F2440" stroke-width="2" opacity=".85">
+              <path d="M0 110H1440M0 166H1440M0 222H1440M0 278H1440M0 334H1440M0 390H1440M0 446H1440"/>
+              <path d="M90 110v56M250 110v56M410 110v56M570 110v56M730 110v56M890 110v56M1050 110v56M1210 110v56M1370 110v56"/>
+              <path d="M10 166v56M170 166v56M330 166v56M490 166v56M650 166v56M810 166v56M970 166v56M1130 166v56M1290 166v56"/>
+              <path d="M90 222v56M250 222v56M410 222v56M570 222v56M730 222v56M890 222v56M1050 222v56M1210 222v56M1370 222v56"/>
+              <path d="M10 278v56M170 278v56M330 278v56M490 278v56M650 278v56M810 278v56M970 278v56M1130 278v56M1290 278v56"/>
+              <path d="M90 334v56M250 334v56M410 334v56M570 334v56M730 334v56M890 334v56M1050 334v56M1210 334v56M1370 334v56"/>
+            </g>
+            <!-- cañón de luz -->
+            <polygon points="1010,0 1086,0 1300,620 760,620" fill="url(#kg-cone)"/>
+            <ellipse cx="1030" cy="548" rx="300" ry="78" fill="url(#kg-pool)"/>
+            <!-- micrófono y taburete -->
+            <g fill="#0C1022">
+              <rect x="1022" y="300" width="7" height="250" rx="3"/>
+              <rect x="990" y="540" width="72" height="9" rx="4"/>
+              <ellipse cx="1025" cy="292" rx="15" ry="21"/>
+              <rect x="800" y="430" width="8" height="120" rx="4"/>
+              <rect x="860" y="430" width="8" height="120" rx="4"/>
+              <rect x="782" y="418" width="104" height="14" rx="6"/>
+              <rect x="796" y="476" width="76" height="7" rx="3"/>
+            </g>
+            <rect y="550" width="1440" height="70" fill="#0C1022"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- La sección entera se desliza en horizontal -->
+      <div class="hero-slider" id="hero-feature" role="group"
+           aria-roledescription="carrusel" aria-label="Eventos destacados">
+        <button type="button" class="hero-arrow hero-arrow-prev" onclick="return heroPrev()" aria-label="Anterior">
+          <span aria-hidden="true">&#8249;</span>
+        </button>
+        <div class="hero-viewport">
+          <div class="hero-track" id="hero-track" aria-live="polite"></div>
+        </div>
+        <button type="button" class="hero-arrow hero-arrow-next" onclick="return heroNext()" aria-label="Siguiente">
+          <span aria-hidden="true">&#8250;</span>
+        </button>
+      </div>
+
+      <!-- Capa fija: el buscador no se mueve con las diapositivas -->
+      <div class="container hero-fixed">
+        <form class="home-search" role="search" aria-label="Búsqueda de eventos" onsubmit="return searchEvents(event)">
+          <label for="home-search-input" class="sr-only">Buscar por artista, evento o teatro</label>
+          <input type="search" id="home-search-input" placeholder="Busca artistas, eventos o teatros…" aria-label="Buscar por artista, evento o teatro">
+          <label for="home-search-city" class="sr-only">Filtrar por ciudad</label>
+          <select id="home-search-city" aria-label="Filtrar por ciudad">
+            <option>Todas las ciudades</option>
+            <option>Cali</option>
+            <option>Tuluá</option>
+            <option>Bogotá</option>
+            <option>Medellín</option>
+          </select>
+          <button type="submit" class="btn btn-gold" aria-label="Buscar eventos">Buscar eventos</button>
+        </form>
+        <div class="hero-fixed-row">
+          <nav class="home-chip-row" aria-label="Categorías populares">
+            <a href="#" onclick="return exploreCategory('Concierto')" class="home-chip" aria-label="Ver categoría Conciertos">Conciertos</a>
+            <a href="#" onclick="return exploreCategory('Teatro')" class="home-chip" aria-label="Ver categoría Teatro">Teatro</a>
+            <a href="#" onclick="return exploreCategory('Festival')" class="home-chip" aria-label="Ver categoría Festivales">Festivales</a>
+            <a href="#" onclick="return exploreCategory('Comedia')" class="home-chip" aria-label="Ver categoría Comedia">Comedia</a>
+            <a href="#" onclick="return exploreCategory('Orquesta')" class="home-chip" aria-label="Ver categoría Orquesta">Orquesta</a>
+          </nav>
+          <div class="hero-dots" id="hero-dots" aria-label="Seleccionar evento destacado"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="home-metrics" aria-label="Estadísticas de la plataforma">
+      <div class="container">
+        <div class="home-hero-stats">
+          <div class="promo-stub"><div class="n">128</div><div class="l">EVENTOS ACTIVOS</div></div>
+          <div class="promo-stub"><div class="n">4.930</div><div class="l">RESERVAS 2026</div></div>
+          <div class="promo-stub"><div class="n">36</div><div class="l">CIUDADES</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-it-works" aria-labelledby="how-heading">
+      <div class="container">
+        <div class="eyebrow-line"><span class="rule" aria-hidden="true"></span><span>PASO A PASO</span></div>
+        <h2 id="how-heading">¿Cómo funciona TUCKET?</h2>
+        <div class="how-grid">
+
+          <div class="how-card">
+            <div class="how-step">PASO 01</div>
+            <div class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <h3>Busca tu evento</h3>
+            <p>Explora la cartelera por ciudad, artista o categoría: conciertos, teatro, festivales y comedia.</p>
+          </div>
+
+          <div class="how-card">
+            <div class="how-step">PASO 02</div>
+            <div class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="7" width="18" height="12" rx="2"></rect><path d="M3 11h18"></path><path d="M8 15h4"></path></svg>
+            </div>
+            <h3>Elige tus boletos</h3>
+            <p>Selecciona la función, la cantidad de entradas y la localidad que prefieras.</p>
+          </div>
+
+          <div class="how-card">
+            <div class="how-step">PASO 03</div>
+            <div class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            </div>
+            <h3>Reserva y paga</h3>
+            <p>Confirma tu reserva de forma segura y recibe la confirmación al instante.</p>
+          </div>
+
+          <div class="how-card">
+            <div class="how-step">PASO 04</div>
+            <div class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 9V6a2 2 0 0 1 2-2h2"></path><path d="M4 15v3a2 2 0 0 0 2 2h2"></path><path d="M20 9V6a2 2 0 0 0-2-2h-2"></path><path d="M20 15v3a2 2 0 0 1-2 2h-2"></path><rect x="9" y="9" width="6" height="6"></rect></svg>
+            </div>
+            <h3>Presenta tu boleto</h3>
+            <p>Llega el día del evento y muestra tu boleto digital en la entrada. Así de fácil.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="container" style="padding-top:20px;">
+
+      <section aria-labelledby="featured-heading">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow-line"><span class="rule" aria-hidden="true"></span><span>DESTACADOS ESTA SEMANA</span></div>
+            <h2 id="featured-heading">Eventos que no te puedes perder</h2>
+          </div>
+          <a href="#" onclick="return nav('events')" class="btn btn-outline btn-sm">Ver toda la cartelera <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="events-grid events-grid-feature">
+
+          <a href="#" onclick="return nav('event-detail')" class="ev-card">
+              <div class="ev-head">
+                <span class="badge badge-boleteria">En Boletería</span>
+                <span class="ev-serial">EVT-2026-0184</span>
+              </div>
+              <div class="ev-body">
+                <h3>Noche de Salsa — Grupo Niche Tributo</h3>
+                <p class="ev-loc">Teatro Los Cristales · Cali</p>
+                <p class="ev-date">14 NOV · 8:00 PM</p>
+              </div>
+              <div class="ev-stub">
+                <p class="ev-price"><span>DESDE</span>$85.000</p>
+                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
+              </div>
+            </a>
+
+          <a href="#" onclick="return nav('event-detail')" class="ev-card">
+              <div class="ev-head">
+                <span class="badge badge-vivo">En Vivo</span>
+                <span class="ev-serial">EVT-2026-0176</span>
+              </div>
+              <div class="ev-body">
+                <h3>Festival Rock a la Cañada</h3>
+                <p class="ev-loc">Parque de la Salsa · Cali</p>
+                <p class="ev-date">HOY · 9:00 PM</p>
+              </div>
+              <div class="ev-stub">
+                <p class="ev-price"><span>DESDE</span>$120.000</p>
+                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
+              </div>
+            </a>
+
+          <a href="#" onclick="return nav('event-detail')" class="ev-card">
+              <div class="ev-head">
+                <span class="badge badge-programado">Programado</span>
+                <span class="ev-serial">EVT-2026-0201</span>
+              </div>
+              <div class="ev-body">
+                <h3>Romeo y Julieta — Compañía Nacional de Teatro</h3>
+                <p class="ev-loc">Teatro Municipal Enrique Buenaventura · Cali</p>
+                <p class="ev-date">02 DIC · 7:30 PM</p>
+              </div>
+              <div class="ev-stub">
+                <p class="ev-price"><span>DESDE</span>$52.000</p>
+                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
+              </div>
+            </a>
+
+        </div>
+      </section>
+
+      <section class="home-cta-banner" aria-labelledby="cta-heading">
+        <div>
+          <h2 id="cta-heading">¿Organizas espectáculos?</h2>
+          <p>Publica tu evento en TUCKET y vende entradas sin complicaciones.</p>
+        </div>
+        <a href="#" onclick="return goRegisterAs('agente')" class="btn btn-gold">Publicar un evento</a>
+      </section>
+
+      <section aria-labelledby="more-events-heading">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow-line"><span class="rule" aria-hidden="true"></span><span>MÁS EVENTOS</span></div>
+            <h2 id="more-events-heading">Explora la cartelera completa</h2>
+          </div>
+          <a href="#" onclick="return nav('events')" class="btn btn-outline btn-sm">Ver todos <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="events-grid">
+
+          <a href="#" onclick="return nav('event-detail')" class="ev-card">
+              <div class="ev-head">
+                <span class="badge badge-programado">Programado</span>
+                <span class="ev-serial">EVT-2026-0219</span>
+              </div>
+              <div class="ev-body">
+                <h3>Concierto de Fin de Año — Orquesta Filarmónica</h3>
+                <p class="ev-loc">Teatro Jorge Isaacs · Cali</p>
+                <p class="ev-date">20 DIC · 6:00 PM</p>
+              </div>
+              <div class="ev-stub">
+                <p class="ev-price"><span>DESDE</span>$65.000</p>
+                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
+              </div>
+            </a>
+
+          <a href="#" onclick="return nav('event-detail')" class="ev-card">
+              <div class="ev-head">
+                <span class="badge badge-boleteria">En Boletería</span>
+                <span class="ev-serial">EVT-2026-0163</span>
+              </div>
+              <div class="ev-body">
+                <h3>Stand Up Comedy Night</h3>
+                <p class="ev-loc">Sala Beethoven · Bogotá</p>
+                <p class="ev-date">28 NOV · 8:30 PM</p>
+              </div>
+              <div class="ev-stub">
+                <p class="ev-price"><span>DESDE</span>$40.000</p>
+                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
+              </div>
+            </a>
+
+          <a href="#" onclick="return nav('event-detail')" class="ev-card">
+              <div class="ev-head">
+                <span class="badge badge-finalizado">Finalizado</span>
+                <span class="ev-serial">EVT-2026-0098</span>
+              </div>
+              <div class="ev-body">
+                <h3>Feria de Cali — Show de Salsódromo</h3>
+                <p class="ev-loc">Autódromo de Palmaseca · Cali</p>
+                <p class="ev-date">03 SEP · 7:00 PM</p>
+              </div>
+              <div class="ev-stub">
+                <p class="ev-price"><span>DESDE</span>$95.000</p>
+                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
+              </div>
+            </a>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="brand">
+            <span class="brand-logo" aria-hidden="true"></span>
+            <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+          </span>
+          <p class="footer-claim">Cada función empieza con una entrada.</p>
+          <p class="footer-note">Conciertos, teatro, festivales y comedia en un solo lugar. Explora la cartelera y reserva en minutos.</p>
+        </div>
+
+        <nav class="footer-cols" aria-label="Secciones del sitio">
+          <div class="footer-col">
+            <h2>Cartelera</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('events')">Todos los eventos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Concierto')">Conciertos</a></li>
+              <li><a href="#" onclick="return exploreCategory('Teatro')">Teatro</a></li>
+              <li><a href="#" onclick="return exploreCategory('Festival')">Festivales</a></li>
+              <li><a href="#" onclick="return exploreCategory('Comedia')">Comedia</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Tu cuenta</h2>
+            <ul>
+              <li><a href="#" onclick="return nav('login')">Iniciar sesión</a></li>
+              <li><a href="#" onclick="return goRegisterAs('cliente')">Crear cuenta</a></li>
+              <li><a href="#" onclick="return requireAuth('reservations')">Mis reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Organizadores</h2>
+            <ul>
+              <li><a href="#" onclick="return goRegisterAs('agente')">Ser organizador</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Publicar un evento</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-events')">Panel de agente</a></li>
+              <li><a href="#" onclick="return requireAuth('agent-reservations')">Gestionar reservas</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Ayuda</h2>
+            <ul>
+              <li><a href="#">Centro de ayuda</a></li>
+              <li><a href="#">Cómo reservar</a></li>
+              <li><a href="#">Preguntas frecuentes</a></li>
+              <li><a href="#">Contáctanos</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h2>Síguenos</h2>
+            <ul>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">YouTube</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">X</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-seal">
+          <span class="seal-mark" aria-hidden="true">UCEVA</span>
+          <p><strong>Proyecto Integrador</strong><br>Programación en Ambiente Web I · Facultad de Ingeniería de Sistemas</p>
+        </div>
+        <p class="footer-copy">© 2026 TUCKET · Prototipo académico, sin transacciones reales.</p>
+        <nav class="footer-legal" aria-label="Enlaces legales">
+          <a href="#">Política de privacidad</a>
+          <a href="#">Términos de uso</a>
+          <a href="#">Tratamiento de datos</a>
+        </nav>
+      </div>
+
+    </div>
+  </footer>
+
+</div>
+</div>

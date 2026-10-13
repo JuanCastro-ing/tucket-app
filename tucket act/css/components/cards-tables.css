@@ -1,0 +1,73 @@
+/* TUCKET — Tarjetas y tablas */
+
+/* ---------- Cards / tables ---------- */
+.panel{
+  background:var(--white); border:1px solid var(--line); border-radius:6px;
+  padding:24px; box-shadow:var(--shadow-sm);
+  transition:box-shadow var(--dur) var(--ease);
+}
+.panel:hover{ box-shadow:var(--shadow); }
+.panel + .panel{ margin-top:20px; }
+.panel-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
+.panel-head h3{ font-size:16px; }
+.panel-head .hint{ font-size:12px; color:var(--muted); }
+
+/* La tabla se desplaza en horizontal dentro de su panel. El degradado del borde
+   derecho avisa de que hay más columnas; desaparece al llegar al final. */
+.table-wrap{
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  background:
+    linear-gradient(to right, var(--white) 30%, rgba(255,255,255,0)) left center / 28px 100% no-repeat,
+    linear-gradient(to left,  var(--white) 30%, rgba(255,255,255,0)) right center / 28px 100% no-repeat,
+    linear-gradient(to right, rgba(18,23,43,.14), rgba(18,23,43,0)) left center / 14px 100% no-repeat,
+    linear-gradient(to left,  rgba(18,23,43,.14), rgba(18,23,43,0)) right center / 14px 100% no-repeat;
+  background-attachment:local, local, scroll, scroll;
+}
+.table-wrap table{ min-width:520px; }
+table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+thead th{
+  text-align:left; font-family:var(--mono); font-size:10.5px; color:var(--muted);
+  letter-spacing:.4px; padding:0 14px 10px; border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+tbody td{ padding:14px 14px; border-bottom:1px solid #F0ECE0; vertical-align:middle; }
+tbody tr:last-child td{ border-bottom:none; }
+tbody tr{ transition:background var(--dur-fast) var(--ease); }
+tbody tr:hover{ background:#FBF9F3; }
+.cell-strong{ font-weight:700; color:var(--navy); }
+.cell-muted{ color:var(--muted); font-size:12.5px; }
+.row-actions{ display:flex; gap:8px; }
+
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-grid > *{ min-width:0; }
+@media (max-width:920px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:520px){ .stat-grid{ grid-template-columns:1fr; } }
+.stat-card{
+  background:var(--navy); color:var(--paper); border-radius:6px;
+  padding:20px 20px 18px; position:relative; overflow:hidden;
+  transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.stat-card:hover{ transform:translate3d(0,-3px,0); box-shadow:var(--shadow); }
+.stat-card::after{
+  content:""; position:absolute; right:-24px; top:-24px; width:90px; height:90px;
+  border-radius:50%; background:rgba(232,180,76,.12);
+  z-index:0;  /* detrás del texto: antes recortaba etiquetas como "AGENTES REGISTRADOS" */
+}
+.stat-card > *{ position:relative; z-index:1; }
+.stat-card .stat-label{ font-family:var(--mono); font-size:10px; color:var(--muted-lt); letter-spacing:.4px; }
+.stat-card .stat-value{ font-family:var(--display); font-size:32px; margin-top:8px; color:var(--paper); }
+.stat-card .stat-delta{ font-size:12px; color:var(--gold); margin-top:6px; }
+.stat-card.alt{ background:var(--white); color:var(--navy); border:1px solid var(--line); }
+.stat-card.alt .stat-label{ color:var(--muted); }
+.stat-card.alt .stat-value{ color:var(--navy); }
+.stat-card.alt::after{ background:#F3ECD5; }
+
+.chart-card{ background:var(--white); border:1px solid var(--line); border-radius:6px; padding:22px; min-width:0; max-width:100%; overflow:hidden; }
+.chart-card h3{ font-size:15px; margin-bottom:2px; }
+.chart-card .hint{ font-size:12px; color:var(--muted); margin-bottom:14px; display:block; }
+.chart-card svg{ max-width:100%; height:auto; }
+@media (max-width:480px){
+  .chart-card{ padding:16px; }
+  .chart-card h3{ font-size:13.5px; }
+  .chart-card .hint{ font-size:11px; }
+}

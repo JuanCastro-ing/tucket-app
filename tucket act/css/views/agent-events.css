@@ -1,0 +1,80 @@
+/* TUCKET — Vista: Eventos del agente */
+
+/* La tabla de eventos tiene 8 columnas y el formulario pedía 400px fijos. Como
+   .container está limitado a 1180px y la barra lateral se lleva unos 220, al
+   área principal le quedan ~830px: nunca hubo sitio para los dos de lado a
+   lado. Por eso se apilan siempre, la tabla usa todo el ancho y el formulario
+   pasa a dos columnas debajo. */
+.layout-main{ display:grid; grid-template-columns:1fr; gap:26px; align-items:start; }
+.layout-main > *{ min-width:0; }
+.new-event-panel{ position:static; }
+
+#agent-event-form{
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:0 18px; align-items:start;
+}
+/* Cada bloque ocupa el ancho completo... */
+#agent-event-form > *{ grid-column:1 / -1; }
+/* ...salvo los campos sueltos, que van de dos en dos */
+#agent-event-form > .field{ grid-column:auto; }
+/* Las áreas de texto vuelven a ancho completo para que se puedan leer */
+#agent-event-form > .field:has(textarea){ grid-column:1 / -1; }
+
+@media (max-width:620px){
+  #agent-event-form{ grid-template-columns:1fr; }
+  #agent-event-form > .field{ grid-column:1 / -1; }
+}
+
+/* La tabla ya no compite por el espacio: el texto puede partirse en varias
+   líneas en vez de forzar desplazamiento horizontal. */
+.layout-main table{ table-layout:auto; }
+.layout-main td,
+.layout-main th{ white-space:normal; }
+.layout-main .cell-strong{ min-width:11ch; }
+
+.icon-mini{ width:30px; height:30px; border-radius:50%; background:var(--paper-2); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; color:var(--navy); }
+
+/* Mensajes y ayudas del formulario de registro de eventos (API) */
+.form-message{ padding:12px 14px; margin:0 0 18px; border-radius:var(--radius); font-size:13px; line-height:1.5; }
+.form-message[hidden]{ display:none; }
+.form-message-error{ background:#fff0ee; border:1px solid #e8b4ad; color:#8f2d24; }
+.form-message-success{ background:#edf8ee; border:1px solid #abd4ae; color:#215b2a; }
+.field-help{ display:block; margin-top:5px; color:var(--muted); font-size:12px; line-height:1.45; }
+.new-event-panel select:disabled{ opacity:.65; cursor:not-allowed; }
+.new-event-panel textarea{ min-height:88px; }
+.new-event-panel button:disabled{ opacity:.65; cursor:wait; }
+
+/* ---------- Ciclo de vida del evento ---------- */
+/* .status-select ya existe en agent-reservations.css, que carga después.
+   Se acota a esta tabla para no pisar aquella vista ni perder contra ella. */
+#agent-events-body .status-select{
+  border:1px solid var(--line); border-radius:20px;
+  padding:6px 12px; font-size:12px;
+  font-family:var(--mono); letter-spacing:.3px;
+  background:var(--white); color:var(--navy); max-width:160px;
+}
+#agent-events-body .status-select:disabled{ opacity:.6; cursor:wait; }
+.cell-reason{
+  margin-top:5px; font-size:11.5px; line-height:1.45;
+  max-width:34ch; white-space:normal;
+}
+
+/* Fila desplegable para registrar la causa de cancelación */
+.cancel-row > td{ background:#FFF7F6; border-top:1px solid #E8B4AD; }
+.cancel-box{ display:flex; flex-direction:column; gap:9px; padding:14px 4px 16px; }
+.cancel-box label{ font-size:12.5px; font-weight:700; color:var(--ink); }
+.cancel-box input{
+  border:1px solid #E8B4AD; border-radius:var(--radius);
+  padding:10px 12px; font-size:13.5px; font-family:var(--body); max-width:560px;
+}
+.cancel-box input:focus-visible{ outline:2px solid var(--red); outline-offset:1px; }
+.cancel-note{ margin:0; font-size:12.5px; color:#8f2d24; }
+.cancel-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:2px; }
+
+/* La columna de acción quedaba cortada: se ajusta el control y se recorta el
+   relleno de las celdas para que las 8 columnas quepan sin desplazamiento. */
+.layout-main td,
+.layout-main th{ padding-left:10px; padding-right:10px; }
+#agent-events-body .status-select{ max-width:124px; padding:6px 8px; }
+/* El texto de ayuda de las fechas ocupa una fila propia: necesita su margen */
+#agent-event-form > .field-help{ margin:-8px 0 18px; }

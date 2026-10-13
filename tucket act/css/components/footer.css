@@ -1,0 +1,101 @@
+/* TUCKET — Pie de página */
+
+.site-footer{
+  background:var(--navy);
+  color:var(--muted-lt);
+  font-size:13px;
+  position:relative;
+  padding:0 0 28px;
+}
+
+/* Borde superior troquelado: el mismo motivo de boleto de la marquesina */
+.site-footer::before{
+  content:""; position:absolute; left:0; right:0; top:0; height:4px;
+  background-image:radial-gradient(circle, var(--gold) 1.5px, transparent 1.6px);
+  background-size:14px 4px;
+  opacity:.55;
+}
+
+/* ---------- Bloque superior: marca + columnas de enlaces ---------- */
+.footer-top{
+  display:grid;
+  grid-template-columns:minmax(260px, 1.1fr) 3fr;
+  gap:48px;
+  padding:56px 0 44px;
+}
+@media (max-width:1000px){
+  .footer-top{ grid-template-columns:1fr; gap:38px; padding:44px 0 34px; }
+}
+
+/* Columna de marca */
+.footer-brand{ display:flex; flex-direction:column; align-items:flex-start; gap:14px; max-width:34ch; }
+.footer-brand .brand{ display:flex; align-items:center; gap:10px; }
+.footer-claim{
+  font-family:var(--display); font-weight:500; color:var(--paper);
+  font-size:27px; line-height:1.18; letter-spacing:.2px; margin:0;
+}
+@media (max-width:480px){ .footer-claim{ font-size:23px; } }
+.footer-note{ margin:0; color:var(--muted-lt); line-height:1.6; font-size:13px; }
+
+/* Rejilla de columnas */
+.footer-cols{
+  display:grid;
+  grid-template-columns:repeat(5, minmax(0,1fr));
+  gap:30px 24px;
+  align-content:start;
+}
+@media (max-width:1000px){ .footer-cols{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
+@media (max-width:620px){ .footer-cols{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:28px 18px; } }
+
+.footer-col h2{
+  font-family:var(--mono); font-size:10.5px; font-weight:500;
+  letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--gold); margin:0 0 14px;
+}
+.footer-col ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.footer-col a{
+  color:var(--muted-lt); line-height:1.35; display:inline-block;
+  border-bottom:1px solid transparent;
+  transition:color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.footer-col a:hover,
+.footer-col a:focus-visible{ color:var(--paper); border-bottom-color:var(--gold); }
+
+/* ---------- Bloque inferior: sello, aviso legal y enlaces ---------- */
+.footer-bottom{
+  border-top:1px solid var(--navy-3);
+  padding-top:24px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px 28px; flex-wrap:wrap;
+}
+.footer-seal{ display:flex; align-items:center; gap:13px; }
+
+/* Sello académico: disco troquelado con el motivo de la marca */
+.seal-mark{
+  width:52px; height:52px; flex-shrink:0; border-radius:50%;
+  display:grid; place-items:center; text-align:center;
+  border:1px solid rgba(232,180,76,.45);
+  background:
+    radial-gradient(circle at 30% 26%, rgba(232,180,76,.16), transparent 58%),
+    var(--navy-2);
+  font-family:var(--mono); font-size:8.5px; letter-spacing:.8px;
+  color:var(--gold); line-height:1.25;
+}
+.footer-seal p{ margin:0; line-height:1.55; font-size:12.5px; max-width:36ch; }
+.footer-seal strong{ color:var(--paper); font-family:var(--display); font-weight:600; letter-spacing:.3px; }
+
+.footer-legal{ display:flex; gap:20px; flex-wrap:wrap; margin-left:auto; }
+.footer-legal a{
+  color:var(--muted-lt); font-size:12.5px;
+  border-bottom:1px solid transparent;
+  transition:color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.footer-legal a:hover,
+.footer-legal a:focus-visible{ color:var(--gold); border-bottom-color:var(--gold); }
+
+.footer-copy{ margin:0; font-size:12.5px; color:var(--muted-lt); }
+
+@media (max-width:620px){
+  .footer-bottom{ flex-direction:column; align-items:flex-start; }
+  .footer-legal{ margin-left:0; }
+}

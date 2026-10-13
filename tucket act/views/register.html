@@ -1,0 +1,117 @@
+<div class="view" id="view-register">
+
+<div class="reg-wrap">
+
+  <header class="reg-top">
+    <div class="container">
+      <a href="#" onclick="return nav('home')" class="brand" aria-label="TUCKET — Ir al inicio">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <span class="brand-mark brand-mark-sm">TUCK<span>E</span>T</span>
+      </a>
+      <div class="reg-top-links">
+        <a href="#" onclick="return nav('home')" class="back-home back-home-light">
+          <span aria-hidden="true">←</span> Volver al inicio
+        </a>
+        <a href="#" onclick="return nav('login')" class="btn-ghost btn-ghost-light">Iniciar sesión</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="reg-main">
+    <div class="reg-box">
+      <div class="reg-head">
+        <span class="kicker">CREAR CUENTA</span>
+        <h2>Regístrate en TUCKET</h2>
+        <div class="type-switch" role="radiogroup" aria-label="Tipo de cuenta">
+          <button type="button" class="type-card active" role="radio" aria-checked="true" onclick="setRegType(this)">
+            <span class="t">Cliente</span>
+            <span class="d">Explora eventos y reserva entradas</span>
+          </button>
+          <button type="button" class="type-card" role="radio" aria-checked="false" onclick="setRegType(this)">
+            <span class="t">Agente</span>
+            <span class="d">Publica eventos y gestiona reservas</span>
+          </button>
+        </div>
+      </div>
+
+      <form class="reg-form" novalidate onsubmit="return completeRegistration(event)">
+        <div class="section-label"><span>DATOS DE LA PERSONA</span><span class="rule"></span></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="doc">Número de identificación</label>
+            <input id="doc" type="text" placeholder="Cédula o pasaporte" required>
+          </div>
+          <div class="field">
+            <label for="name">Nombre completo</label>
+            <input id="name" type="text" placeholder="Nombre y apellidos" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="mail">Correo electrónico</label>
+          <input id="mail" type="email" placeholder="nombre@correo.com" required>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="dep">Departamento</label>
+            <select id="dep">
+              <option>Valle del Cauca</option>
+              <option>Antioquia</option>
+              <option>Cundinamarca</option>
+              <option>Atlántico</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="city">Ciudad</label>
+            <select id="city">
+              <option>Cali</option>
+              <option>Palmira</option>
+              <option>Buenaventura</option>
+              <option>Tuluá</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="addr">Dirección</label>
+          <input id="addr" type="text" placeholder="Calle 5 # 23-10">
+        </div>
+
+        <div class="field">
+          <label for="phone1">Números de teléfono</label>
+          <div class="phone-row">
+            <input id="phone1" type="tel" placeholder="+57 300 000 0000" required>
+            <button type="button" class="btn btn-outline btn-sm">Quitar</button>
+          </div>
+          <a href="#" class="add-phone">+ Agregar otro número</a>
+        </div>
+
+        <div class="section-label"><span>DATOS DE LA CUENTA</span><span class="rule"></span></div>
+        <div class="field-row">
+          <div class="field">
+            <label for="pw">Contraseña</label>
+            <input id="pw" type="password" placeholder="Mínimo 8 caracteres" minlength="8" required>
+          </div>
+          <div class="field">
+            <label for="pw2">Confirmar contraseña</label>
+            <input id="pw2" type="password" placeholder="Repite la contraseña" minlength="8" required>
+          </div>
+        </div>
+
+        <label class="check-row" for="terms" style="margin-bottom:24px;">
+          <input id="terms" type="checkbox" required> Acepto los términos de uso y el tratamiento de datos personales
+        </label>
+
+        <button type="submit" class="btn btn-gold btn-block">Crear mi cuenta</button>
+        <p class="auth-foot">¿Ya tienes cuenta? <a class="link-gold" href="#" onclick="return nav('login')">Inicia sesión</a></p>
+        <p class="auth-foot auth-foot-skip">
+          <a href="#" onclick="return nav('events')">Explorar la cartelera sin cuenta <span aria-hidden="true">→</span></a>
+        </p>
+      </form>
+    </div>
+  </main>
+</div>
+
+</div>

@@ -1,0 +1,88 @@
+/* TUCKET — Vista: Inicio */
+
+.home-hero{
+  background:var(--navy);
+  background-image:
+    radial-gradient(circle at 16% 20%, rgba(232,180,76,.16), transparent 44%),
+    radial-gradient(circle at 84% 82%, rgba(46,156,130,.12), transparent 48%);
+  padding:72px 0 88px; position:relative; overflow:hidden;
+}
+.home-hero::after{ content:""; position:absolute; right:-80px; top:-80px; width:280px; height:280px; border-radius:50%; background:rgba(232,180,76,.12); }
+.home-hero::before{ content:""; position:absolute; left:-60px; bottom:-110px; width:220px; height:220px; border-radius:50%; background:rgba(46,156,130,.10); }
+/* La columna derecha aloja el carrusel de destacados: necesita más ancho que
+   las antiguas cifras y se centra con el bloque de texto. */
+.home-hero-inner{ display:grid; grid-template-columns:1fr minmax(330px,392px); gap:56px; align-items:center; position:relative; z-index:var(--z-base); }
+@media (max-width:1080px){ .home-hero-inner{ grid-template-columns:1fr minmax(300px,340px); gap:36px; } }
+@media (max-width:900px){ .home-hero-inner{ grid-template-columns:1fr; gap:40px; } }
+.home-hero-copy h1{ color:var(--paper); font-size:clamp(36px,5.6vw,60px); line-height:1.02; letter-spacing:-1.4px; max-width:15ch; margin-top:14px; }
+.home-hero-copy > p{ color:var(--muted-lt); font-size:16px; margin-top:18px; max-width:46ch; line-height:1.6; }
+.home-search{
+  display:flex; margin-top:28px; background:var(--paper); border-radius:4px; overflow:hidden;
+  box-shadow:var(--shadow); max-width:640px;
+}
+.home-search input{ flex:1.4; border:none; padding:15px 16px; font-size:14.5px; font-family:var(--body); min-width:0; }
+.home-search select{ border:none; border-left:1px solid var(--line); padding:15px 10px; font-size:13px; background:var(--white); flex:.85; }
+.home-search .btn{ border-radius:0; padding:15px 24px; white-space:nowrap; }
+/* En móvil el campo de búsqueda quedaba reducido a una rendija: cada control toma su propia fila */
+@media (max-width:620px){
+  .home-search{ flex-wrap:wrap; }
+  .home-search input,
+  .home-search select,
+  .home-search .btn{ flex:1 1 100%; }
+  .home-search select{ border-left:none; border-top:1px solid var(--line); }
+  .home-search .btn{ border-top:1px solid var(--line); }
+}
+.home-chip-row{ display:flex; gap:10px; margin-top:24px; flex-wrap:wrap; }
+.home-chip{
+  font-size:13px; font-weight:600; color:var(--paper); border:1px solid rgba(247,243,234,.35);
+  padding:8px 16px; border-radius:20px; transition:border-color .15s, color .15s;
+}
+.home-chip:hover, .home-chip:focus{ border-color:var(--gold); color:var(--gold); }
+/* Las cifras pasaron de columna lateral a franja bajo el hero (hero-slider.css) */
+
+.home-cta-banner{
+  margin:8px 0 44px; background:var(--navy); border-radius:4px; padding:30px 34px;
+  display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;
+  position:relative; overflow:hidden;
+}
+.home-cta-banner::after{ content:""; position:absolute; right:-40px; top:-40px; width:140px; height:140px; border-radius:50%; background:rgba(232,180,76,.12); }
+.home-cta-banner h2, .home-cta-banner h3{ color:var(--paper); font-size:21px; }
+.home-cta-banner p{ color:var(--muted-lt); font-size:14px; margin-top:6px; }
+
+/* ---------- Cómo funciona ---------- */
+.how-it-works{ padding:28px 0 60px; }
+.how-grid{
+  display:grid; grid-template-columns:1fr; gap:18px; margin-top:28px;
+}
+@media (min-width:640px){ .how-grid{ grid-template-columns:1fr 1fr; } }
+@media (min-width:1000px){ .how-grid{ grid-template-columns:repeat(4,1fr); } }
+.how-card{
+  position:relative;
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+  padding:26px 20px 22px; text-align:left;
+  transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+             border-color var(--dur) var(--ease);
+}
+.how-card:hover{
+  transform:translate3d(0,-3px,0); box-shadow:var(--shadow);
+  border-color:var(--gold-dark);
+}
+.how-card:hover .how-icon{ background:var(--gold); color:var(--navy); }
+.how-icon{ transition:background var(--dur) var(--ease), color var(--dur) var(--ease); }
+.how-step{
+  font-family:var(--mono); font-size:11px; letter-spacing:.4px; color:#875A00; font-weight:700;
+  margin-bottom:12px;
+}
+.how-icon{
+  width:44px; height:44px; border-radius:50%;
+  background:var(--navy); color:var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:14px;
+}
+.how-icon svg{ width:22px; height:22px; }
+.how-card h3, .how-card h4{ font-size:16.5px; margin-bottom:8px; }
+.how-card p{ font-size:13.5px; color:var(--muted); line-height:1.55; }
+
+/* Ritmo vertical: las secciones necesitaban más aire */
+.home-cta-banner{ margin:36px 0 56px; padding:38px 40px; }
+@media (max-width:560px){ .home-cta-banner{ padding:26px 22px; } }
