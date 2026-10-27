@@ -1,0 +1,221 @@
+/* TUCKET — Vista: Explorar eventos */
+
+.filters{
+  display:flex; gap:12px; flex-wrap:wrap; align-items:center;
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 16px; margin-bottom:28px;
+}
+.filters input[type="search"]{
+  flex:1; min-width:180px; border:none; background:transparent; font-size:14.5px; padding:6px 4px;
+}
+.filters input[type="search"]:focus{ outline:none; }
+.filters select{
+  border:1px solid var(--line); border-radius:3px; padding:9px 10px; font-size:13px; background:var(--white);
+}
+.events-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+@media (max-width:960px){ .events-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:660px){ .events-grid{ grid-template-columns:1fr; } }
+
+.ev-card{
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+  overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-sm);
+  transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+             border-color var(--dur) var(--ease);
+}
+.ev-card:hover,
+.ev-card:focus-visible{
+  transform:translate3d(0,-4px,0);
+  box-shadow:var(--shadow-lg);
+  border-color:var(--gold-dark);
+}
+.ev-card:active{ transform:translate3d(0,-1px,0); }
+.ev-card:hover .ev-media::after{ opacity:1; }
+.ev-card:hover .ev-body .btn-outline{ background:var(--navy); color:var(--paper); }
+
+.ev-media{
+  height:118px; position:relative; display:flex; align-items:flex-end; padding:14px;
+  /* malla radial en vez de un degradado plano a 45°, + troquel de boleto al pie */
+  background:var(--navy);
+  background-image:
+    radial-gradient(circle at 22% 18%, rgba(232,180,76,.20), transparent 46%),
+    radial-gradient(circle at 86% 88%, rgba(46,156,130,.16), transparent 50%);
+}
+.ev-media::before{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+  background-image:radial-gradient(circle, var(--paper) 1.6px, transparent 1.7px);
+  background-size:12px 3px;
+  opacity:.5;
+}
+.ev-media::after{
+  content:""; position:absolute; inset:0; opacity:0;
+  background:radial-gradient(circle at 50% 120%, rgba(232,180,76,.22), transparent 60%);
+  transition:opacity var(--dur) var(--ease);
+}
+.ev-media .badge{ position:absolute; top:12px; right:12px; background:rgba(255,255,255,.94); }
+.ev-media .ev-date{
+  font-family:var(--mono); color:var(--gold); font-size:11.5px; letter-spacing:.6px;
+  position:relative;
+}
+.ev-body{ padding:16px 18px 18px; flex:1; display:flex; flex-direction:column; }
+.ev-body h3{ font-size:16.5px; margin-bottom:4px; }
+.ev-loc{ font-size:12.5px; color:var(--muted); margin-bottom:12px; }
+.ev-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:12px; border-top:1px dashed var(--line); }
+.ev-price{ font-family:var(--display); font-size:17px; color:var(--navy); }
+.ev-price span{ font-family:var(--mono); font-size:10px; color:var(--muted); display:block; }
+
+/* Entrada escalonada: las tarjetas no aparecen todas de golpe */
+/* 'backwards' (no 'both'): las tarjetas deben estar ocultas durante su retardo,
+   pero al terminar vuelven al estado normal y sueltan la capa de composición. */
+.view.active .events-grid > *{ animation:card-in .42s var(--ease) backwards; }
+.view.active .events-grid > *:nth-child(1){ animation-delay:.02s; }
+.view.active .events-grid > *:nth-child(2){ animation-delay:.07s; }
+.view.active .events-grid > *:nth-child(3){ animation-delay:.12s; }
+.view.active .events-grid > *:nth-child(4){ animation-delay:.17s; }
+.view.active .events-grid > *:nth-child(5){ animation-delay:.22s; }
+.view.active .events-grid > *:nth-child(6){ animation-delay:.27s; }
+@keyframes card-in{
+  from{ opacity:0; transform:translate3d(0,14px,0); }
+  to  { opacity:1; transform:none; }
+}
+
+/* ---------- Destacados: composición asimétrica ----------
+   Rompe la fila de tres columnas iguales: una tarjeta principal grande
+   y dos secundarias apiladas a su derecha. */
+@media (min-width:860px){
+  .events-grid-feature{
+    grid-template-columns:1.45fr 1fr;
+    align-items:stretch;
+  }
+  .events-grid-feature > :first-child{ grid-row:span 2; }
+  /* En el boleto grande crece la marquesina, no el cuerpo: si se estirase el
+     cuerpo quedaría un hueco en blanco entre el texto y el troquel. */
+  .events-grid-feature > :first-child .ev-head{ flex:1; min-height:210px; align-items:flex-start; }
+  .events-grid-feature > :first-child .ev-body{ flex:0 0 auto; }
+  .events-grid-feature > :first-child .ev-body h3{ font-size:22px; line-height:1.15; }
+  .events-grid-feature > :first-child .ev-price{ font-size:21px; }
+  .events-grid-feature > :first-child .ev-date{ font-size:13px; }
+}
+
+/* ---------- Cartelera servida por la API: tarjeta con forma de boleto ----------
+   Mismo lenguaje que el componente .ticket de "Mis reservas": cuerpo, línea de
+   troquel con muescas y talón. Las muescas se recortan con radial-gradient
+   sobre el propio fondo de la tarjeta, así funcionan sobre cualquier color. */
+
+.ev-card{
+  --tear: 86px;                 /* altura del talón, donde cae el troquel */
+  position:relative;
+  display:flex; flex-direction:column; align-items:stretch;
+  gap:0; padding:0; overflow:hidden;
+  border:none; border-radius:var(--radius);
+  background:
+    radial-gradient(circle at 0 calc(100% - var(--tear)),
+      transparent 0 9px, var(--white) 9.5px) left / 50.5% 100% no-repeat,
+    radial-gradient(circle at 100% calc(100% - var(--tear)),
+      transparent 0 9px, var(--white) 9.5px) right / 50.5% 100% no-repeat;
+  box-shadow:var(--shadow-sm);
+  transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.ev-card:hover{ transform:translate3d(0,-4px,0); box-shadow:var(--shadow-lg); }
+.ev-card:active{ transform:translate3d(0,-1px,0); }
+
+/* Cabecera del boleto: marquesina oscura con el troquelado de la marca */
+.ev-head{
+  position:relative; padding:14px 18px 16px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--navy);
+  background-image:
+    radial-gradient(circle at 22% 20%, rgba(232,180,76,.22), transparent 52%),
+    radial-gradient(circle at 88% 86%, rgba(46,156,130,.18), transparent 56%);
+}
+.ev-head::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+  background-image:radial-gradient(circle, var(--paper) 1.5px, transparent 1.6px);
+  background-size:11px 3px; opacity:.45;
+}
+.ev-head .badge{ background:rgba(247,243,234,.94); }
+
+/* Afiche del evento: ocupa la marquesina y deja el estado y el código
+   encima. El degradado garantiza contraste con cualquier imagen. */
+/* El afiche se muestra entero (16:9): recortarlo partía los títulos
+   que vienen dentro de la propia imagen. */
+.ev-head.has-poster{ padding-top:0; padding-bottom:0; aspect-ratio:16/9; align-items:flex-start; }
+.ev-head.has-poster > .badge,
+.ev-head.has-poster > .ev-serial{ position:relative; z-index:2; margin-top:14px; }
+.ev-poster{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; display:block; z-index:0;
+  background:var(--navy);
+}
+.ev-head.has-poster::before{
+  content:""; position:absolute; inset:0; z-index:1;
+  background:linear-gradient(180deg, rgba(18,23,43,.62) 0%, rgba(18,23,43,.12) 42%, rgba(18,23,43,.52) 100%);
+}
+.ev-card:hover .ev-poster{ transform:scale(1.04); }
+.ev-poster{ transition:transform var(--dur) var(--ease); }
+
+@media (prefers-reduced-motion: reduce){
+  .ev-poster{ transition:none; }
+  .ev-card:hover .ev-poster{ transform:none; }
+}
+.ev-serial{
+  font-family:var(--mono); font-size:10px; letter-spacing:1.1px;
+  color:var(--gold); white-space:nowrap;
+}
+
+/* Cuerpo */
+.ev-body{ padding:16px 18px 18px; display:flex; flex-direction:column; gap:7px; flex:1; }
+.ev-card h3{ font-size:17px; line-height:1.2; margin:0; color:var(--navy); }
+.ev-card .ev-loc,
+.ev-card .ev-date{ margin:0; font-size:12.5px; color:var(--muted); line-height:1.45; }
+.ev-card .ev-date{ font-family:var(--mono); font-size:11.5px; letter-spacing:.3px; }
+
+/* Línea de troquel y talón */
+.ev-stub{
+  height:var(--tear); flex-shrink:0;
+  margin:0 14px; padding:0 4px;
+  border-top:2px dashed var(--line);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.ev-card .ev-price{
+  margin:0; font-family:var(--display); font-size:20px; color:var(--navy); line-height:1.1;
+}
+.ev-card .ev-price span{
+  display:block; font-family:var(--mono); font-size:9.5px; letter-spacing:.7px;
+  color:var(--muted); margin-bottom:3px;
+}
+
+/* Entrada escalonada: las tarjetas no aparecen todas de golpe */
+.view.active .events-grid > *{ animation:card-in .42s var(--ease) backwards; }
+.view.active .events-grid > *:nth-child(1){ animation-delay:.02s; }
+.view.active .events-grid > *:nth-child(2){ animation-delay:.07s; }
+.view.active .events-grid > *:nth-child(3){ animation-delay:.12s; }
+.view.active .events-grid > *:nth-child(4){ animation-delay:.17s; }
+.view.active .events-grid > *:nth-child(5){ animation-delay:.22s; }
+.view.active .events-grid > *:nth-child(6){ animation-delay:.27s; }
+@keyframes card-in{
+  from{ opacity:0; transform:translate3d(0,14px,0); }
+  to  { opacity:1; transform:none; }
+}
+
+/* Reloj de Colombia y contador de resultados */
+.events-live-line{ font-size:12px; color:var(--muted); margin-top:8px; }
+.event-results-count{ font-size:13px; color:var(--muted); margin:-12px 0 18px; }
+
+/* Estados de la cuadrícula: cargando y sin resultados */
+.events-empty{
+  grid-column:1/-1; padding:28px; background:var(--white);
+  border:1px dashed var(--line); border-radius:var(--radius);
+  color:var(--muted); text-align:center;
+}
+.events-loading{
+  grid-column:1/-1; display:flex; align-items:center; justify-content:center;
+  gap:12px; min-height:180px; color:var(--muted); font-size:14px;
+}
+.loading-spinner{
+  width:28px; height:28px; border:3px solid var(--line); border-top-color:var(--gold);
+  border-radius:50%; animation:events-spin .8s linear infinite;
+}
+@keyframes events-spin{ to{ transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce){
+  .loading-spinner{ animation-duration:2s; }
+}

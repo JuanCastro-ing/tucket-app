@@ -1,0 +1,16 @@
+# Dependencias
+node_modules/
+
+# Credenciales: nunca al repositorio
+backend/.env
+
+# Afiches subidos por los agentes (contenido de usuarios, no del proyecto).
+# Los afiches de los eventos de ejemplo sí van al repo: están en img/events/.
+backend/uploads/
+
+# Reportes de Lighthouse
+localhost_*.report.html
+
+# Sistema
+.DS_Store
+Thumbs.db
