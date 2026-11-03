@@ -1,0 +1,132 @@
+/* ------------------------------------------------------------------
+   Vista: Mi perfil
+   Dos columnas en escritorio (resumen + formulario) y una sola en móvil.
+------------------------------------------------------------------ */
+
+.profile-grid{
+  display:grid;
+  grid-template-columns:300px minmax(0, 1fr);
+  gap:22px;
+  align-items:start;
+  margin-bottom:40px;
+}
+
+.profile-card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);
+  padding:22px 24px 26px;
+}
+
+.profile-card-title{
+  font-size:15px;
+  margin:0 0 18px;
+  color:var(--navy);
+}
+
+/* Resumen de la cuenta (solo lectura) */
+.profile-summary{
+  position:sticky;
+  top:18px;
+}
+.profile-facts{ margin:0; }
+.profile-facts .pf{
+  padding:11px 0;
+  border-top:1px solid var(--line);
+}
+.profile-facts .pf:first-child{ border-top:none; padding-top:0; }
+.profile-facts dt{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:.8px;
+  color:var(--muted);
+  margin-bottom:5px;
+}
+.profile-facts dd{
+  margin:0;
+  font-size:13.5px;
+  color:var(--ink);
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+.profile-note{
+  margin:18px 0 0;
+  padding-top:14px;
+  border-top:1px dashed var(--line);
+  font-size:11.5px;
+  color:var(--muted);
+  line-height:1.5;
+}
+
+/* Acciones del formulario */
+.profile-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:24px;
+  padding-top:20px;
+  border-top:1px dashed var(--line);
+}
+.profile-actions .btn{ min-width:150px; }
+
+/* Enlaces del menú que dependen del rol: el perfil es la única vista que
+   sirve a los dos, así que cada enlace se muestra solo a quien le toca. */
+:root:not([data-role="cliente"]) #view-profile .role-cliente{ display:none; }
+:root:not([data-role="agente"])  #view-profile .role-agente{ display:none; }
+
+@media (max-width: 900px){
+  .profile-grid{ grid-template-columns:1fr; }
+  .profile-summary{ position:static; }
+}
+
+@media (max-width: 560px){
+  .profile-card{ padding:18px 16px 22px; }
+  .profile-actions .btn{ width:100%; min-width:0; }
+}
+
+/* ------------------------------------------------------------------
+   Cambiar contraseña
+
+   La rejilla del perfil es de 300px + resto. Sin esto la tarjeta cae en
+   la primera columna, debajo del resumen de la cuenta, y los tres campos
+   quedan apretados en 300px mientras sobra media pantalla a la derecha.
+   Se la ancla a la segunda columna para que quede alineada con «Editar
+   mis datos» y comparta su ancho.
+------------------------------------------------------------------ */
+.profile-card-pwd{ grid-column:2; }
+
+.pwd-intro{
+  margin:0 0 18px;
+  font-size:12.5px; line-height:1.6; color:var(--muted);
+  max-width:62ch;
+}
+
+/* Los tres campos caben en una fila: son cortos y se leen de corrido
+   —actual, nueva, repetir—, que es el orden en que se llenan. */
+.pwd-row{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:16px 18px;
+  margin-bottom:4px;
+}
+
+/* A partir de aquí la rejilla del perfil ya es de una sola columna, así
+   que anclar la tarjeta a la segunda sobraría. Mismo punto de corte que
+   usa .profile-grid, arriba. */
+@media (max-width:900px){
+  .profile-card-pwd{ grid-column:auto; }
+}
+@media (max-width:720px){
+  .pwd-row{ grid-template-columns:1fr; }
+}
+
+/* ------------------------------------------------------------------
+   Perfil reducido del administrador
+
+   Su tabla solo guarda nombre y correo: no tiene teléfonos, dirección ni
+   ubicación. En vez de enseñarle campos que no puede llenar, se ocultan.
+   La marca la pone profile.js al pintar el perfil, con el rol que viene
+   del servidor.
+------------------------------------------------------------------ */
+:root[data-perfil="reducido"] #view-profile .solo-perfil-completo{ display:none; }

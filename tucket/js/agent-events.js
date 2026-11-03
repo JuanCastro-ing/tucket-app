@@ -2,39 +2,11 @@
 (function(){
   var viewId = 'view-agent-events';
 
-  /* ---------------- Modo prototipo (sin PostgreSQL) ----------------
-     Cuando la API no está disponible el panel sigue siendo usable con estos
-     datos en memoria: se pueden consultar, crear y cambiar de estado. Todo se
-     pierde al recargar, que es justo lo que se espera de un prototipo. */
-  var DEMO_GEO = {
-    paises: [{ code:'CO', name:'Colombia' }],
-    departamentos: { CO: [
-      { code:'76', name:'Valle del Cauca' },
-      { code:'11', name:'Bogotá D.C.' },
-      { code:'05', name:'Antioquia' }
-    ]},
-    ciudades: {
-      '76': [{ id:1, name:'Cali' }, { id:2, name:'Tuluá' }, { id:3, name:'Palmira' }],
-      '11': [{ id:4, name:'Bogotá' }],
-      '05': [{ id:5, name:'Medellín' }]
-    }
-  };
-  var demoEvents = [
-    { code:'EVT-2026-0184', name:'Noche de Salsa — Grupo Niche Tributo',
-      description:'Tributo a la salsa caleña con banda en vivo.',
-      venue:'Teatro Los Cristales', city:'Cali', department:'Valle del Cauca',
-      starts_at:'2026-11-14T20:00:00-05:00', ends_at:'2026-11-14T23:00:00-05:00',
-      total_capacity:1200, base_price:85000, status:'En Boletería', observations:'' },
-    { code:'EVT-2026-0201', name:'Romeo y Julieta — Compañía Nacional de Teatro',
-      description:'Puesta en escena del clásico de Shakespeare.',
-      venue:'Teatro Municipal Ángel María Camacho', city:'Tuluá', department:'Valle del Cauca',
-      starts_at:'2026-12-02T19:30:00-05:00', ends_at:'2026-12-02T22:00:00-05:00',
-      total_capacity:800, base_price:52000, status:'Programado', observations:'' }
-  ];
-  function esDemo(){ return typeof tucketDemoMode !== 'undefined' && tucketDemoMode; }
-  function avisoDemo(){
-    setMessage('Modo prototipo: el backend no está disponible, así que trabajas con datos de muestra que no se guardan.', 'success');
-  }
+  /* Aquí vivían un catálogo geográfico y dos eventos escritos a mano que
+     sostenían un «modo prototipo» sin PostgreSQL. Se quitaron: el panel
+     trabaja únicamente contra la base de datos, así que lo que se ve en
+     pantalla es siempre lo que está guardado. Sin servidor no hay datos, y
+     se dice con un mensaje en vez de mostrar eventos que no existen. */
   var requestVersion = { departments: 0, cities: 0 };
 
   function el(id){ return document.getElementById(id); }
@@ -76,12 +48,6 @@
     if(!country || country.dataset.loaded === 'true') return;
     country.disabled = true;
     setLoading(country, 'Cargando países…');
-    if(esDemo()){
-      setOptions(country, DEMO_GEO.paises, 'Selecciona un país', 'code');
-      country.disabled = false; country.dataset.loaded = 'true';
-      department.disabled = true; city.disabled = true;
-      return;
-    }
     try{
       var rows = await tucketApi('/api/geography/countries');
       setOptions(country, rows, 'Selecciona un país', 'code');
@@ -108,11 +74,6 @@
     setLoading(department, country.value ? 'Cargando departamentos…' : 'Selecciona primero un país');
     setLoading(city, 'Selecciona primero un departamento');
     if(!country.value) return;
-    if(esDemo()){
-      setOptions(department, DEMO_GEO.departamentos[country.value] || [], 'Selecciona un departamento', 'code');
-      department.disabled = false;
-      return;
-    }
     try{
       var rows = await tucketApi('/api/geography/countries/' + encodeURIComponent(country.value) + '/departments');
       if(version !== requestVersion.departments || country.value === '') return;
@@ -135,11 +96,6 @@
     city.disabled = true;
     setLoading(city, department.value ? 'Cargando ciudades…' : 'Selecciona primero un departamento');
     if(!department.value) return;
-    if(esDemo()){
-      setOptions(city, DEMO_GEO.ciudades[department.value] || [], 'Selecciona una ciudad', 'id');
-      city.disabled = false;
-      return;
-    }
     try{
       var rows = await tucketApi('/api/geography/departments/' + encodeURIComponent(department.value) + '/cities');
       if(version !== requestVersion.cities || department.value === '') return;
@@ -175,50 +131,81 @@
   ---------------------------------------------------------------- */
   var MAX_AFICHE = 4 * 1024 * 1024;
   var TIPOS_AFICHE = ['image/jpeg', 'image/png', 'image/webp'];
-  var aficheSeleccionado = null;   /* dataURL del archivo elegido */
+  /* ----------------------------------------------------------------
+     Imágenes del evento: afiche y banner
 
-  function limpiarAfiche(){
-    aficheSeleccionado = null;
-    var input = el('event-image');
-    var caja = el('event-image-preview');
-    var img = el('event-image-thumb');
-    var quitar = el('event-image-clear');
-    var pista = el('event-image-hint');
+     Son dos campos con el mismo comportamiento —elegir, previsualizar,
+     quitar— así que comparten código y solo cambian los identificadores
+     y los textos. Antes esto estaba escrito una vez; duplicarlo para el
+     banner habría dejado dos copias que se desincronizan.
+
+     · Afiche: la imagen que se ve en la ficha y en la cartelera.
+     · Banner: la imagen ancha del fondo del detalle. Es opcional, y si
+       no se pone, el detalle usa el afiche.
+  ---------------------------------------------------------------- */
+  var CAMPOS_IMAGEN = {
+    afiche: { input:'event-image',  caja:'event-image-preview',  thumb:'event-image-thumb',
+              quitar:'event-image-clear', pista:'event-image-hint',
+              vacio:'Sin afiche', nombre:'El afiche' },
+    banner: { input:'event-banner', caja:'event-banner-preview', thumb:'event-banner-thumb',
+              quitar:'event-banner-clear', pista:'event-banner-hint',
+              vacio:'Sin banner', nombre:'El banner' }
+  };
+
+  var imagenesSeleccionadas = { afiche:null, banner:null };   /* dataURL de cada una */
+
+  function limpiarImagen(clave){
+    var campo = CAMPOS_IMAGEN[clave];
+    imagenesSeleccionadas[clave] = null;
+    var input = el(campo.input);
+    var caja = el(campo.caja);
+    var img = el(campo.thumb);
+    var quitar = el(campo.quitar);
+    var pista = el(campo.pista);
     if(input) input.value = '';
     if(img){ img.hidden = true; img.removeAttribute('src'); img.alt = ''; }
     if(caja) caja.dataset.empty = 'true';
     if(quitar) quitar.hidden = true;
-    if(pista) pista.textContent = 'Sin afiche';
+    if(pista) pista.textContent = campo.vacio;
   }
 
-  function elegirAfiche(){
-    var input = el('event-image');
+  /* El botón «Quitar» hace dos cosas distintas según el momento: al
+     crear solo descarta el archivo elegido, y al editar además hay que
+     decirle al servidor que borre la imagen que ya estaba guardada. */
+  function quitarImagen(clave){
+    if(editandoCodigo) imagenesQuitadas[clave] = true;
+    limpiarImagen(clave);
+  }
+
+  function elegirImagen(clave){
+    var campo = CAMPOS_IMAGEN[clave];
+    var input = el(campo.input);
     var archivo = input && input.files ? input.files[0] : null;
-    if(!archivo){ limpiarAfiche(); return; }
+    if(!archivo){ limpiarImagen(clave); return; }
 
     /* Se valida aquí para avisar antes de subir 4 MB al servidor; el
        backend vuelve a validarlo igual, porque esto es solo comodidad. */
     if(TIPOS_AFICHE.indexOf(archivo.type) === -1){
-      setMessage('El afiche debe ser una imagen JPG, PNG o WEBP.', 'error');
-      limpiarAfiche();
+      setMessage(campo.nombre + ' debe ser una imagen JPG, PNG o WEBP.', 'error');
+      limpiarImagen(clave);
       return;
     }
     if(archivo.size > MAX_AFICHE){
-      setMessage('El afiche pesa ' + (archivo.size / 1048576).toFixed(1) + ' MB. El máximo es 4 MB.', 'error');
-      limpiarAfiche();
+      setMessage(campo.nombre + ' pesa ' + (archivo.size / 1048576).toFixed(1) + ' MB. El máximo es 4 MB.', 'error');
+      limpiarImagen(clave);
       return;
     }
 
     var lector = new FileReader();
     lector.onload = function(){
-      aficheSeleccionado = String(lector.result || '');
-      var img = el('event-image-thumb');
-      var caja = el('event-image-preview');
-      var quitar = el('event-image-clear');
-      var pista = el('event-image-hint');
+      imagenesSeleccionadas[clave] = String(lector.result || '');
+      var img = el(campo.thumb);
+      var caja = el(campo.caja);
+      var quitar = el(campo.quitar);
+      var pista = el(campo.pista);
       if(img){
-        img.src = aficheSeleccionado;
-        img.alt = 'Vista previa del afiche seleccionado';
+        img.src = imagenesSeleccionadas[clave];
+        img.alt = 'Vista previa de ' + campo.nombre.toLowerCase() + ' seleccionado';
         img.hidden = false;
       }
       if(caja) caja.dataset.empty = 'false';
@@ -228,10 +215,16 @@
     };
     lector.onerror = function(){
       setMessage('No se pudo leer la imagen. Intenta con otro archivo.', 'error');
-      limpiarAfiche();
+      limpiarImagen(clave);
     };
     lector.readAsDataURL(archivo);
   }
+
+  /* Atajos con el nombre de antes, que es como los llama el resto del
+     archivo y el arranque de la vista. */
+  function limpiarAfiche(){ limpiarImagen('afiche'); limpiarImagen('banner'); }
+  function elegirAfiche(){ elegirImagen('afiche'); }
+  function elegirBanner(){ elegirImagen('banner'); }
 
   function renderEvents(events){
     var body = el('agent-events-body');
@@ -256,7 +249,14 @@
       var code = document.createElement('div');
       code.className = 'cell-muted';
       code.textContent = event.code;
-      details.append(strong, code);
+      /* Nombre y código van dentro de un bloque propio: cuando la fila
+         tiene miniatura la celda es flex, y sin este contenedor el
+         código se colocaba al lado del nombre y se salía de la celda
+         encima de la columna siguiente. */
+      var info = document.createElement('div');
+      info.className = 'cell-info';
+      info.append(strong, code);
+      details.append(info);
       /* Miniatura del afiche, si el evento tiene uno. */
       if(event.image_path){
         details.classList.add('cell-with-thumb');
@@ -295,9 +295,9 @@
       body.appendChild(row);
     });
     var nota = el('agent-store-note');
-    if(nota) nota.textContent = esDemo() ? 'Datos de muestra en memoria' : 'Guardados en PostgreSQL';
+    if(nota) nota.textContent = 'Guardados en PostgreSQL';
     var origen = el('agent-api-state');
-    if(origen) origen.textContent = esDemo() ? 'Modo prototipo' : 'PostgreSQL';
+    if(origen) origen.textContent = 'PostgreSQL';
     var total = el('agent-event-count');
     if(total) total.textContent = events.length.toLocaleString('es-CO');
     var hint = el('agent-event-total');
@@ -318,12 +318,18 @@
 
   function accionCelda(event){
     var celda = document.createElement('td');
+    var grupo = document.createElement('div');
+    grupo.className = 'row-actions';
+    celda.appendChild(grupo);
 
     if(ESTADOS_FINALES.indexOf(event.status) !== -1){
       var fin = document.createElement('span');
       fin.className = 'cell-muted';
       fin.textContent = 'Ciclo cerrado';
-      celda.appendChild(fin);
+      grupo.appendChild(fin);
+      /* Un evento cerrado ya no se edita, pero sí se puede borrar si
+         nadie tiene boleta: es el caso de una publicación equivocada. */
+      grupo.appendChild(botonEliminar(event));
       return celda;
     }
 
@@ -347,8 +353,97 @@
       else { aplicarEstado(event.code, destino, null, select); }
     });
 
-    celda.appendChild(select);
+    grupo.appendChild(select);
+
+    var editar = document.createElement('button');
+    editar.type = 'button';
+    editar.className = 'btn btn-outline btn-sm';
+    editar.textContent = 'Editar';
+    editar.setAttribute('aria-label', 'Editar ' + event.name);
+    editar.addEventListener('click', function(){ entrarEnEdicion(event); });
+    grupo.appendChild(editar);
+
+    grupo.appendChild(botonEliminar(event));
     return celda;
+  }
+
+  /* ----------------------------------------------------------------
+     Eliminar un evento.
+
+     Se pide confirmación escrita en la propia fila y no con un
+     confirm() del navegador: el aviso puede explicar que esto no es lo
+     mismo que cancelar, y que lo borrado no vuelve.
+  ---------------------------------------------------------------- */
+  function botonEliminar(event){
+    var boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'btn btn-danger btn-sm';
+    boton.textContent = 'Eliminar';
+    boton.setAttribute('aria-label', 'Eliminar ' + event.name);
+    boton.addEventListener('click', function(){ pedirConfirmacionBorrado(event, boton); });
+    return boton;
+  }
+
+  function pedirConfirmacionBorrado(event, boton){
+    var fila = boton.closest('tr');
+    if(!fila) return;
+    var siguiente = fila.nextSibling;
+    if(siguiente && siguiente.classList && siguiente.classList.contains('delete-row')) return;
+
+    var extra = document.createElement('tr');
+    extra.className = 'cancel-row delete-row';
+    var celda = document.createElement('td');
+    celda.colSpan = 8;
+
+    var caja = document.createElement('div');
+    caja.className = 'cancel-box';
+
+    var titulo = document.createElement('p');
+    titulo.className = 'cancel-title';
+    titulo.textContent = '¿Eliminar «' + event.name + '» (' + event.code + ')?';
+
+    var nota = document.createElement('p');
+    nota.className = 'cancel-note';
+    nota.textContent = 'Esto borra el evento de la base de datos y no se puede deshacer. Si ya hay gente con reserva, cancélalo en vez de borrarlo: así queda el registro y la causa.';
+
+    var acciones = document.createElement('div');
+    acciones.className = 'cancel-actions';
+    var confirmar = document.createElement('button');
+    confirmar.type = 'button'; confirmar.className = 'btn btn-danger btn-sm';
+    confirmar.textContent = 'Sí, eliminar';
+    var descartar = document.createElement('button');
+    descartar.type = 'button'; descartar.className = 'btn btn-outline btn-sm';
+    descartar.textContent = 'Conservar';
+
+    descartar.addEventListener('click', function(){ extra.remove(); boton.focus(); });
+    confirmar.addEventListener('click', function(){
+      confirmar.disabled = true;
+      confirmar.textContent = 'Eliminando…';
+      eliminarEvento(event, confirmar);
+    });
+
+    acciones.append(confirmar, descartar);
+    caja.append(titulo, nota, acciones);
+    celda.appendChild(caja);
+    extra.appendChild(celda);
+    fila.parentNode.insertBefore(extra, fila.nextSibling);
+    confirmar.focus();
+  }
+
+  async function eliminarEvento(event, boton){
+    setMessage('', '');
+    try{
+      var r = await tucketApi('/api/events/' + encodeURIComponent(event.code), { method: 'DELETE' });
+      /* Si se estaba editando justo ese evento, el formulario vuelve a
+         modo creación: no tiene sentido guardar cambios de algo que ya
+         no existe. */
+      if(editandoCodigo === event.code) salirDeEdicion();
+      setMessage(r.message, 'success');
+      await loadAgentEvents();
+    }catch(error){
+      setMessage(error.message, 'error');
+      if(boton){ boton.disabled = false; boton.textContent = 'Sí, eliminar'; }
+    }
   }
 
   /* Fila desplegable con la causa de cancelación */
@@ -410,19 +505,6 @@
     setMessage('', '');
     var cuerpo = { status: status };
     if(causa) cuerpo.cancellationReason = causa;
-    if(esDemo()){
-      demoEvents = demoEvents.map(function(e){
-        if(e.code !== code) return e;
-        var copia = Object.assign({}, e, { status: status });
-        copia.cancellation_reason = status === 'Cancelado' ? causa : null;
-        return copia;
-      });
-      renderEvents(demoEvents);
-      setMessage(status === 'Cancelado'
-        ? 'Evento cancelado en modo prototipo. La causa quedó registrada en memoria.'
-        : 'Estado actualizado a ' + status + ' (modo prototipo).', 'success');
-      return;
-    }
     try{
       var r = await tucketApi('/api/events/' + encodeURIComponent(code) + '/status', {
         method: 'PATCH', body: JSON.stringify(cuerpo)
@@ -438,24 +520,166 @@
   }
 
   async function loadAgentEvents(){
-    if(esDemo()){ renderEvents(demoEvents); avisoDemo(); return; }
     try{
       var events = await tucketApi('/api/events/mine');
       renderEvents(events);
     }catch(error){
+      renderEvents([]);
       if(apiNoDisponible(error)){
-        tucketDemoMode = true;
-        renderEvents(demoEvents);
-        avisoDemo();
+        setMessage('No se pudo contactar con el servidor, así que no hay eventos que mostrar. Enciende el backend y recarga.', 'error');
         return;
       }
-      renderEvents([]);
       if(error.message.toLowerCase().includes('sesión') || error.message.toLowerCase().includes('inicia sesión')){
         setMessage('Inicia sesión con una cuenta de agente para consultar y registrar eventos.', 'error');
       }else{
         setMessage(error.message, 'error');
       }
     }
+  }
+
+  /* ----------------------------------------------------------------
+     Edición de un evento.
+
+     Se reutiliza el mismo formulario en vez de abrir otro: son los
+     mismos campos y las mismas validaciones, y así no hay dos sitios
+     que mantener. Lo único que cambia es a dónde se envía y el texto
+     de los botones.
+
+     editandoCodigo guarda el código del evento abierto, o null cuando
+     el formulario está creando uno nuevo.
+  ---------------------------------------------------------------- */
+  var editandoCodigo = null;
+  var imagenesQuitadas = { afiche:false, banner:false };
+
+  /* Un evento nuevo no puede empezar en el pasado: se publica para que
+     alguien asista. Si se deja, el estado calculado lo marca Finalizado
+     nada más crearlo y parece un error del sistema. El servidor lo
+     revalida igual. */
+  function ahoraLocal(){
+    return new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  }
+  function aplicarMinimoFechas(){
+    var inicio = el('event-start');
+    var fin = el('event-end');
+    if(!inicio || !fin) return;
+    inicio.min = ahoraLocal();
+    fin.min = ahoraLocal();
+  }
+
+  function paraCampoLocal(iso){
+    var d = new Date(iso);
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  }
+
+  /* Deja seleccionados país, departamento y ciudad esperando a que cada
+     lista termine de cargar: la de departamentos depende del país y la
+     de ciudades del departamento, así que no se pueden fijar de golpe. */
+  async function seleccionarUbicacion(countryCode, departmentCode, cityId){
+    var country = el('event-country');
+    var department = el('event-department');
+    var city = el('agent-event-city');
+    await loadCountries();
+    country.value = countryCode || '';
+    await loadDepartments();
+    department.value = departmentCode || '';
+    await loadCities();
+    city.value = cityId ? String(cityId) : '';
+  }
+
+  /* Muestra la imagen que el evento ya tiene guardada. No es un archivo
+     elegido, así que no viaja en el envío: solo se manda si el agente
+     la reemplaza o la quita. */
+  function mostrarImagenGuardada(clave, ruta, alt){
+    var campo = CAMPOS_IMAGEN[clave];
+    var img = el(campo.thumb);
+    var caja = el(campo.caja);
+    var quitar = el(campo.quitar);
+    var pista = el(campo.pista);
+    if(!ruta){ limpiarImagen(clave); return; }
+    if(img){ img.src = ruta; img.alt = alt || ('Imagen actual de ' + campo.nombre.toLowerCase()); img.hidden = false; }
+    if(caja) caja.dataset.empty = 'false';
+    if(quitar) quitar.hidden = false;
+    if(pista) pista.textContent = 'Imagen actual';
+  }
+
+  async function entrarEnEdicion(event){
+    var form = el('agent-event-form');
+    if(!form) return;
+    editandoCodigo = event.code;
+    imagenesQuitadas = { afiche:false, banner:false };
+    imagenesSeleccionadas = { afiche:null, banner:null };
+
+    el('event-form-title').textContent = 'Editar evento';
+    el('event-code-display').textContent = event.code;
+    el('event-code-help').textContent = 'El código no cambia al editar: las reservas ya hechas siguen apuntando a él.';
+    el('event-submit').textContent = 'Guardar cambios';
+    el('event-cancel-edit').hidden = false;
+    var campoEstado = el('event-status-field');
+    if(campoEstado) campoEstado.hidden = true;
+
+    el('event-name').value = event.name;
+    el('event-description').value = event.description || '';
+    el('event-venue').value = event.venue || '';
+    el('event-capacity').value = event.total_capacity;
+    el('event-price').value = event.base_price;
+    el('event-observations').value = event.observations || '';
+
+    /* El mínimo de fecha se levanta: un evento ya publicado puede tener
+       la fecha encima o recién pasada y el campo no debe bloquearla si
+       no se va a cambiar. El servidor sí revisa que no la muevan al
+       pasado. */
+    var inicio = el('event-start');
+    var fin = el('event-end');
+    inicio.min = '';
+    fin.min = '';
+    inicio.value = paraCampoLocal(event.starts_at);
+    fin.value = paraCampoLocal(event.ends_at);
+
+    el('event-image-alt').value = event.image_alt || '';
+    el('event-banner-alt').value = event.banner_alt || '';
+    mostrarImagenGuardada('afiche', event.image_path, event.image_alt);
+    mostrarImagenGuardada('banner', event.banner_path, event.banner_alt);
+
+    setMessage('Estás editando «' + event.name + '». Cambia lo que necesites y guarda.', 'success');
+    form.scrollIntoView({ behavior:'smooth', block:'start' });
+
+    await seleccionarUbicacion(event.country_code, event.department_code, event.city_id);
+  }
+
+  function salirDeEdicion(){
+    var form = el('agent-event-form');
+    editandoCodigo = null;
+    imagenesQuitadas = { afiche:false, banner:false };
+    if(form) form.reset();
+    limpiarAfiche();
+    el('event-form-title').textContent = 'Registrar nuevo evento';
+    el('event-code-help').textContent = 'Lo asigna el sistema de forma automática y consecutiva.';
+    el('event-submit').textContent = 'Publicar evento';
+    el('event-cancel-edit').hidden = true;
+    var campoEstado = el('event-status-field');
+    if(campoEstado) campoEstado.hidden = false;
+    el('agent-event-status').value = 'Programado';
+    el('event-department').disabled = true;
+    el('agent-event-city').disabled = true;
+    setLoading(el('event-department'), 'Selecciona primero un país');
+    setLoading(el('agent-event-city'), 'Selecciona primero un departamento');
+    aplicarMinimoFechas();
+    mostrarProximoCodigo();
+    setMessage('', '');
+  }
+  window.salirDeEdicion = salirDeEdicion;
+
+  /* El próximo código se consulta al servidor solo para mostrarlo. El
+     definitivo se asigna al guardar, porque entre tanto puede haber
+     guardado otro agente. */
+  async function mostrarProximoCodigo(){
+    var caja = el('event-code-display');
+    if(!caja || editandoCodigo) return;
+    caja.textContent = 'Se asigna al guardar';
+    try{
+      var r = await tucketApi('/api/events/next-code');
+      if(!editandoCodigo) caja.textContent = r.code;
+    }catch(error){ /* Sin servidor se queda el texto genérico. */ }
   }
 
   async function createEvent(event){
@@ -471,12 +695,12 @@
       return false;
     }
 
+    var editando = editandoCodigo;
     var submit = el('event-submit');
     submit.disabled = true;
     submit.textContent = 'Guardando…';
     setMessage('', '');
     var payload = {
-      code: el('event-code').value.trim(),
       name: el('event-name').value.trim(),
       description: el('event-description').value.trim(),
       venue: el('event-venue').value.trim(),
@@ -490,61 +714,47 @@
       observations: el('event-observations').value.trim(),
       status: el('agent-event-status').value
     };
-    /* El afiche solo viaja si el agente eligió uno. */
-    if(aficheSeleccionado){
+    /* Las imágenes solo viajan si el agente eligió alguna. */
+    if(imagenesSeleccionadas.afiche){
       payload.image = {
-        data: aficheSeleccionado,
+        data: imagenesSeleccionadas.afiche,
         alt: el('event-image-alt') ? el('event-image-alt').value.trim() : ''
       };
     }
-    if(esDemo()){
-      if(demoEvents.some(function(e){ return e.code === payload.code; })){
-        setMessage('Ese código ya está registrado. Usa un código único.', 'error');
-        submit.disabled = false; submit.textContent = 'Publicar evento';
-        return false;
-      }
-      var depSel = el('event-department'), citySel = el('agent-event-city');
-      demoEvents.unshift({
-        code: payload.code, name: payload.name, description: payload.description,
-        venue: payload.venue,
-        city: citySel.options[citySel.selectedIndex] ? citySel.options[citySel.selectedIndex].textContent : '',
-        department: depSel.options[depSel.selectedIndex] ? depSel.options[depSel.selectedIndex].textContent : '',
-        starts_at: payload.startsAt, ends_at: payload.endsAt,
-        total_capacity: payload.totalCapacity, base_price: payload.basePrice,
-        status: payload.status, observations: payload.observations,
-        image_path: aficheSeleccionado || null,
-        image_alt: payload.image ? payload.image.alt : ''
-      });
-      form.reset();
-      limpiarAfiche();
-      el('agent-event-status').value = 'Programado';
-      el('event-department').disabled = true;
-      el('agent-event-city').disabled = true;
-      setLoading(el('event-department'), 'Selecciona primero un país');
-      setLoading(el('agent-event-city'), 'Selecciona primero un departamento');
-      el('event-country').dataset.loaded = '';
-      loadCountries();
-      renderEvents(demoEvents);
-      setMessage('Evento registrado en modo prototipo. No se guarda en base de datos.', 'success');
-      submit.disabled = false; submit.textContent = 'Publicar evento';
-      return false;
+    if(imagenesSeleccionadas.banner){
+      payload.banner = {
+        data: imagenesSeleccionadas.banner,
+        alt: el('event-banner-alt') ? el('event-banner-alt').value.trim() : ''
+      };
     }
+
+    /* Al editar, el estado no se manda —se cambia desde la tabla— y sí
+       se avisa de las imágenes que el agente quitó, porque no mandar
+       nada significa «déjala como está». */
+    if(editando){
+      delete payload.status;
+      if(imagenesQuitadas.afiche && !imagenesSeleccionadas.afiche) payload.removeImage = true;
+      if(imagenesQuitadas.banner && !imagenesSeleccionadas.banner) payload.removeBanner = true;
+      if(!imagenesSeleccionadas.afiche && !payload.removeImage){
+        payload.image = { alt: el('event-image-alt').value.trim() };
+      }
+      if(!imagenesSeleccionadas.banner && !payload.removeBanner){
+        payload.banner = { alt: el('event-banner-alt').value.trim() };
+      }
+    }
+
     try{
-      var result = await tucketApi('/api/events', { method: 'POST', body: JSON.stringify(payload) });
+      var result = editando
+        ? await tucketApi('/api/events/' + encodeURIComponent(editando), { method: 'PUT', body: JSON.stringify(payload) })
+        : await tucketApi('/api/events', { method: 'POST', body: JSON.stringify(payload) });
+      salirDeEdicion();
       setMessage(result.message, 'success');
-      form.reset();
-      limpiarAfiche();
-      el('agent-event-status').value = 'Programado';
-      el('event-department').disabled = true;
-      el('agent-event-city').disabled = true;
-      setLoading(el('event-department'), 'Selecciona primero un país');
-      setLoading(el('agent-event-city'), 'Selecciona primero un departamento');
       await loadAgentEvents();
     }catch(error){
       setMessage(error.message, 'error');
     }finally{
       submit.disabled = false;
-      submit.textContent = 'Publicar evento';
+      submit.textContent = editandoCodigo ? 'Guardar cambios' : 'Publicar evento';
     }
     return false;
   }
@@ -564,15 +774,38 @@
       form.addEventListener('submit', createEvent);
       form.dataset.listener = 'true';
       el('event-end').addEventListener('input', function(){ this.setCustomValidity(''); });
+
+      aplicarMinimoFechas();
+      /* Y el final nunca antes del inicio: el calendario del navegador ya
+         no deja elegirlo, en vez de avisar después de intentarlo. */
+      var inicio = el('event-start');
+      var fin = el('event-end');
+      inicio.addEventListener('change', function(){
+        fin.min = inicio.value || (editandoCodigo ? '' : ahoraLocal());
+        if(fin.value && fin.value <= inicio.value) fin.value = '';
+      });
     }
     var imagen = el('event-image');
     if(imagen && imagen.dataset.listener !== 'true'){
       imagen.addEventListener('change', elegirAfiche);
       var quitar = el('event-image-clear');
-      if(quitar) quitar.addEventListener('click', limpiarAfiche);
+      if(quitar) quitar.addEventListener('click', function(){ quitarImagen('afiche'); });
       imagen.dataset.listener = 'true';
-      limpiarAfiche();
+      limpiarImagen('afiche');
     }
+    var banner = el('event-banner');
+    if(banner && banner.dataset.listener !== 'true'){
+      banner.addEventListener('change', elegirBanner);
+      var quitarBanner = el('event-banner-clear');
+      if(quitarBanner) quitarBanner.addEventListener('click', function(){ quitarImagen('banner'); });
+      banner.dataset.listener = 'true';
+      limpiarImagen('banner');
+    }
+    /* Al volver a entrar a la vista el formulario arranca siempre en
+       modo creación: una edición a medias de la visita anterior no
+       debería seguir abierta. */
+    if(editandoCodigo) salirDeEdicion();
+    else mostrarProximoCodigo();
     loadCountries();
     loadAgentEvents();
   };

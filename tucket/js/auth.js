@@ -20,11 +20,12 @@ function setAuthState(state, role){
    saltárselo desde la interfaz.
 
    Aviso importante: esto protege la INTERFAZ, no los datos. La barrera real
-   son los endpoints del backend (requireAgent + cookie de sesión firmada).
-   Cuando exista el rol de administrador en la base de datos, su panel deberá
-   protegerse igual en el servidor.
+   son los endpoints del backend (requireAgent, requireClient y requireAdmin
+   sobre la cookie de sesión firmada), que es donde se decide de verdad quién
+   puede leer y escribir qué.
 ------------------------------------------------------------------ */
 var VIEW_ROLES = {
+  'profile':           ['cliente', 'agente', 'administrador'],
   'reservations':      ['cliente'],
   'agent-events':      ['agente'],
   'agent-reservations':['agente'],
@@ -74,6 +75,13 @@ function showAccessNotice(text){
   }, 5200);
 }
 
+/* El rol SIEMPRE sale de lo que responde el servidor, nunca de la pestaña
+   que la persona eligió en el formulario de login. */
+function rolDeSesion(sesion){
+  var rol = sesion && sesion.role;
+  return (rol === 'cliente' || rol === 'administrador') ? rol : 'agente';
+}
+
 /* Restaura la sesión guardada en la cookie al recargar la página.
    El rol lo decide el servidor: en la base hay agentes y clientes, así que
    no se puede asumir que quien tiene sesión es un agente. */
@@ -81,9 +89,9 @@ async function restoreAgentSession(){
   if(typeof tucketApi !== 'function') return;
   try{
     var sesion = await tucketApi('/api/auth/me');
-    var rol = (sesion && sesion.role) === 'cliente' ? 'cliente' : 'agente';
+    var rol = rolDeSesion(sesion);
     setAuthState(true, rol);
-    var etiqueta = rol === 'cliente' ? 'CLIENTE' : 'AGENTE';
+    var etiqueta = ROLE_LABEL[rol] ? ROLE_LABEL[rol].toUpperCase() : 'AGENTE';
     document.querySelectorAll('.nav-user .role-pill').forEach(function(item){ item.textContent = etiqueta; });
   }catch(_error){
     setAuthState(false);
@@ -102,5 +110,8 @@ function logout(){
   if(typeof tucketApi === 'function') tucketApi('/api/auth/logout', { method: 'POST' }).catch(function(){});
   setAuthState(false);
   pendingView = null;
+  /* Volver atrás después de salir no debe devolver a la vista privada de la
+     cuenta que se acaba de cerrar. */
+  if(typeof olvidarHistorialDeVistas === 'function') olvidarHistorialDeVistas();
   return nav('home');
 }

@@ -61,6 +61,7 @@ Si prefieres ir paso a paso:
 | `npm run agent:create` | Crea una cuenta de agente |
 | `npm run db:seed` | Carga los 7 eventos de ejemplo |
 | `npm run agent:check` | Lista los agentes registrados |
+| `npm run admin:create` | Crea una cuenta de administrador |
 
 Para comprobar la conexión con el servidor arriba: <http://localhost:8000/api/health>
 debe responder `{"status":"ok","database":"connected","host":"neon"}`.
@@ -75,6 +76,9 @@ backend/
 │   ├── 03-eventos.sql         events (incluye el afiche)
 │   ├── 04-clientes.sql        clients
 │   ├── 05-reservas.sql        reservations · tickets · vista y triggers
+│   ├── 06-perfil.sql          datos editables del perfil (ambos roles)
+│   ├── 07-administradores.sql admins
+│   ├── 08-solicitudes-agente.sql  agent_requests
 │   └── colombia-divipola.json Catálogo DANE
 ├── scripts/
 │   ├── bootstrap.js           npm run setup: la puesta en marcha completa
@@ -82,6 +86,7 @@ backend/
 │   ├── setup-db.js            Instala el esquema y carga la geografía
 │   ├── seed-events.js         Carga los 7 eventos de ejemplo
 │   ├── create-agent.js        Crea una cuenta de agente
+│   ├── create-admin.js        Crea una cuenta de administrador
 │   └── check-agents.js        Lista los agentes registrados
 ├── src/
 │   ├── server.js              Solo arma la app y monta los routers
@@ -93,7 +98,9 @@ backend/
 │       ├── geography.routes.js    /api/geography
 │       ├── events.routes.js       /api/events
 │       ├── clients.routes.js      /api/clients
-│       └── reservations.routes.js /api/reservations
+│       ├── profile.routes.js      /api/profile
+│       ├── reservations.routes.js /api/reservations
+│       └── agent-requests.routes.js /api/agent-requests
 └── uploads/events/            Afiches subidos por los agentes (no va al repo)
 ```
 
@@ -103,8 +110,10 @@ backend/
 countries(code PK, name)
 departments(code PK, country_code FK, name)
 cities(id PK, dane_code, country_code FK, department_code FK, name)
-agents(id PK, full_name, email, password_hash, active, created_at)
-clients(id PK, document_type, document_number, full_name, email, password_hash, phone, address, country_code FK, department_code FK, city_id FK, accepted_terms, active, created_at)
+agents(id PK, full_name, email, password_hash, phone, phone_alt, address, country_code FK, department_code FK, city_id FK, active, created_at, updated_at)
+admins(id PK, full_name, email, password_hash, active, created_at, updated_at)
+agent_requests(id PK, full_name, document_number, email, phone, organization, nit, justification, status, review_notes, reviewed_by FK, reviewed_at, agent_id FK, created_at)
+clients(id PK, document_type, document_number, full_name, email, password_hash, phone, phone_alt, address, country_code FK, department_code FK, city_id FK, accepted_terms, active, created_at, updated_at)
 events(id PK, code, name, description, venue, starts_at, ends_at, total_capacity, base_price, observations, image_path, image_alt, status, cancellation_reason, status_updated_at, country_code FK, department_code FK, city_id FK, agent_id FK, created_at)
 reservations(id PK, code, client_id FK, event_id FK, quantity, unit_price, total_amount, status, cancellation_reason, created_at, status_updated_at)
 tickets(id PK, reservation_id FK, serial, holder_name, seat_label, used_at, created_at)
@@ -122,6 +131,11 @@ Reglas que vive la base, no solo la API:
 | `total_amount = unit_price × quantity` | `reservations_total_matches` |
 | No se puede sobrevender un evento | Trigger `reservations_capacity_guard` |
 | Las reservas canceladas liberan el cupo | Vista `event_availability` |
+| Un segundo teléfono exige que exista el primero | `clients_phone_alt_needs_phone` y su gemela en `agents` |
+| Rechazar una solicitud exige motivo de 10 a 500 caracteres | `agent_requests_reject_needs_notes` |
+| Una solicitud aprobada apunta siempre a la cuenta que creó | `agent_requests_approved_needs_agent` |
+| Un correo no puede tener dos solicitudes pendientes | Índice parcial `agent_requests_una_pendiente_por_correo` |
+| La fecha de última edición se actualiza sola | Triggers `clients_touch_updated` y `agents_touch_updated` |
 
 ## 6. API
 
@@ -138,15 +152,48 @@ Reglas que vive la base, no solo la API:
 | `POST /api/events` | agente | Crear evento (afiche opcional) |
 | `PUT /api/events/:code/image` | agente | Cambiar o quitar el afiche |
 | `PATCH /api/events/:code/status` | agente | Ciclo de vida del evento |
-| `GET /api/events/:code/reservations` | agente | Reservas de mi evento |
+| `GET /api/events/mine/reservations` | agente | Reservas de todos mis eventos |
+| `GET /api/events/:code/reservations` | agente | Reservas de un evento mío |
+| `GET /api/admin/stats` | admin | Cifras, gráficas y tablas del panel |
 | `POST /api/clients/register` | — | Registro de cliente |
 | `GET /api/clients/me` | cliente | Mis datos |
+| `GET /api/profile` | sesión | Ver mi perfil (cliente o agente) |
+| `PUT /api/profile` | sesión | Editar nombre, teléfonos, dirección y ciudad |
+| `PUT /api/profile/password` | sesión | Cambiar mi contraseña (exige la actual) |
+| `POST /api/agent-requests` | — | Solicitar una cuenta de agente |
+| `GET /api/agent-requests` | admin | Bandeja de solicitudes con conteos |
+| `PATCH /api/agent-requests/:id/approve` | admin | Aprobar y crear la cuenta |
+| `PATCH /api/agent-requests/:id/reject` | admin | Rechazar con motivo |
 | `POST /api/reservations` | cliente | Reservar entradas |
 | `GET /api/reservations/mine` | cliente | Mis reservas |
 | `GET /api/reservations/:code` | cliente | Detalle con las boletas |
 | `PATCH /api/reservations/:code/cancel` | cliente | Cancelar una reserva |
 
-## 7. Afiches
+## 7. Roles y cuentas
+
+Hay tres roles y ninguno se auto-otorga permisos:
+
+| Rol | Cómo nace la cuenta |
+|---|---|
+| Cliente | Se registra solo, desde el formulario público |
+| Agente | Solicita desde `Ser organizador` y un administrador la aprueba, o se crea a mano con `npm run agent:create` |
+| Administrador | Solo con `npm run admin:create`. No hay forma de crearlo desde la web |
+
+Un correo pertenece a una sola tabla: el login busca en `admins`, `agents` y
+`clients` en ese orden, y las solicitudes rechazan un correo que ya tenga
+cuenta en cualquiera de las tres.
+
+El administrador **no** entra en modo prototipo: si el backend está caído, su
+login falla con un aviso. Cliente y agente sí pueden recorrer la aplicación
+con datos de muestra, porque no deciden nada.
+
+El flujo de una solicitud es: `Pendiente` → `Aprobada` (nace el agente con una
+contraseña temporal que se muestra una sola vez) o → `Rechazada` (con el
+motivo registrado). Quien fue rechazado puede volver a solicitar; quien tiene
+una pendiente, no.
+
+
+## 8. Afiches
 
 El navegador lee el archivo y lo manda en base64 dentro del JSON:
 
@@ -167,7 +214,7 @@ Los 7 afiches de los eventos de ejemplo están en `img/events/` y se regeneran c
 python3 tools/generar-afiches.py
 ```
 
-## 8. Si algo falla
+## 9. Si algo falla
 
 | Síntoma | Causa | Solución |
 |---|---|---|

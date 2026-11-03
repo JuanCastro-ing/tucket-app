@@ -19,3 +19,39 @@
   border:1px solid var(--line);
 }
 .tabs a.active{ background:var(--navy); color:var(--gold); border-color:var(--navy); }
+
+/* ---------- Filtro por estado ---------- */
+.tabs a{
+  cursor:pointer; user-select:none;
+  transition:background .18s var(--ease), color .18s var(--ease), border-color .18s var(--ease);
+}
+.tabs a:hover{ border-color:var(--navy); color:var(--navy); }
+.tabs a.active:hover{ color:var(--gold); }
+.tabs a:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+/* El conteo pesa menos que la etiqueta: informa, no compite */
+.tab-count{ font-family:var(--mono); font-size:11px; font-weight:400; opacity:.72; margin-left:2px; }
+
+/* .ticket declara display:flex, y una regla de autor le gana siempre a la
+   hoja del navegador: sin esto, una tarjeta con el atributo hidden se
+   seguiría viendo. Por eso el ocultado del filtro se declara aquí. */
+.res-list .res-ticket[hidden]{ display:none; }
+
+/* Aviso cuando el filtro no deja ninguna reserva a la vista */
+.res-empty{
+  margin:0 0 26px; padding:22px 24px;
+  border:1px dashed var(--line); border-radius:6px;
+  color:var(--muted); font-size:14px; text-align:center;
+}
+
+/* Enlace de cancelar dentro de la tarjeta. Es una acción destructiva, así
+   que no se viste como botón: tiene que costar un poco más pulsarlo. */
+.link-cancel{
+  font-size:12.5px; font-weight:700; color:#8f2d24;
+  text-decoration:underline; text-underline-offset:3px;
+  cursor:pointer;
+}
+.link-cancel:hover{ color:#6d211a; }
+.link-cancel:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+.cell-reason{ margin-top:6px; font-size:12px; }

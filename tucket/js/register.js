@@ -2,6 +2,15 @@
 
 var selectedRegType = 'cliente';
 function setRegType(el){
+  var label = el.querySelector('.t');
+  var tipo = (label && label.textContent.trim() === 'Agente') ? 'agente' : 'cliente';
+
+  /* Elegir «Agente» lleva de inmediato a la solicitud: este formulario crea
+     cuentas de cliente, y quedarse en él pidiendo contraseña y aceptación de
+     términos hace creer que la cuenta de agente se crea aquí. No se crea:
+     se solicita y la aprueba un administrador. */
+  if(tipo === 'agente'){ return nav('agent-request'); }
+
   var wrap = el.closest('.type-switch');
   wrap.querySelectorAll('.type-card').forEach(function(c){
     c.classList.remove('active');
@@ -9,12 +18,15 @@ function setRegType(el){
   });
   el.classList.add('active');
   el.setAttribute('aria-checked', 'true');
-  var label = el.querySelector('.t');
-  selectedRegType = (label && label.textContent.trim() === 'Agente') ? 'agente' : 'cliente';
+  selectedRegType = tipo;
 }
 function goRegisterAs(role){
+  /* Un agente no se registra: solicita. El formulario de registro crea
+     cuentas de cliente, así que quien quiere publicar eventos va derecho a
+     la solicitud, que es lo que un administrador puede aprobar. */
+  if(role === 'agente'){ return nav('agent-request'); }
   var cards = document.querySelectorAll('#view-register .type-card');
-  if(cards.length){ setRegType(cards[role === 'agente' ? 1 : 0]); }
+  if(cards.length){ setRegType(cards[0]); }
   return nav('register');
 }
 function completeRegistration(event){
@@ -39,16 +51,10 @@ function completeRegistration(event){
   ]);
   if(!ok){ return false; }
 
-  /* Las cuentas de agente no se crean desde el formulario: viven en la base de datos */
+  /* Las cuentas de agente no se crean desde este formulario: se solicitan y
+     las aprueba un administrador. */
   if(selectedRegType === 'agente'){
-    selectedRole = 'agente';
-    nav('login');
-    var loginMessage = document.getElementById('login-message');
-    if(loginMessage){
-      loginMessage.textContent = 'Las cuentas de agente se crean en la base de datos. Ejecuta INICIAR PAGINA.bat para crear la primera cuenta y luego inicia sesión aquí.';
-      loginMessage.hidden = false;
-    }
-    return false;
+    return nav('agent-request');
   }
 
   guardarCliente();

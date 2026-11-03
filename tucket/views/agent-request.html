@@ -1,0 +1,114 @@
+<div class="view" id="view-agent-request">
+
+<div class="reg-wrap">
+
+  <header class="reg-top">
+    <div class="container">
+      <a href="#" onclick="return nav('home')" class="brand" aria-label="TUCKET — Ir al inicio">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <span class="brand-mark brand-mark-sm">TUCK<span>E</span>T</span>
+      </a>
+      <div class="reg-top-links">
+        <a href="#" onclick="return nav('home')" class="back-home back-home-light">
+          <span aria-hidden="true">←</span> Volver al inicio
+        </a>
+        <a href="#" onclick="return nav('login')" class="btn-ghost btn-ghost-light">Iniciar sesión</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="reg-main">
+    <div class="reg-box">
+
+      <div class="reg-head">
+        <span class="kicker">SOLICITUD DE CUENTA</span>
+        <h2>Quiero publicar eventos</h2>
+        <p class="sol-intro">
+          Las cuentas de agente no se crean solas: un administrador revisa cada
+          solicitud antes de otorgarla. Cuéntanos quién eres y qué espectáculos
+          vas a publicar, y te escribiremos al correo que registres.
+        </p>
+      </div>
+
+      <!-- Resultado del envío -->
+      <p id="sol-message" class="form-message" role="status" aria-live="polite" hidden></p>
+
+      <!-- Pantalla de confirmación: reemplaza al formulario cuando se envía -->
+      <div id="sol-ok" class="sol-ok" hidden>
+        <span class="sol-ok-mark" aria-hidden="true">✓</span>
+        <h3>Solicitud enviada</h3>
+        <p>
+          Quedó registrada a nombre de <strong id="sol-ok-nombre"></strong>.
+          Un administrador la revisará y recibirás la respuesta en
+          <strong id="sol-ok-correo"></strong>.
+        </p>
+        <p class="sol-ok-nota">
+          Si se aprueba, te llegará una contraseña temporal para entrar por
+          primera vez. Mientras tanto puedes seguir explorando la cartelera.
+        </p>
+        <a href="#" onclick="return nav('events')" class="btn btn-gold">Ver la cartelera</a>
+      </div>
+
+      <form id="sol-form" class="reg-form" novalidate onsubmit="return enviarSolicitudAgente(event)">
+
+        <div class="section-label"><span>DATOS DE LA PERSONA</span><span class="rule"></span></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="sol-doc">Número de identificación</label>
+            <input id="sol-doc" type="text" maxlength="32" placeholder="Cédula o pasaporte" required>
+          </div>
+          <div class="field">
+            <label for="sol-nombre">Nombre completo</label>
+            <input id="sol-nombre" type="text" maxlength="160" placeholder="Ej: Marcela Ríos" required>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="sol-correo">Correo electrónico</label>
+            <input id="sol-correo" type="email" maxlength="254" placeholder="nombre@correo.com" autocomplete="email" required
+                   aria-describedby="sol-correo-help">
+            <small id="sol-correo-help" class="field-help">Aquí llegará la respuesta y, si se aprueba, tu acceso.</small>
+          </div>
+          <div class="field">
+            <label for="sol-tel">Teléfono de contacto</label>
+            <input id="sol-tel" type="tel" maxlength="32" placeholder="300 000 0000" required>
+          </div>
+        </div>
+
+        <div class="section-label"><span>A QUIÉN REPRESENTAS</span><span class="rule"></span></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="sol-org">Teatro, productora o empresa</label>
+            <input id="sol-org" type="text" maxlength="180" placeholder="Ej: Teatro Los Cristales" required>
+          </div>
+          <div class="field">
+            <label for="sol-nit">NIT <span class="field-optional">(opcional)</span></label>
+            <input id="sol-nit" type="text" maxlength="32" placeholder="900123456-7">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="sol-just">¿Por qué necesitas una cuenta de agente?</label>
+          <textarea id="sol-just" maxlength="1000" rows="5" required aria-describedby="sol-just-help"
+                    placeholder="Cuéntanos qué tipo de espectáculos vas a publicar, con qué frecuencia y cómo podemos verificar que representas a esa organización."></textarea>
+          <small id="sol-just-help" class="field-help">
+            Entre 30 y 1000 caracteres. <span id="sol-just-count">0</span> escritos.
+          </small>
+        </div>
+
+        <button id="sol-submit" type="submit" class="btn btn-gold btn-block">Enviar solicitud</button>
+
+        <p class="auth-foot">
+          ¿Solo quieres comprar entradas?
+          <a class="link-gold" href="#" onclick="return goRegisterAs('cliente')">Crea una cuenta de cliente</a>
+        </p>
+      </form>
+
+    </div>
+  </main>
+</div>
+
+</div>

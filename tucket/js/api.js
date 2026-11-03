@@ -1,7 +1,8 @@
 /* Cliente HTTP del mismo origen: la cookie de sesión es HttpOnly y no se lee desde JS. */
 
-/* Modo prototipo: se activa cuando el backend no está disponible. Permite
-   recorrer la aplicación sin PostgreSQL, con datos de muestra en memoria. */
+/* Se conserva en false y declarado porque alguna vista todavía lo consulta.
+   El modo prototipo se retiró: la aplicación no trae datos escritos en el
+   código, así que sin backend no hay nada que mostrar ni sesión que abrir. */
 var tucketDemoMode = false;
 
 async function tucketApi(path, options){
@@ -39,4 +40,12 @@ async function tucketApi(path, options){
 /* ¿El fallo viene de que no hay backend, y no de un rechazo del servidor? */
 function apiNoDisponible(error){
   return !!(error && error.offline);
+}
+
+/* Caso distinto y muy común mientras se desarrolla: el servidor responde,
+   pero esa ruta no existe en la versión que está corriendo. Pasa al copiar
+   archivos nuevos sin reiniciar el backend. Decir «no se pudo contactar con
+   el servidor» ahí manda a buscar el problema donde no está. */
+function rutaNoMontada(error){
+  return !!(error && error.status === 404);
 }

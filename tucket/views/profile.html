@@ -1,0 +1,239 @@
+<div class="view" id="view-profile">
+
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a></div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('events')">Eventos</a>
+        <a href="#" onclick="return nav('reservations')" class="role-cliente">Mis reservas</a>
+        <a href="#" onclick="return nav('agent-events')" class="role-agente">Mis eventos</a>
+        <a href="#" onclick="return nav('profile')" class="active" aria-current="page">Mi perfil</a>
+      </nav>
+      <div class="nav-user">
+        <span class="role-pill" id="profile-role-pill">CUENTA</span>
+        <div class="avatar" id="profile-avatar">··</div>
+        <a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-body">
+    <div class="container">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>MI CUENTA</span></div>
+          <h1>Datos personales</h1>
+          <p id="profile-intro">Actualiza tu nombre, tus teléfonos de contacto y tu dirección. Los cambios quedan guardados en tu cuenta de TUCKET.</p>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+
+        <!-- Columna izquierda: resumen de la cuenta, solo lectura -->
+        <aside class="profile-card profile-summary" aria-labelledby="profile-summary-title">
+          <h2 id="profile-summary-title" class="profile-card-title">Tu cuenta</h2>
+          <dl class="profile-facts">
+            <div class="pf">
+              <dt>CORREO</dt>
+              <dd id="profile-email">—</dd>
+            </div>
+            <div class="pf" id="profile-doc-row" hidden>
+              <dt>IDENTIFICACIÓN</dt>
+              <dd id="profile-doc">—</dd>
+            </div>
+            <div class="pf">
+              <dt>TIPO DE CUENTA</dt>
+              <dd id="profile-role">—</dd>
+            </div>
+            <div class="pf">
+              <dt>MIEMBRO DESDE</dt>
+              <dd id="profile-created">—</dd>
+            </div>
+            <div class="pf">
+              <dt>ÚLTIMA ACTUALIZACIÓN</dt>
+              <dd id="profile-updated">—</dd>
+            </div>
+          </dl>
+          <p class="profile-note">
+            El correo y la identificación no se editan desde aquí porque identifican tu cuenta.
+          </p>
+        </aside>
+
+        <!-- Columna derecha: formulario editable -->
+        <section class="profile-card" aria-labelledby="profile-form-title">
+          <h2 id="profile-form-title" class="profile-card-title">Editar mis datos</h2>
+
+          <p id="profile-message" class="form-message" role="status" aria-live="polite" hidden></p>
+
+          <form id="profile-form" novalidate>
+
+            <div class="section-label"><span>DATOS DE LA PERSONA</span><span class="rule"></span></div>
+
+            <div class="field">
+              <label for="profile-name">Nombre completo</label>
+              <input id="profile-name" name="fullName" type="text" maxlength="160" placeholder="Nombre y apellidos" required>
+            </div>
+
+            <div class="section-label solo-perfil-completo"><span>CONTACTO</span><span class="rule"></span></div>
+
+            <div class="field-row solo-perfil-completo">
+              <div class="field">
+                <label for="profile-phone">Teléfono principal</label>
+                <input id="profile-phone" name="phone" type="tel" maxlength="32" placeholder="+57 300 000 0000" required>
+              </div>
+              <div class="field">
+                <label for="profile-phone-alt">Segundo teléfono <span class="field-optional">(opcional)</span></label>
+                <input id="profile-phone-alt" name="phoneAlt" type="tel" maxlength="32" placeholder="+57 602 000 0000">
+              </div>
+            </div>
+
+            <div class="field solo-perfil-completo">
+              <label for="profile-address">Dirección</label>
+              <input id="profile-address" name="address" type="text" maxlength="180" placeholder="Calle 5 # 23-10">
+            </div>
+
+            <div class="section-label solo-perfil-completo"><span>UBICACIÓN</span><span class="rule"></span></div>
+
+            <div class="field-row solo-perfil-completo">
+              <div class="field">
+                <label for="profile-country">País</label>
+                <select id="profile-country" name="countryCode">
+                  <option value="">Sin especificar</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="profile-department">Departamento</label>
+                <select id="profile-department" name="departmentCode" disabled>
+                  <option value="">Selecciona primero un país</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field solo-perfil-completo">
+              <label for="profile-city">Ciudad</label>
+              <select id="profile-city" name="cityId" disabled>
+                <option value="">Selecciona primero un departamento</option>
+              </select>
+              <p class="field-help">La ubicación es opcional, pero si la indicas deben ir los tres datos.</p>
+            </div>
+
+            <div class="profile-actions">
+              <button id="profile-submit" type="submit" class="btn btn-gold">Guardar cambios</button>
+              <button id="profile-reset" type="button" class="btn btn-outline">Descartar</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ============================================================
+             Cambiar contraseña.
+
+             Va en la columna ancha, debajo de «Editar mis datos»: la
+             rejilla del perfil es de 300px + resto, y si esta tarjeta cae
+             en la primera columna los tres campos se aprietan.
+
+             Formulario aparte del de datos a propósito: son dos envíos a
+             dos rutas distintas, y mezclarlos obligaría a escribir la
+             contraseña actual cada vez que se corrige un teléfono.
+             ============================================================ -->
+        <section class="profile-card profile-card-pwd" aria-labelledby="pwd-titulo">
+          <h2 id="pwd-titulo" class="profile-card-title">Cambiar mi contraseña</h2>
+
+          <p id="pwd-message" class="form-message" role="status" aria-live="polite" hidden></p>
+
+          <form id="pwd-form" novalidate onsubmit="return cambiarContrasenaPerfil(event)">
+
+            <div class="section-label"><span>SEGURIDAD DE LA CUENTA</span><span class="rule"></span></div>
+            <p class="pwd-intro">
+              Te pedimos la contraseña actual para confirmar que eres tú. La nueva
+              empieza a regir de inmediato; tu sesión sigue abierta.
+            </p>
+
+            <div class="pwd-row">
+              <div class="field">
+                <label for="pwd-actual">Contraseña actual</label>
+                <div class="pw-wrap">
+                  <input id="pwd-actual" type="password" autocomplete="current-password" required>
+                  <button type="button" class="pw-toggle" onclick="alternarContrasena('pwd-actual', this)"
+                        aria-controls="pwd-actual" aria-pressed="false"
+                        aria-label="Mostrar la contraseña" title="Mostrar la contraseña">
+                  <svg class="pw-icon pw-icon-ver" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12Z"/>
+                    <circle cx="12" cy="12" r="3.2"/>
+                  </svg>
+                  <svg class="pw-icon pw-icon-ocultar" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17.9 17.9A10.1 10.1 0 0 1 12 19.5C5.5 19.5 1.5 12 1.5 12a18.5 18.5 0 0 1 5.1-5.9"/>
+                    <path d="M9.9 4.8A9.1 9.1 0 0 1 12 4.5c6.5 0 10.5 7.5 10.5 7.5a18.6 18.6 0 0 1-2.2 3.2"/>
+                    <path d="M14.1 14.1a3 3 0 1 1-4.2-4.2"/>
+                    <line x1="2.5" y1="2.5" x2="21.5" y2="21.5"/>
+                  </svg>
+                </button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="pwd-nueva">Nueva contraseña</label>
+                <div class="pw-wrap">
+                  <input id="pwd-nueva" type="password" autocomplete="new-password" required
+                         aria-describedby="pwd-nueva-help">
+                  <button type="button" class="pw-toggle" onclick="alternarContrasena('pwd-nueva', this)"
+                        aria-controls="pwd-nueva" aria-pressed="false"
+                        aria-label="Mostrar la contraseña" title="Mostrar la contraseña">
+                  <svg class="pw-icon pw-icon-ver" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12Z"/>
+                    <circle cx="12" cy="12" r="3.2"/>
+                  </svg>
+                  <svg class="pw-icon pw-icon-ocultar" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17.9 17.9A10.1 10.1 0 0 1 12 19.5C5.5 19.5 1.5 12 1.5 12a18.5 18.5 0 0 1 5.1-5.9"/>
+                    <path d="M9.9 4.8A9.1 9.1 0 0 1 12 4.5c6.5 0 10.5 7.5 10.5 7.5a18.6 18.6 0 0 1-2.2 3.2"/>
+                    <path d="M14.1 14.1a3 3 0 1 1-4.2-4.2"/>
+                    <line x1="2.5" y1="2.5" x2="21.5" y2="21.5"/>
+                  </svg>
+                </button>
+                </div>
+                <small id="pwd-nueva-help" class="field-help">Mínimo 8 caracteres.</small>
+              </div>
+
+              <div class="field">
+                <label for="pwd-repetir">Repite la nueva</label>
+                <div class="pw-wrap">
+                  <input id="pwd-repetir" type="password" autocomplete="new-password" required>
+                  <button type="button" class="pw-toggle" onclick="alternarContrasena('pwd-repetir', this)"
+                        aria-controls="pwd-repetir" aria-pressed="false"
+                        aria-label="Mostrar la contraseña" title="Mostrar la contraseña">
+                  <svg class="pw-icon pw-icon-ver" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12Z"/>
+                    <circle cx="12" cy="12" r="3.2"/>
+                  </svg>
+                  <svg class="pw-icon pw-icon-ocultar" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17.9 17.9A10.1 10.1 0 0 1 12 19.5C5.5 19.5 1.5 12 1.5 12a18.5 18.5 0 0 1 5.1-5.9"/>
+                    <path d="M9.9 4.8A9.1 9.1 0 0 1 12 4.5c6.5 0 10.5 7.5 10.5 7.5a18.6 18.6 0 0 1-2.2 3.2"/>
+                    <path d="M14.1 14.1a3 3 0 1 1-4.2-4.2"/>
+                    <line x1="2.5" y1="2.5" x2="21.5" y2="21.5"/>
+                  </svg>
+                </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-actions">
+              <button id="pwd-submit" type="submit" class="btn btn-gold">Cambiar contraseña</button>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+</div>

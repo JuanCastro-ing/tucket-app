@@ -69,12 +69,50 @@
 }
 .cancel-box input:focus-visible{ outline:2px solid var(--red); outline-offset:1px; }
 .cancel-note{ margin:0; font-size:12.5px; color:#8f2d24; }
+.cancel-title{ margin:0; font-size:13.5px; font-weight:800; color:var(--ink); }
+
+/* El atributo hidden no gana contra el display de .btn, así que los
+   botones que deben aparecer solo en su momento —quitar imagen,
+   cancelar edición— se veían siempre. Hay que decirlo explícitamente. */
+#agent-event-form .btn[hidden],
+#agent-event-form .field[hidden]{ display:none; }
 .cancel-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:2px; }
 
 /* La columna de acción quedaba cortada: se ajusta el control y se recorta el
    relleno de las celdas para que las 8 columnas quepan sin desplazamiento. */
 .layout-main td,
-.layout-main th{ padding-left:10px; padding-right:10px; }
-#agent-events-body .status-select{ max-width:124px; padding:6px 8px; }
+.layout-main th{ padding-left:8px; padding-right:8px; }
+#agent-events-body .status-select{ max-width:92px; padding:5px 6px; font-size:12px; }
+/* La miniatura y la causa de cancelación son lo que más ancho piden en
+   las dos columnas grandes; recortarlas es lo que deja sitio para la
+   columna de acciones sin que la tabla se desplace. */
+#agent-events-body .cell-thumb{ flex:0 0 44px; width:44px; height:26px; }
+#agent-events-body .cell-info{ min-width:0; }
+#agent-events-body .cell-reason{ max-width:20ch; }
+#agent-events-body td:nth-child(7){ max-width:124px; }
+/* El nombre del evento es el texto más largo de la fila: se le pone
+   techo para que envuelva en vez de estirar la tabla. */
+#agent-events-body td:first-child{ max-width:170px; }
+#agent-events-body .cell-strong{ white-space:normal; }
+
+/* Acciones de cada fila: cambiar estado, editar y eliminar. Se apilan
+   en una columna porque los tres controles uno al lado del otro no
+   caben en la última columna de una tabla de ocho, y van compactos
+   para que la columna no empuje la tabla fuera del panel. */
+.row-actions{ display:flex; flex-direction:column; align-items:stretch; gap:5px; min-width:92px; }
+.row-actions .btn{
+  width:100%; justify-content:center;
+  padding:5px 6px; font-size:11.5px; letter-spacing:.2px;
+}
+
+/* El código que asigna el sistema: se enseña, no se escribe. Se le da
+   aire de dato y no de campo editable para que nadie intente cambiarlo. */
+.code-chip{
+  margin:0; display:inline-block;
+  padding:10px 14px; border-radius:var(--radius);
+  border:1px dashed var(--line); background:#FAFAF7;
+  font-family:var(--mono, var(--body)); font-size:15px; font-weight:800;
+  letter-spacing:1px; color:var(--navy);
+}
 /* El texto de ayuda de las fechas ocupa una fila propia: necesita su margen */
 #agent-event-form > .field-help{ margin:-8px 0 18px; }

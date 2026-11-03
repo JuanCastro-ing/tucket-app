@@ -14,12 +14,34 @@
 .hero-bg-layer.is-active{ opacity:1; transform:scale(1); }
 .hero-bg-layer svg{ width:100%; height:100%; display:block; }
 
-/* Viñeta: asienta el texto sobre la escena sin apagarla */
+/* ---------- Imagen del evento destacado ----------
+   Va por encima de la escena dibujada y por debajo de la viñeta, que es
+   la que garantiza el contraste del titular. Desenfoque mínimo: la
+   gracia es reconocer el espectáculo.
+
+   El z-index es necesario: en el HTML esta capa va antes que los SVG de
+   las escenas, así que sin él quedaría tapada por ellos. */
+.hero-bg-photo{
+  position:absolute; inset:0; z-index:1;
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+  filter:blur(3px) saturate(1.1);
+  transform:scale(1.04);
+  opacity:0;
+  transition:opacity .6s var(--ease);
+}
+.hero-bg-photo.is-visible{ opacity:.92; }
+
+@media (prefers-reduced-motion:reduce){
+  .hero-bg-photo{ transition:none; }
+}
+
+/* Viñeta: asienta el texto sobre la escena sin apagarla. Va por encima de
+   la foto del evento, si la hay. */
 .hero-bg::after{
-  content:""; position:absolute; inset:0;
+  content:""; position:absolute; inset:0; z-index:2;
   background:
-    linear-gradient(100deg, rgba(18,23,43,.94) 0%, rgba(18,23,43,.78) 38%, rgba(18,23,43,.30) 68%, rgba(18,23,43,.52) 100%),
-    linear-gradient(0deg, rgba(18,23,43,.72) 0%, transparent 42%);
+    linear-gradient(100deg, rgba(18,23,43,.90) 0%, rgba(18,23,43,.70) 38%, rgba(18,23,43,.22) 68%, rgba(18,23,43,.45) 100%),
+    linear-gradient(0deg, rgba(18,23,43,.70) 0%, transparent 42%);
 }
 
 /* Las luces del concierto y las bombillas del festival respiran */
@@ -38,6 +60,12 @@
 
 /* ---------- Carril: una diapositiva ocupa el ancho completo ---------- */
 .hero-slider{ position:relative; z-index:var(--z-base); }
+
+/* Con la viñeta más clara para que se vea la imagen, el texto se apoya en
+   su propia sombra. */
+.hero-headline,
+.hero-lead,
+.hero-facts .v{ text-shadow:0 1px 14px rgba(10,13,28,.7); }
 .hero-viewport{ overflow:hidden; }
 .hero-track{
   display:flex;
@@ -169,6 +197,30 @@
 .hero-dot.is-active{ background:var(--gold); width:26px; border-radius:4px; }
 .hero-dot:hover{ background:rgba(232,180,76,.7); }
 .hero-dot:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+
+/* ---------- Afiche del evento destacado ----------
+   Va anclado al borde derecho de la misma caja que el texto, así que
+   respeta el ancho del contenedor. No usa transform para centrarse porque
+   la animación de entrada de .hero-slide-inner > * se lo sobrescribiría. */
+.hero-slide-inner{ position:relative; }
+.hero-poster{
+  position:absolute; right:0; bottom:38px;
+  width:clamp(180px, 19vw, 260px);
+  margin:0; padding:0;
+  border:1px solid rgba(232,180,76,.35);
+  border-radius:4px;
+  overflow:hidden;
+  background:rgba(12,16,34,.55);
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
+}
+.hero-poster img{
+  display:block; width:100%; height:auto;
+  aspect-ratio:16/9; object-fit:cover;
+}
+.hero-slide.is-current .hero-slide-inner > *:nth-child(6){ animation-delay:.34s; }
+
+/* El afiche cede el paso al texto en pantallas angostas */
+@media (max-width:980px){ .hero-poster{ display:none; } }
 
 /* ---------- Franja de cifras, ya fuera del hero ---------- */
 .home-metrics{ background:var(--navy); padding:0 0 10px; }

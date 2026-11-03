@@ -12,6 +12,7 @@ Antes todo estaba en un solo archivo de ~2200 líneas. Ahora cada sección vive 
 | Explorar eventos | `events.html` | `events.css` | `events.js` |
 | Detalle de evento | `event-detail.html` | `event-detail.css` | `event-detail.js` |
 | Mis reservas (cliente) | `reservations.html` | `reservations.css` | `reservations.js` |
+| **Mi perfil** | `profile.html` | `profile.css` | `profile.js` |
 | Eventos (agente) | `agent-events.html` | `agent-events.css` | — |
 | Reservas (agente) | `agent-reservations.html` | `agent-reservations.css` | `agent-reservations.js` |
 | Panel admin | `admin-dashboard.html` | `admin-dashboard.css` | — |

@@ -1,7 +1,8 @@
 /* Rutas de sesión: /api/auth/*
-   Un mismo formulario sirve para agentes y clientes: se busca el correo
-   primero en `agents` y luego en `clients`, y el rol sale de la tabla en la
-   que aparezca. */
+   Un mismo formulario sirve para los tres roles: se busca el correo en
+   `admins`, luego en `agents` y luego en `clients`, y el rol sale de la
+   tabla en la que aparezca. Un correo vive en una sola tabla, así que no
+   hay ambigüedad posible. */
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const pool = require('../db');
@@ -11,6 +12,14 @@ const router = express.Router();
 router.use(express.json({ limit: '32kb' }));
 
 async function buscarCuenta(email) {
+  /* El administrador va primero: es el rol con más permisos y así queda
+     claro en el código que ninguna otra tabla se lo puede arrebatar. */
+  const admin = await pool.query(
+    'SELECT id, full_name, email, password_hash FROM admins WHERE email = $1 AND active = TRUE',
+    [email]
+  );
+  if (admin.rowCount) return { ...admin.rows[0], role: 'administrador' };
+
   const agente = await pool.query(
     'SELECT id, full_name, email, password_hash FROM agents WHERE email = $1 AND active = TRUE',
     [email]
@@ -65,6 +74,15 @@ router.get('/me', async (req, res, next) => {
   try {
     const payload = leerSesion(req);
     if (!payload) return res.status(401).json({ error: 'No hay una sesión activa.' });
+
+    if (payload.role === 'administrador') {
+      const result = await pool.query(
+        'SELECT id, full_name AS name, email FROM admins WHERE id = $1 AND active = TRUE',
+        [payload.adminId]
+      );
+      if (!result.rowCount) return res.status(401).json({ error: 'La cuenta de administrador ya no está activa.' });
+      return res.json({ role: 'administrador', user: result.rows[0] });
+    }
 
     if (payload.role === 'agente') {
       const result = await pool.query(

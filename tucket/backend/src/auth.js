@@ -1,6 +1,7 @@
 /* Sesión: un JWT firmado que viaja en una cookie HttpOnly.
-   El rol ('agente' o 'cliente') va dentro del token, así que los guardias
-   de abajo no necesitan volver a consultar la base en cada petición. */
+   El rol ('agente', 'cliente' o 'administrador') va dentro del token, así
+   que los guardias de abajo no necesitan volver a consultar la base en
+   cada petición. */
 const jwt = require('jsonwebtoken');
 
 const COOKIE = 'tucket_session';
@@ -27,7 +28,9 @@ function abrirSesion(res, { id, email, role }) {
   if (!clave) throw new Error('JWT_SECRET debe tener al menos 32 caracteres.');
   const payload = role === 'agente'
     ? { agentId: id, email, role }
-    : { clientId: id, email, role };
+    : role === 'administrador'
+      ? { adminId: id, email, role }
+      : { clientId: id, email, role };
   const token = jwt.sign(payload, clave, {
     algorithm: 'HS256', expiresIn: `${DURACION_HORAS}h`,
     issuer: 'tucket-api', audience: 'tucket-web'
@@ -73,6 +76,42 @@ function requireAgent(req, res, next) {
   return next();
 }
 
+/* Solo administradores: resolver las solicitudes de cuenta de agente. */
+function requireAdmin(req, res, next) {
+  if (!secreto()) return res.status(500).json({ error: 'JWT_SECRET debe tener al menos 32 caracteres.' });
+  const payload = leerSesion(req);
+  if (!payload) return res.status(401).json({ error: 'Inicia sesión como administrador para continuar.' });
+  const id = idValido(payload.adminId);
+  if (payload.role !== 'administrador' || !id) {
+    return res.status(403).json({ error: 'Esta operación requiere una cuenta de administrador.' });
+  }
+  req.admin = { id, email: payload.email };
+  return next();
+}
+
+/* Cualquier sesión válida: lo usan el perfil y el cambio de contraseña.
+   Deja en req.user el id y el rol para que la ruta sepa contra qué tabla
+   trabajar.
+
+   El administrador también entra, con un perfil reducido: su tabla solo
+   guarda nombre y correo. Antes se le rechazaba de plano, lo que lo dejaba
+   sin poder cambiar ni su propia contraseña. */
+function requireSession(req, res, next) {
+  if (!secreto()) return res.status(500).json({ error: 'JWT_SECRET debe tener al menos 32 caracteres.' });
+  const payload = leerSesion(req);
+  if (!payload) return res.status(401).json({ error: 'Inicia sesión para continuar.' });
+
+  const role = payload.role === 'agente' ? 'agente'
+    : payload.role === 'administrador' ? 'administrador'
+    : 'cliente';
+  const campo = { agente:'agentId', administrador:'adminId', cliente:'clientId' }[role];
+  const id = idValido(payload[campo]);
+  if (!id) return res.status(401).json({ error: 'La sesión no es válida. Inicia sesión otra vez.' });
+
+  req.user = { id, role, email: payload.email };
+  return next();
+}
+
 /* Solo clientes: reservar y gestionar sus propias reservas. */
 function requireClient(req, res, next) {
   if (!secreto()) return res.status(500).json({ error: 'JWT_SECRET debe tener al menos 32 caracteres.' });
@@ -86,4 +125,4 @@ function requireClient(req, res, next) {
   return next();
 }
 
-module.exports = { abrirSesion, cerrarSesion, leerSesion, requireAgent, requireClient, COOKIE };
+module.exports = { abrirSesion, cerrarSesion, leerSesion, requireSession, requireAgent, requireClient, requireAdmin, COOKIE };

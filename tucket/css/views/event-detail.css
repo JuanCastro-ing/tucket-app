@@ -11,6 +11,57 @@
   content:""; position:absolute; right:-60px; top:-60px; width:220px; height:220px;
   border-radius:50%; background:rgba(232,180,76,.10);
 }
+
+/* ------------------------------------------------------------------
+   Fondo con el afiche difuminado
+
+   La cabecera era un azul plano con dos manchas de color. Con el afiche
+   detrás, cada evento trae su propia atmósfera y el espacio deja de verse
+   vacío.
+
+   Tres cuidados:
+   · scale(1.1) porque el desenfoque come los bordes y dejaría un halo
+     claro alrededor;
+   · la capa oscura encima, porque el titular es blanco y sobre un afiche
+     claro desaparecería;
+   · z-index por debajo del contenido, que va en posición relativa.
+------------------------------------------------------------------ */
+.hero-event-bg{
+  position:absolute; inset:0;
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+  /* Menos desenfoque que antes: la idea es que se reconozca la imagen,
+     no que sea una mancha de color. */
+  filter:blur(14px) saturate(1.2);
+  transform:scale(1.08);
+  opacity:0;
+  transition:opacity .5s var(--ease);
+  pointer-events:none;
+}
+.hero-event-bg.is-visible{ opacity:.8; }
+
+/* Cuando el evento trae banner propio se desenfoca menos todavía: esa
+   imagen está hecha para verse de fondo. */
+.hero-event-bg.es-banner{ filter:blur(3px) saturate(1.12); }
+.hero-event-bg.es-banner.is-visible{ opacity:.96; }
+
+/* Velo: garantiza el contraste del texto pase lo que pase con el afiche */
+.hero-event-bg::after{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(18,23,43,.40) 0%, rgba(18,23,43,.50) 55%, rgba(18,23,43,.84) 100%);
+}
+
+/* El contenido va por encima del fondo. La sombra en el texto es el
+   seguro: con el velo más claro, un banner muy luminoso podría acercarse
+   al blanco del titular. */
+.hero-event > .container{ position:relative; z-index:1; }
+.hero-event h1,
+.hero-event .venue,
+.hero-event .crumb{ text-shadow:0 1px 14px rgba(10,13,28,.75); }
+
+@media (prefers-reduced-motion:reduce){
+  .hero-event-bg{ transition:none; }
+}
 .crumb{ font-size:12.5px; color:var(--muted-lt); margin-bottom:18px; }
 .crumb a{ color:var(--muted-lt); } .crumb a:hover{ color:var(--gold); }
 .hero-event .badges-row{ display:flex; gap:10px; margin-bottom:16px; }

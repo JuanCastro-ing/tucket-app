@@ -6,6 +6,7 @@
      src/routes/geography.routes.js     país → departamento → ciudad
      src/routes/events.routes.js        eventos y afiches
      src/routes/clients.routes.js       registro de clientes
+     src/routes/profile.routes.js       datos personales (ambos roles)
      src/routes/reservations.routes.js  reservas y boletas
 */
 require('dotenv').config({ path: require('node:path').join(__dirname, '..', '.env') });
@@ -48,7 +49,11 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/geography', require('./routes/geography.routes'));
 app.use('/api/events', require('./routes/events.routes'));
 app.use('/api/clients', require('./routes/clients.routes'));
+app.use('/api/profile', require('./routes/profile.routes'));
 app.use('/api/reservations', require('./routes/reservations.routes'));
+app.use('/api/agent-requests', require('./routes/agent-requests.routes'));
+app.use('/api/admin', require('./routes/admin.routes'));
+app.use('/api/stats', require('./routes/stats.routes'));
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Ruta de API no encontrada.' }));
 

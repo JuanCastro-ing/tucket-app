@@ -1,0 +1,41 @@
+/* TUCKET — Vista Solicitud de cuenta de agente
+   Hereda la caja y la retícula de campos de register.css; aquí solo va lo
+   propio de esta vista: la introducción y la pantalla de confirmación. */
+
+.sol-intro{
+  margin:14px 0 0;
+  font-size:13.5px; line-height:1.6; color:var(--muted);
+  max-width:56ch;
+}
+
+/* ---------- Confirmación tras enviar ---------- */
+.sol-ok{
+  margin-top:24px;
+  padding:34px 28px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:#fbfaf7;
+  text-align:center;
+}
+.sol-ok[hidden]{ display:none; }
+
+.sol-ok-mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:52px; height:52px; margin-bottom:16px;
+  border-radius:50%;
+  background:#edf8ee; border:1px solid #abd4ae; color:#215b2a;
+  font-size:24px; line-height:1;
+}
+.sol-ok h3{
+  font-family:var(--display);
+  font-size:21px; margin:0 0 10px; color:var(--navy);
+}
+.sol-ok p{
+  margin:0 auto 10px; max-width:48ch;
+  font-size:13.5px; line-height:1.65; color:var(--ink);
+}
+.sol-ok-nota{ color:var(--muted); font-size:12.5px; }
+.sol-ok .btn{ margin-top:14px; }
+
+/* El contador de caracteres de la justificación */
+#sol-just-count{ font-family:var(--mono); }

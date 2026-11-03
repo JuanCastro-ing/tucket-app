@@ -5,15 +5,11 @@ var publicEventsServerTime = Date.now();
 var publicEventsReceivedAt = Date.now();
 var publicEventsTimer = null;
 var publicEventsLoading = false;
-var DEMO_EVENTS = [
-  {code:'DEMO-001',name:'Noche de Salsa — Grupo Niche Tributo',description:'Una noche de salsa en vivo para disfrutar los clásicos de la música caleña.',venue:'Teatro Los Cristales',city:'Cali',department:'Valle del Cauca',starts_at:'2026-11-14T20:00:00-05:00',ends_at:'2026-11-14T23:00:00-05:00',total_capacity:1200,base_price:85000,status:'En Boletería',observations:'Apertura de puertas una hora antes.',image_path:'/img/events/demo-001.jpg',image_alt:'Afiche del evento Noche de Salsa — Grupo Niche Tributo'},
-  {code:'DEMO-002',name:'Festival Rock a la Cañada',description:'Festival de música al aire libre.',venue:'Parque de la Salsa',city:'Cali',department:'Valle del Cauca',starts_at:'2026-10-10T21:00:00-05:00',ends_at:'2026-10-11T02:00:00-05:00',total_capacity:3000,base_price:120000,status:'En Boletería',observations:'',image_path:'/img/events/demo-002.jpg',image_alt:'Afiche del evento Festival Rock a la Cañada'},
-  {code:'DEMO-003',name:'Romeo y Julieta — Compañía Nacional de Teatro',description:'Una puesta en escena de la obra clásica de Shakespeare.',venue:'Teatro Municipal Enrique Buenaventura',city:'Cali',department:'Valle del Cauca',starts_at:'2026-12-02T19:30:00-05:00',ends_at:'2026-12-02T22:00:00-05:00',total_capacity:800,base_price:52000,status:'Programado',observations:'',image_path:'/img/events/demo-003.jpg',image_alt:'Afiche del evento Romeo y Julieta — Compañía Nacional de Teatro'},
-  {code:'DEMO-004',name:'Concierto de Fin de Año — Orquesta Filarmónica',description:'Concierto especial de temporada.',venue:'Teatro Jorge Isaacs',city:'Cali',department:'Valle del Cauca',starts_at:'2026-12-20T18:00:00-05:00',ends_at:'2026-12-20T21:00:00-05:00',total_capacity:900,base_price:65000,status:'Programado',observations:'',image_path:'/img/events/demo-004.jpg',image_alt:'Afiche del evento Concierto de Fin de Año — Orquesta Filarmónica'},
-  {code:'DEMO-007',name:'Noche de Orquesta — Banda Sinfónica de Tuluá',description:'Concierto de la banda sinfónica en el marco de la temporada cultural.',venue:'Teatro Municipal Ángel María Camacho',city:'Tuluá',department:'Valle del Cauca',starts_at:'2026-11-21T19:00:00-05:00',ends_at:'2026-11-21T21:30:00-05:00',total_capacity:650,base_price:38000,status:'En Boletería',observations:'Entrada libre para estudiantes con carné.',image_path:'/img/events/demo-007.jpg',image_alt:'Afiche del evento Noche de Orquesta — Banda Sinfónica de Tuluá'},
-  {code:'DEMO-005',name:'Stand Up Comedy Night',description:'Una noche de comedia en vivo.',venue:'Sala Beethoven',city:'Bogotá',department:'Bogotá D.C.',starts_at:'2026-11-28T20:30:00-05:00',ends_at:'2026-11-28T22:30:00-05:00',total_capacity:350,base_price:40000,status:'En Boletería',observations:'',image_path:'/img/events/demo-005.jpg',image_alt:'Afiche del evento Stand Up Comedy Night'},
-  {code:'DEMO-006',name:'Feria de Cali — Show de Salsódromo',description:'Espectáculo de salsa y tradición caleña.',venue:'Autódromo de Palmaseca',city:'Cali',department:'Valle del Cauca',starts_at:'2026-09-03T19:00:00-05:00',ends_at:'2026-09-03T23:00:00-05:00',total_capacity:5000,base_price:95000,status:'Finalizado',observations:'',image_path:'/img/events/demo-006.jpg',image_alt:'Afiche del evento Feria de Cali — Show de Salsódromo'}
-];
+var publicEventsSinConexion = false;
+/* El catálogo de muestra que vivía aquí se eliminó: la cartelera muestra
+   únicamente los eventos guardados en la base de datos. Si la API no
+   responde, la cartelera queda vacía y se dice por qué, en vez de enseñar
+   espectáculos que no existen. */
 
 function eventNow(){ return publicEventsServerTime + (Date.now() - publicEventsReceivedAt); }
 function eventDate(value){ var date = new Date(value); return Number.isNaN(date.getTime()) ? null : date; }
@@ -114,7 +110,11 @@ function renderExploreEvents(){
     grid.append(card);
   });
   grid.setAttribute('aria-busy','false');
-  if(!shown.length){var empty=document.createElement('p');empty.className='events-empty';empty.textContent=publicEvents.length?'No hay eventos que coincidan con estos filtros.':'Todavía no hay eventos publicados.';grid.append(empty);}
+  if(!shown.length){var empty=document.createElement('p');empty.className='events-empty';empty.textContent=publicEvents.length
+    ? 'No hay eventos que coincidan con estos filtros.'
+    : (publicEventsSinConexion
+        ? 'No pudimos contactar con el servidor, así que no hay cartelera que mostrar. Enciende el backend y recarga la página.'
+        : 'Todavía no hay eventos publicados.');grid.append(empty);}
   var count=document.getElementById('event-results-count'); if(count) count.textContent=shown.length+' '+(shown.length===1?'evento encontrado':'eventos encontrados');
   updateEventClock();
 }
@@ -150,16 +150,19 @@ async function loadPublicEvents(){
   if(grid && publicEvents.length===0){grid.setAttribute('aria-busy','true');grid.innerHTML='<div class="events-loading" role="status" aria-label="Cargando eventos"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando eventos…</span></div>';}
   try{
     var result=await tucketApi('/api/events');
-    publicEvents=Array.isArray(result.events)&&result.events.length ? result.events : DEMO_EVENTS.slice();
+    publicEvents=Array.isArray(result.events) ? result.events : [];
+    publicEventsSinConexion=false;
     publicEventsServerTime=result.serverTime ? new Date(result.serverTime).getTime() : Date.now();
     publicEventsReceivedAt=Date.now();
     var updated=document.getElementById('events-updated-at');
     if(updated)updated.textContent='a las '+new Intl.DateTimeFormat('es-CO',{hour:'2-digit',minute:'2-digit',timeZone:'America/Bogota'}).format(new Date());
     renderExploreEvents();
   }catch(error){
-    publicEvents=DEMO_EVENTS.slice();
+    publicEvents=[];
+    publicEventsSinConexion=apiNoDisponible(error);
     publicEventsServerTime=Date.now(); publicEventsReceivedAt=Date.now();
-    var updated=document.getElementById('events-updated-at'); if(updated)updated.textContent='cartelera de muestra';
+    var updated=document.getElementById('events-updated-at');
+    if(updated)updated.textContent = apiNoDisponible(error) ? 'sin conexión con el servidor' : 'no se pudo actualizar';
   }finally{
     publicEventsLoading=false;
     renderExploreEvents();
@@ -181,9 +184,45 @@ function searchEvents(event){
   renderExploreEvents(); return false;
 }
 
+/* Pone (o quita) la imagen de fondo de la cabecera.
+
+   Si el evento tiene banner propio se usa ese, y se desenfoca menos:
+   está hecho para verse. Si solo hay afiche, se desenfoca un poco más,
+   porque un afiche vertical estirado a lo ancho se ve raro si queda
+   demasiado nítido.
+
+   Se precarga antes de asignarlo: si se pusiera directo, el fondo
+   aparecería en blanco y se llenaría a trozos mientras descarga, que
+   encima del azul se nota mucho. Si la imagen falla, la cabecera se queda
+   con su fondo de siempre. */
+function fondoDelEvento(ruta, esBanner){
+  var capa=document.getElementById('detail-hero-bg');
+  if(!capa)return;
+  capa.classList.toggle('es-banner', !!esBanner);
+  if(!ruta){
+    capa.classList.remove('is-visible');
+    capa.style.backgroundImage='';
+    return;
+  }
+  var previa=new Image();
+  previa.onload=function(){
+    capa.style.backgroundImage='url("'+ruta.replace(/"/g,'%22')+'")';
+    capa.classList.add('is-visible');
+  };
+  previa.onerror=function(){
+    capa.classList.remove('is-visible');
+    capa.style.backgroundImage='';
+  };
+  previa.src=ruta;
+}
+
 function openEventDetails(code){
   var event=publicEvents.find(function(item){return item.code===code;}); if(!event)return false;
   window.selectedPublicEvent=event;
+  /* El aviso de la reserva es de UN intento concreto: si no se borra aquí,
+     el «este evento está cancelado» del evento anterior sigue en pantalla
+     al abrir el siguiente, como si el nuevo también lo estuviera. */
+  if(typeof reservaMensaje==='function') reservaMensaje('');
   var values={
     'detail-crumb':event.name,'detail-status':eventStatus(event),'detail-title':event.name,
     'detail-venue':[event.venue,event.city,event.department].filter(Boolean).join(' · '),
@@ -197,20 +236,23 @@ function openEventDetails(code){
   var detailBadge=document.getElementById('detail-status');
   if(detailBadge){var status=eventStatus(event);detailBadge.className='badge '+({'En Boletería':'badge-boleteria','Programado':'badge-programado','En Vivo':'badge-vivo','Finalizado':'badge-finalizado'}[status]||'badge-programado');}
   var address=document.getElementById('detail-address');if(address)address.textContent=[event.venue,event.city,event.department].filter(Boolean).join(' · ');
-  /* Afiche del evento, si lo tiene */
+  /* Afiche del evento, si lo tiene. El mismo archivo se usa dos veces: la
+     ficha de la cabecera y el fondo difuminado de la sección. */
   var poster=document.getElementById('detail-poster');
   var posterImg=document.getElementById('detail-poster-img');
   if(poster&&posterImg){
     if(event.image_path){
       posterImg.src=event.image_path;
       posterImg.alt=event.image_alt||('Afiche del evento '+event.name);
-      posterImg.onerror=function(){poster.hidden=true;};
+      posterImg.onerror=function(){poster.hidden=true;fondoDelEvento(event.banner_path||null, true);};
       poster.hidden=false;
     }else{
       poster.hidden=true;
       posterImg.removeAttribute('src');
     }
   }
+  /* El banner manda; el afiche es el respaldo. */
+  fondoDelEvento(event.banner_path || event.image_path, !!event.banner_path);
   if(typeof setEventPrice==='function')setEventPrice(event.base_price);
   nav('event-detail');return false;
 }

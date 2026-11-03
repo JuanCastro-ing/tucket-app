@@ -5,9 +5,11 @@ var VIEWS = [
   "home",
   "login",
   "register",
+  "agent-request",
   "events",
   "event-detail",
   "reservations",
+  "profile",
   "agent-events",
   "agent-reservations",
   "admin-dashboard"
@@ -23,8 +25,10 @@ var VIEWS = [
   })).then(function(parts){
     app.innerHTML = parts.join('\n');
     syncSkipLink(document.querySelector('.view.active'));
+    if(typeof montarBotonesVolver === 'function') montarBotonesVolver();
     if(typeof restoreAgentSession === 'function') restoreAgentSession();
     if(typeof initHeroSlider === 'function') initHeroSlider();
+    if(typeof cargarCifrasPortada === 'function') cargarCifrasPortada();
   }).catch(function(err){
     app.innerHTML = '<div style="padding:40px;font-family:sans-serif;max-width:640px;margin:auto">' +
       '<h2>No se pudieron cargar las vistas</h2>' +

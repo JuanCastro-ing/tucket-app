@@ -99,3 +99,32 @@ input[type="checkbox"].input-invalid{ outline:2px solid var(--red); outline-offs
   .image-field{ flex-direction:column; }
   .image-preview{ flex:none; width:100%; }
 }
+
+/* ============================================================
+   Campo de contraseña con botón de mostrar/ocultar.
+   Vive aquí y no en login.css porque lo usan dos vistas: el inicio de
+   sesión y el cambio de contraseña del perfil.
+   ============================================================ */
+.pw-wrap{ position:relative; }
+.pw-wrap input{ padding-right:46px; width:100%; }
+
+.pw-toggle{
+  position:absolute; top:50%; right:6px; transform:translateY(-50%);
+  display:inline-flex; align-items:center; justify-content:center;
+  width:34px; height:34px; padding:0;
+  border:none; border-radius:6px;
+  background:transparent; color:var(--muted);
+  cursor:pointer;
+  transition:color .18s var(--ease), background .18s var(--ease);
+}
+.pw-toggle:hover{ color:var(--navy); background:rgba(18,23,43,.06); }
+.pw-toggle:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+.pw-icon{ width:19px; height:19px; display:block; }
+
+/* El icono sigue al estado del campo: ojo = está oculta y al pulsar se ve;
+   ojo tachado = se está viendo y al pulsar se oculta. */
+.pw-icon-ocultar{ display:none; }
+.pw-toggle[aria-pressed="true"] .pw-icon-ver{ display:none; }
+.pw-toggle[aria-pressed="true"] .pw-icon-ocultar{ display:block; }
+.pw-toggle[aria-pressed="true"]{ color:var(--navy); }

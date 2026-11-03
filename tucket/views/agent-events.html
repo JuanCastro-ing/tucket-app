@@ -9,7 +9,7 @@
       <nav class="nav-role" aria-label="Navegación principal">
         <a href="#" onclick="return nav('agent-events')" class="active" aria-current="page">Panel de agente</a>
       </nav>
-      <div class="nav-user"><span class="role-pill">AGENTE</span><div class="avatar">JD</div><a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a></div>
+      <div class="nav-user"><span class="role-pill">AGENTE</span><div class="avatar">JD</div><a href="#" onclick="return nav('profile')" class="btn-ghost btn-ghost-light">Mi perfil</a><a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a></div>
     </div>
   </header>
 
@@ -62,13 +62,17 @@
 
             <div class="new-event-panel">
               <div class="panel">
-                <div class="panel-head"><h3>Registrar nuevo evento</h3></div>
+                <div class="panel-head"><h3 id="event-form-title">Registrar nuevo evento</h3></div>
                 <form id="agent-event-form">
                   <p id="event-form-message" class="form-message" role="status" aria-live="polite" hidden></p>
+
+                  <!-- El código ya no se escribe: lo asigna el sistema con una
+                       secuencia de la base, así que es siempre único y va en
+                       orden. Se muestra para que el agente lo reconozca. -->
                   <div class="field">
-                    <label for="event-code">Código único del evento</label>
-                    <input id="event-code" name="code" type="text" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,31}" placeholder="EVT-2026-0220" autocomplete="off" required aria-describedby="event-code-help">
-                    <small id="event-code-help" class="field-help">3–32 caracteres: letras, números, guion o guion bajo.</small>
+                    <span class="field-label">Código del evento</span>
+                    <p class="code-chip" id="event-code-display" aria-describedby="event-code-help">—</p>
+                    <small id="event-code-help" class="field-help">Lo asigna el sistema de forma automática y consecutiva.</small>
                   </div>
                   <div class="field">
                     <label for="event-name">Nombre del evento</label>
@@ -101,11 +105,12 @@
                   <div class="field-row">
                     <div class="field">
                       <label for="event-start">Fecha y hora de inicio</label>
-                      <input id="event-start" name="startsAt" type="datetime-local" required>
+                      <input id="event-start" name="startsAt" type="datetime-local" step="60" required aria-describedby="event-start-help">
+                      <small id="event-start-help" class="field-help">Puedes escribir la fecha y la hora directamente, sin abrir el calendario.</small>
                     </div>
                     <div class="field">
                       <label for="event-end">Fecha y hora de finalización</label>
-                      <input id="event-end" name="endsAt" type="datetime-local" required aria-describedby="event-date-help">
+                      <input id="event-end" name="endsAt" type="datetime-local" step="60" required aria-describedby="event-date-help">
                     </div>
                   </div>
                   <small id="event-date-help" class="field-help">La hora de finalización debe ser posterior a la de inicio.</small>
@@ -119,7 +124,7 @@
                       <input id="event-price" name="basePrice" type="number" min="0" step="0.01" placeholder="85000" required>
                     </div>
                   </div>
-                  <div class="field">
+                  <div class="field" id="event-status-field">
                     <label for="agent-event-status">Estado inicial</label>
                     <select id="agent-event-status" name="status" required>
                       <option value="Programado" selected>Programado</option>
@@ -149,7 +154,33 @@
                     <input id="event-image-alt" name="imageAlt" type="text" maxlength="200" placeholder="Ej: Afiche con la orquesta sobre el escenario" aria-describedby="event-image-alt-help">
                     <p class="field-help" id="event-image-alt-help">Lo leen los lectores de pantalla. Si lo dejas vacío usamos el nombre del evento.</p>
                   </div>
+
+                  <!-- Banner: la imagen ancha del fondo del detalle. Si no se
+                       pone, el detalle usa el afiche, así que nadie queda sin
+                       fondo. -->
+                  <div class="field">
+                    <label for="event-banner">Banner de fondo <span class="field-optional">(opcional)</span></label>
+                    <div class="image-field">
+                      <div class="image-preview image-preview-wide" id="event-banner-preview" data-empty="true">
+                        <img id="event-banner-thumb" alt="" hidden>
+                        <span class="image-preview-hint" id="event-banner-hint">Sin banner</span>
+                      </div>
+                      <div class="image-field-controls">
+                        <input id="event-banner" name="banner" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="event-banner-help">
+                        <button type="button" id="event-banner-clear" class="btn btn-outline btn-sm" hidden>Quitar banner</button>
+                        <p class="field-help" id="event-banner-help">Es la imagen que se ve de fondo en la página del evento. Apaisada y ancha funciona mejor. Si la dejas vacía usamos el afiche.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="event-banner-alt">Descripción del banner <span class="field-optional">(accesibilidad)</span></label>
+                    <input id="event-banner-alt" name="bannerAlt" type="text" maxlength="200" placeholder="Ej: El escenario iluminado visto desde la platea">
+                  </div>
+                  <!-- El estado inicial solo tiene sentido al crear: en una
+                       edición el estado se cambia desde la tabla, que es
+                       donde vive el ciclo de vida. -->
                   <button id="event-submit" type="submit" class="btn btn-gold btn-block">Publicar evento</button>
+                  <button id="event-cancel-edit" type="button" class="btn btn-outline btn-block" hidden onclick="salirDeEdicion()">Cancelar edición</button>
                 </form>
               </div>
             </div>
@@ -207,20 +238,20 @@
           <div class="footer-col">
             <h2>Ayuda</h2>
             <ul>
-              <li><a href="#">Centro de ayuda</a></li>
-              <li><a href="#">Cómo reservar</a></li>
-              <li><a href="#">Preguntas frecuentes</a></li>
-              <li><a href="#">Contáctanos</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">Centro de ayuda</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">Cómo reservar</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">Preguntas frecuentes</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">Contáctanos</a></li>
             </ul>
           </div>
 
           <div class="footer-col">
             <h2>Síguenos</h2>
             <ul>
-              <li><a href="#">Instagram</a></li>
-              <li><a href="#">YouTube</a></li>
-              <li><a href="#">Facebook</a></li>
-              <li><a href="#">X</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">Instagram</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">YouTube</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">Facebook</a></li>
+              <li><a href="#" onclick="return seccionEnPreparacion(this)">X</a></li>
             </ul>
           </div>
         </nav>
@@ -233,9 +264,9 @@
         </div>
         <p class="footer-copy">© 2026 TUCKET · Prototipo académico, sin transacciones reales.</p>
         <nav class="footer-legal" aria-label="Enlaces legales">
-          <a href="#">Política de privacidad</a>
-          <a href="#">Términos de uso</a>
-          <a href="#">Tratamiento de datos</a>
+          <a href="#" onclick="return seccionEnPreparacion(this)">Política de privacidad</a>
+          <a href="#" onclick="return seccionEnPreparacion(this)">Términos de uso</a>
+          <a href="#" onclick="return seccionEnPreparacion(this)">Tratamiento de datos</a>
         </nav>
       </div>
 

@@ -29,3 +29,33 @@
 }
 #access-notice.is-visible{ opacity:1; transform:translate(-50%,0); }
 #access-notice[hidden]{ display:none; }
+
+/* ============================================================
+   Botón «Volver» a la vista anterior
+
+   Convive con «Volver al inicio»: son dos destinos distintos, así que se
+   distinguen por peso visual — este es un control secundario y queda a su
+   izquierda. Lo inyecta montarBotonesVolver() en navigation.js.
+   ============================================================ */
+.btn-volver{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 12px; margin-right:10px;
+  border:1px solid var(--line); border-radius:20px;
+  font-size:12.5px; font-weight:700; color:var(--muted);
+  white-space:nowrap;
+  transition:color .18s var(--ease), border-color .18s var(--ease), background .18s var(--ease);
+}
+.btn-volver:hover{ color:var(--navy); border-color:var(--navy); background:rgba(18,23,43,.04); }
+.btn-volver:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+/* Sobre fondo oscuro (barra superior y panel de marca del login) */
+.btn-volver-light{
+  border-color:rgba(232,180,76,.35); color:var(--paper);
+}
+.btn-volver-light:hover{
+  color:var(--gold); border-color:var(--gold); background:rgba(232,180,76,.08);
+}
+
+@media (max-width:620px){
+  .btn-volver{ padding:5px 10px; font-size:12px; margin-right:6px; }
+}

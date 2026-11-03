@@ -16,9 +16,21 @@ function schemaFiles() {
     .sort();
 }
 
+/* El DANE entrega los nombres en mayúscula sostenida ("VALLE DEL CAUCA").
+   Pasarlos a capitular palabra por palabra dejaba "Valle Del Cauca" y
+   "Santiago De Cali", que no es como se escriben ni como aparecen en el
+   resto de la aplicación. Los conectores van en minúscula salvo cuando
+   abren el nombre. */
+const CONECTORES = new Set(['de', 'del', 'la', 'las', 'lo', 'los', 'y', 'e', 'el', 'en']);
+
 function titleCase(value) {
   return String(value).toLocaleLowerCase('es-CO')
-    .replace(/(^|[\s-])(\p{L})/gu, (_m, separator, letter) => separator + letter.toLocaleUpperCase('es-CO'));
+    .replace(/(^|[\s-])([\p{L}\p{M}]+(?:\.[\p{L}\p{M}]+)*\.?)/gu, (completo, separador, palabra, posicion) => {
+      /* Siglas con punto ("d.c." → "D.C.") van completas en mayúscula. */
+      if (palabra.includes('.')) return separador + palabra.toLocaleUpperCase('es-CO');
+      if (posicion > 0 && CONECTORES.has(palabra)) return separador + palabra;
+      return separador + palabra.charAt(0).toLocaleUpperCase('es-CO') + palabra.slice(1);
+    });
 }
 
 async function setup() {
