@@ -5,12 +5,32 @@ var isLoggedIn = false;
 var currentRole = null;
 var pendingView = null;
 
+/* La pastilla del rol que se ve arriba, junto a «Mi perfil».
+
+   Cada vista trae escrito en su HTML el rol que le corresponde, y eso
+   bastaba mientras cada quien veía solo las suyas. El problema aparecía
+   al cambiar de cuenta sin recargar: las vistas ya cargadas conservaban
+   la pastilla de la sesión anterior, así que un cliente podía ver
+   «AGENTE» encima si antes había entrado un agente en esa pestaña.
+
+   Se repinta aquí, que es el único sitio por el que pasan el inicio de
+   sesión, el cierre y la restauración al recargar. */
+function pintarPastillasDeRol(){
+  var etiqueta = (currentRole && ROLE_LABEL[currentRole])
+    ? ROLE_LABEL[currentRole].toUpperCase()
+    : 'CUENTA';
+  document.querySelectorAll('.nav-user .role-pill').forEach(function(item){
+    item.textContent = etiqueta;
+  });
+}
+
 function setAuthState(state, role){
   isLoggedIn = state;
   currentRole = state ? (role || currentRole || null) : null;
   document.documentElement.setAttribute('data-auth', state ? 'in' : 'out');
   if(currentRole) document.documentElement.setAttribute('data-role', currentRole);
   else document.documentElement.removeAttribute('data-role');
+  pintarPastillasDeRol();
 }
 
 /* ------------------------------------------------------------------
@@ -90,9 +110,7 @@ async function restoreAgentSession(){
   try{
     var sesion = await tucketApi('/api/auth/me');
     var rol = rolDeSesion(sesion);
-    setAuthState(true, rol);
-    var etiqueta = ROLE_LABEL[rol] ? ROLE_LABEL[rol].toUpperCase() : 'AGENTE';
-    document.querySelectorAll('.nav-user .role-pill').forEach(function(item){ item.textContent = etiqueta; });
+    setAuthState(true, rol);   /* repinta las pastillas del rol */
   }catch(_error){
     setAuthState(false);
   }

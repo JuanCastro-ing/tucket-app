@@ -98,6 +98,11 @@ function nav(viewId){
   var target = document.getElementById('view-' + viewId);
   if(target){ target.classList.add('active'); }
   syncSkipLink(target);
+  /* Las vistas se cargan la primera vez que se entra en ellas, o sea
+     después del inicio de sesión, y llegan con la pastilla del rol
+     escrita a mano en su HTML. Se repinta al mostrarlas para que diga
+     la de la cuenta que está dentro. */
+  if(typeof pintarPastillasDeRol === 'function') pintarPastillasDeRol();
   if(viewId === 'agent-events' && typeof initAgentEvents === 'function') initAgentEvents();
   if(viewId === 'events' && typeof initExploreEvents === 'function') initExploreEvents();
   if(viewId === 'profile' && typeof initProfile === 'function') initProfile();

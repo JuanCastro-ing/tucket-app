@@ -3,7 +3,21 @@
 const express = require('express');
 const pool = require('../db');
 const { requireAgent } = require('../auth');
-const { guardarAfiche, borrarAfiche, normalizarAlt, ImagenInvalida } = require('../images');
+const { guardarAfiche, borrarAfiche, normalizarAlt, ImagenInvalida, ErrorDeAlmacenamiento } = require('../images');
+
+/* Las dos cosas que pueden salir mal al guardar una imagen y que no son
+   un fallo del sistema: que el archivo no sirva (culpa de quien lo sube)
+   o que el servicio de imágenes no responda (culpa de la red). Las dos
+   se le explican al agente en vez de devolver un 500 sin más. */
+function respuestaDeImagen(res, error, prefijo) {
+  if (error instanceof ImagenInvalida) {
+    return res.status(400).json({ error: prefijo + error.message });
+  }
+  if (error instanceof ErrorDeAlmacenamiento) {
+    return res.status(502).json({ error: prefijo + error.message });
+  }
+  return null;
+}
 
 const router = express.Router();
 
@@ -217,27 +231,23 @@ router.post('/', requireAgent, async (req, res, next) => {
   let bannerAlt = null;
   if (body.image?.data) {
     try {
-      imagePath = guardarAfiche(body.image.data, code).rutaPublica;
+      imagePath = (await guardarAfiche(body.image.data, code)).rutaPublica;
       imageAlt = normalizarAlt(body.image.alt, name);
     } catch (error) {
-      if (error instanceof ImagenInvalida) return res.status(400).json({ error: error.message });
-      return next(error);
+      return respuestaDeImagen(res, error, '') || next(error);
     }
   }
 
   /* El banner es la imagen ancha del fondo del detalle. Opcional: si no
      viene, el detalle usa el afiche. Se guarda con el sufijo -banner para
-     no confundir los dos archivos del mismo evento en la carpeta. */
+     no confundir los dos archivos del mismo evento. */
   if (body.banner?.data) {
     try {
-      bannerPath = guardarAfiche(body.banner.data, code + '-banner').rutaPublica;
+      bannerPath = (await guardarAfiche(body.banner.data, code + '-banner')).rutaPublica;
       bannerAlt = normalizarAlt(body.banner.alt, name);
     } catch (error) {
       borrarAfiche(imagePath);
-      if (error instanceof ImagenInvalida) {
-        return res.status(400).json({ error: 'Banner: ' + error.message });
-      }
-      return next(error);
+      return respuestaDeImagen(res, error, 'Banner: ') || next(error);
     }
   }
 
@@ -402,7 +412,7 @@ router.put('/:code', requireAgent, async (req, res, next) => {
     let imagePath = evento.image_path;
     let imageAlt = evento.image_alt;
     if (body.image?.data) {
-      imagenNueva = guardarAfiche(body.image.data, code).rutaPublica;
+      imagenNueva = (await guardarAfiche(body.image.data, code)).rutaPublica;
       imagenVieja = evento.image_path;
       imagePath = imagenNueva;
       imageAlt = normalizarAlt(body.image.alt, name);
@@ -417,7 +427,7 @@ router.put('/:code', requireAgent, async (req, res, next) => {
     let bannerPath = evento.banner_path;
     let bannerAlt = evento.banner_alt;
     if (body.banner?.data) {
-      bannerNuevo = guardarAfiche(body.banner.data, code + '-banner').rutaPublica;
+      bannerNuevo = (await guardarAfiche(body.banner.data, code + '-banner')).rutaPublica;
       bannerViejo = evento.banner_path;
       bannerPath = bannerNuevo;
       bannerAlt = normalizarAlt(body.banner.alt, name);
@@ -456,7 +466,8 @@ router.put('/:code', requireAgent, async (req, res, next) => {
     await client.query('ROLLBACK').catch(() => {});
     borrarAfiche(imagenNueva);
     borrarAfiche(bannerNuevo);
-    if (error instanceof ImagenInvalida) return res.status(400).json({ error: error.message });
+    const respuesta = respuestaDeImagen(res, error, '');
+    if (respuesta) return respuesta;
     if (error.code === '23503') {
       return res.status(400).json({ error: 'La ciudad no corresponde al departamento y país elegidos.' });
     }
@@ -548,9 +559,10 @@ router.put('/:code/image', requireAgent, async (req, res, next) => {
 
     let guardado;
     try {
-      guardado = guardarAfiche(body.data, code);
+      guardado = await guardarAfiche(body.data, code);
     } catch (error) {
-      if (error instanceof ImagenInvalida) return res.status(400).json({ error: error.message });
+      const respuesta = respuestaDeImagen(res, error, '');
+      if (respuesta) return respuesta;
       throw error;
     }
     const alt = normalizarAlt(body.alt, actual.rows[0].name);
