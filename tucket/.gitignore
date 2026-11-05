@@ -4,9 +4,17 @@ node_modules/
 # Credenciales: nunca al repositorio
 backend/.env
 
-# Afiches subidos por los agentes (contenido de usuarios, no del proyecto).
+# Afiches subidos por los agentes cuando se trabaja sin Cloudinary. En el
+# servidor publicado las imágenes van a Cloudinary, así que esta carpeta solo
+# existe en los computadores del equipo.
 # Los afiches de los eventos de ejemplo sí van al repo: están en img/events/.
 backend/uploads/
+
+# Archivo generado por build.py. No se versiona: es una COPIA de la aplicación
+# y, si se sube, el servidor acaba publicando dos versiones distintas de la
+# misma página (la de index.html y esta, congelada en el último build).
+# Quien lo necesite lo genera con `python build.py`.
+dist/
 
 # Reportes de Lighthouse
 localhost_*.report.html

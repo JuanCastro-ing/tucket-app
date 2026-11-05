@@ -1,6 +1,20 @@
 /* TUCKET — Carga las vistas de /views dentro de #app.
    Para agregar una vista: crea views/<nombre>.html (con <div class="view" id="view-<nombre>">)
    y añade <nombre> a esta lista. */
+
+/* Trozos de HTML que se repiten en varias vistas y viven en
+   views/partials/. Una vista los pide escribiendo
+
+       <div data-parcial="footer"></div>
+
+   y aquí se sustituye por el contenido del archivo.
+
+   El pie de página estaba copiado tal cual en siete vistas: 81 líneas
+   repetidas siete veces. Cambiar un enlace obligaba a editar los siete
+   archivos y acordarse de los siete, que fue justo lo que dejó un pie
+   duplicado en el panel de administrador. */
+var PARTIALS = ["footer"];
+
 var VIEWS = [
   "home",
   "login",
@@ -10,6 +24,7 @@ var VIEWS = [
   "event-detail",
   "reservations",
   "profile",
+  "ayuda",
   "agent-events",
   "agent-reservations",
   "admin-dashboard"
@@ -17,13 +32,31 @@ var VIEWS = [
 
 (function loadViews(){
   var app = document.getElementById('app');
-  Promise.all(VIEWS.map(function(v){
-    return fetch('views/' + v + '.html').then(function(r){
-      if(!r.ok) throw new Error('No se pudo cargar views/' + v + '.html');
+
+  function traer(ruta){
+    return fetch(ruta).then(function(r){
+      if(!r.ok) throw new Error('No se pudo cargar ' + ruta);
       return r.text();
     });
-  })).then(function(parts){
-    app.innerHTML = parts.join('\n');
+  }
+
+  Promise.all([
+    Promise.all(VIEWS.map(function(v){ return traer('views/' + v + '.html'); })),
+    Promise.all(PARTIALS.map(function(p){ return traer('views/partials/' + p + '.html'); }))
+  ]).then(function(resultado){
+    var parts = resultado[0];
+    var trozos = resultado[1];
+    var html = parts.join('\n');
+
+    /* Se sustituyen los marcadores antes de insertar nada en el documento:
+       así el navegador analiza el HTML una sola vez y nadie llega a ver la
+       página sin pie. */
+    PARTIALS.forEach(function(nombre, i){
+      var marcador = new RegExp('<div data-parcial="' + nombre + '"></div>', 'g');
+      html = html.replace(marcador, trozos[i]);
+    });
+
+    app.innerHTML = html;
     syncSkipLink(document.querySelector('.view.active'));
     if(typeof montarBotonesVolver === 'function') montarBotonesVolver();
     if(typeof restoreAgentSession === 'function') restoreAgentSession();

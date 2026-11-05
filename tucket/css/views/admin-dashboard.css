@@ -15,7 +15,6 @@
 
 /* Rejilla y ejes: siempre por detrás del dato */
 .g-grid{ stroke:var(--chart-grid); stroke-width:1; }
-.g-axis-line{ stroke:var(--line); stroke-width:1; }
 .g-axis{ font-family:var(--mono); font-size:9.5px; fill:var(--chart-ink); }
 
 /* Texto: tinta, nunca el color de la serie */
@@ -30,20 +29,8 @@
 .g-bar{ fill:var(--c1); transition:opacity var(--dur-fast) var(--ease); }
 .g-bar:hover{ opacity:.78; }
 
-.g-c1-stroke{ stroke:var(--c1); } .g-c1-bg{ background:var(--c1); }
-.g-c2-stroke{ stroke:var(--c2); } .g-c2-bg{ background:var(--c2); }
-.g-c3-stroke{ stroke:var(--c3); } .g-c3-bg{ background:var(--c3); }
-.g-c4-stroke{ stroke:var(--c4); } .g-c4-bg{ background:var(--c4); }
-
 .g-donut-n{ font-family:var(--display); font-size:26px; fill:var(--navy); }
 .g-donut-l{ font-family:var(--mono); font-size:9px; fill:var(--chart-ink); }
-
-.donut-row{ display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
-.legend-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:14px; }
-.legend-col{ flex-direction:column; gap:9px; }
-.legend-item{ display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink); }
-.legend-dot{ width:10px; height:10px; border-radius:2px; display:inline-block; flex-shrink:0; }
-.legend-pct{ color:var(--muted); font-family:var(--mono); font-size:11px; }
 
 .select-inline{
   border:1px solid var(--line); border-radius:3px; padding:9px 12px;
@@ -174,9 +161,3 @@
   .sol-acciones .btn{ flex:1 1 100%; }
 }
 
-/* Cuadros de la leyenda de la dona: las clases g-cN-stroke solo definen el
-   trazo, y la leyenda necesita relleno. */
-.g-c1-fill{ fill:var(--c1); }
-.g-c2-fill{ fill:var(--c2); }
-.g-c3-fill{ fill:var(--c3); }
-.g-c4-fill{ fill:var(--c4); }

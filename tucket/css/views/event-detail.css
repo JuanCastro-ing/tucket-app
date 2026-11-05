@@ -76,9 +76,6 @@
 .info-panel{ background:var(--white); border:1px solid var(--line); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); }
 .info-panel h3{ font-size:16px; margin-bottom:12px; }
 .info-panel p.desc{ color:var(--muted); font-size:14.5px; line-height:1.7; }
-.capacity-bar{ background:var(--paper-2); border-radius:20px; height:8px; margin:8px 0 6px; overflow:hidden; }
-.capacity-bar span{ display:block; height:100%; background:var(--gold-dark); width:72%; }
-.cap-label{ display:flex; justify-content:space-between; font-size:12px; color:var(--muted); }
 
 .book-card{
   background:var(--white); border:1px solid var(--line); border-radius:var(--radius);

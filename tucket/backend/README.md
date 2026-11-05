@@ -149,12 +149,16 @@ Reglas que vive la base, no solo la API:
 | `GET /api/events` | — | Catálogo con afiche y disponibilidad |
 | `GET /api/events/:code` | — | Detalle de un evento |
 | `GET /api/events/mine` | agente | Mis eventos |
-| `POST /api/events` | agente | Crear evento (afiche opcional) |
+| `GET /api/events/next-code` | agente | Vista previa del próximo código, para el formulario |
+| `POST /api/events` | agente | Crear evento (el código lo asigna el servidor) |
+| `PUT /api/events/:code` | agente | Editar un evento propio |
+| `DELETE /api/events/:code` | agente | Eliminar un evento propio sin reservas activas |
 | `PUT /api/events/:code/image` | agente | Cambiar o quitar el afiche |
 | `PATCH /api/events/:code/status` | agente | Ciclo de vida del evento |
 | `GET /api/events/mine/reservations` | agente | Reservas de todos mis eventos |
 | `GET /api/events/:code/reservations` | agente | Reservas de un evento mío |
 | `GET /api/admin/stats` | admin | Cifras, gráficas y tablas del panel |
+| `GET /api/stats/home` | — | Cifras de la portada (eventos activos, reservas, ciudades) |
 | `POST /api/clients/register` | — | Registro de cliente |
 | `GET /api/clients/me` | cliente | Mis datos |
 | `GET /api/profile` | sesión | Ver mi perfil (cliente o agente) |
@@ -203,10 +207,34 @@ El navegador lee el archivo y lo manda en base64 dentro del JSON:
 ```
 
 El servidor valida la **firma binaria** del archivo (no el tipo que declara el
-navegador, que se puede falsificar), acepta JPG, PNG y WEBP de hasta 4 MB, lo
-guarda en `backend/uploads/events/` con un nombre aleatorio y deja en la base
-solo la ruta (`image_path`). Los binarios no entran a la base: en Neon se paga
-por almacenamiento y transferencia, y cada consulta del catálogo se volvería lenta.
+navegador, que se puede falsificar) y acepta JPG, PNG y WEBP de hasta 4 MB. En la
+base nunca se guarda el binario, solo la dirección con la que el navegador pide
+la imagen (`image_path` y `banner_path`): los binarios en una tabla la inflan y
+hacen más lenta cada consulta del catálogo.
+
+Dónde queda el archivo depende de dónde corra el proyecto, y lo decide
+`hayCloudinary()` en `src/images.js`:
+
+| Situación | Dónde se guarda |
+|---|---|
+| Sin variables de Cloudinary (tu computador) | `backend/uploads/events/`, con nombre aleatorio |
+| Con las tres variables (servidor publicado) | **Cloudinary**, y en la base queda su URL |
+
+```env
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
+
+Se sacan del Dashboard de <https://cloudinary.com> (plan gratuito). En el
+servidor publicado son obligatorias: los servicios de despliegue entregan un
+disco nuevo y vacío en cada publicación, así que los afiches subidos por los
+agentes se perderían y los eventos quedarían apuntando a archivos inexistentes.
+En los computadores del equipo se dejan vacías y todo funciona contra el disco,
+sin necesidad de crear cuenta.
+
+Al reemplazar o quitar una imagen, la anterior se borra de donde estuviera. Al
+eliminar un evento, también.
 
 Los 7 afiches de los eventos de ejemplo están en `img/events/` y se regeneran con:
 

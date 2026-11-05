@@ -1,0 +1,252 @@
+<div class="view" id="view-ayuda">
+
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a>
+        <span class="brand-tag">BOLETERÍA · GESTIÓN DE EVENTOS</span>
+      </div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('home')">Inicio</a>
+        <a href="#" onclick="return nav('events')">Eventos</a>
+        <a href="#" onclick="return requireAuth('reservations')">Mis reservas</a>
+      </nav>
+      <div class="nav-user">
+        <span class="auth-out">
+          <a href="#" onclick="return nav('login')" class="btn-ghost btn-ghost-light">Iniciar sesión</a>
+          <a href="#" onclick="return goRegisterAs('cliente')" class="btn btn-gold btn-sm">Crear cuenta</a>
+        </span>
+        <span class="auth-in">
+          <span class="role-pill">CLIENTE</span>
+          <div class="avatar">VR</div>
+          <a href="#" onclick="return nav('profile')" class="btn-ghost btn-ghost-light">Mi perfil</a><a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-body">
+    <div class="container">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>CENTRO DE AYUDA</span></div>
+          <h1 id="ayuda-titulo">¿En qué te ayudamos?</h1>
+          <p>Cómo reservar, qué pasa con tu información y cómo contactarnos.</p>
+        </div>
+      </div>
+
+      <nav class="ayuda-indice" aria-label="Secciones de la ayuda">
+        <a href="#ayuda-reservar">Cómo reservar</a>
+        <a href="#ayuda-organizador">Ser organizador</a>
+        <a href="#ayuda-faq">Preguntas frecuentes</a>
+        <a href="#ayuda-contacto">Contáctanos</a>
+        <a href="#ayuda-redes">Redes sociales</a>
+        <a href="#ayuda-legal">Privacidad y términos</a>
+      </nav>
+
+      <!-- ============================================================
+           Cómo reservar
+           ============================================================ -->
+      <section class="panel ayuda-bloque" id="ayuda-reservar" aria-labelledby="ayuda-reservar-t">
+        <div class="panel-head"><h3 id="ayuda-reservar-t">Cómo reservar una entrada</h3></div>
+
+        <ol class="ayuda-pasos">
+          <li>
+            <strong>Crea tu cuenta de cliente.</strong>
+            Solo pedimos nombre, documento, correo y teléfono. El documento se usa
+            para identificar la reserva en taquilla.
+          </li>
+          <li>
+            <strong>Busca el evento en la cartelera.</strong>
+            Puedes filtrar por ciudad o escribir el nombre del artista, el evento
+            o el teatro en el buscador de la portada.
+          </li>
+          <li>
+            <strong>Abre el evento y elige cuántas entradas quieres.</strong>
+            El total se actualiza al momento. Debajo puedes dejar una observación
+            si necesitas algo especial, como acceso en silla de ruedas.
+          </li>
+          <li>
+            <strong>Confirma.</strong>
+            La reserva queda en estado <em>Reservada</em> y se generan tus boletas,
+            una por entrada, cada una con su número de serie.
+          </li>
+          <li>
+            <strong>Paga en taquilla.</strong>
+            Esta plataforma no cobra en línea: la reserva aparta tu cupo y el pago
+            se hace en el recinto, donde la reserva pasa a <em>Confirmada</em>.
+          </li>
+        </ol>
+
+        <p class="ayuda-cierre">
+          Todas tus reservas quedan en
+          <a href="#" onclick="return requireAuth('reservations')">Mis reservas</a>,
+          donde puedes ver el detalle o cancelarlas mientras sigan en estado Reservada.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           Ser organizador
+           ============================================================ -->
+      <section class="panel ayuda-bloque" id="ayuda-organizador" aria-labelledby="ayuda-organizador-t">
+        <div class="panel-head"><h3 id="ayuda-organizador-t">Publicar eventos como organizador</h3></div>
+
+        <p>
+          Las cuentas de organizador no se crean solas: se solicitan y un
+          administrador las aprueba, porque quien publica un evento compromete al
+          público que reserva.
+        </p>
+        <ol class="ayuda-pasos">
+          <li><strong>Envía la solicitud</strong> con tus datos y una justificación
+            de qué eventos vas a publicar.</li>
+          <li><strong>Espera la revisión.</strong> Si la aprueban, recibirás una
+            contraseña temporal para entrar; si la rechazan, te explican por qué.</li>
+          <li><strong>Publica desde tu panel.</strong> Cada evento lleva recinto,
+            ciudad, fechas, aforo, precio y afiche. El código se asigna solo.</li>
+          <li><strong>Controla su estado</strong> —Programado, En Boletería, En Vivo,
+            Finalizado o Cancelado— y consulta las reservas que vas recibiendo.</li>
+        </ol>
+        <p class="ayuda-cierre">
+          <a href="#" onclick="return goRegisterAs('agente')">Solicitar una cuenta de organizador</a>
+        </p>
+      </section>
+
+      <!-- ============================================================
+           Preguntas frecuentes
+           ============================================================ -->
+      <section class="panel ayuda-bloque" id="ayuda-faq" aria-labelledby="ayuda-faq-t">
+        <div class="panel-head"><h3 id="ayuda-faq-t">Preguntas frecuentes</h3></div>
+
+        <details class="ayuda-faq">
+          <summary>¿Se paga en esta página?</summary>
+          <p>No. TUCKET aparta el cupo y genera las boletas; el pago se hace en la
+            taquilla del recinto. Por eso la reserva nace en estado Reservada y
+            pasa a Confirmada cuando se paga.</p>
+        </details>
+
+        <details class="ayuda-faq">
+          <summary>¿Puedo cancelar una reserva?</summary>
+          <p>Sí, mientras esté en estado Reservada, desde «Mis reservas». Al
+            cancelarla las entradas vuelven a quedar disponibles para otras personas.
+            Una reserva ya confirmada o usada no se cancela desde la página.</p>
+        </details>
+
+        <details class="ayuda-faq">
+          <summary>¿Qué pasa si cancelan el evento?</summary>
+          <p>El organizador debe registrar la causa, y todas las reservas vigentes
+            de ese evento quedan canceladas automáticamente con esa misma causa,
+            que puedes leer en el detalle de tu reserva.</p>
+        </details>
+
+        <details class="ayuda-faq">
+          <summary>¿Cuántas entradas puedo reservar?</summary>
+          <p>Las que queden disponibles en el aforo del evento. El sistema no deja
+            sobrevender: si dos personas reservan a la vez las últimas entradas,
+            solo una lo consigue.</p>
+        </details>
+
+        <details class="ayuda-faq">
+          <summary>Olvidé mi contraseña.</summary>
+          <p>Todavía no hay recuperación automática. Escríbenos y la restablecemos
+            a mano. Si sí recuerdas la actual, puedes cambiarla desde «Mi perfil».</p>
+        </details>
+
+        <details class="ayuda-faq">
+          <summary>¿Por qué la página tarda la primera vez?</summary>
+          <p>Está alojada en un plan gratuito que apaga el servicio cuando nadie lo
+            visita. La primera carga del día puede tardar hasta un minuto mientras
+            despierta; después va normal.</p>
+        </details>
+      </section>
+
+      <!-- ============================================================
+           Contacto
+           ============================================================ -->
+      <section class="panel ayuda-bloque" id="ayuda-contacto" aria-labelledby="ayuda-contacto-t">
+        <div class="panel-head"><h3 id="ayuda-contacto-t">Contáctanos</h3></div>
+
+        <p>
+          TUCKET es el proyecto integrador de la asignatura <strong>Programación en
+          Ambiente Web I</strong>, de la Facultad de Ingeniería de Sistemas de la
+          <strong>Unidad Central del Valle del Cauca (UCEVA)</strong>, en Tuluá.
+        </p>
+        <p>
+          No hay todavía una línea de atención: el equipo de desarrollo responde a
+          través de la asignatura. Si encuentras un fallo o algo que no se entiende,
+          repórtalo ahí indicando qué hiciste y qué esperabas que pasara.
+        </p>
+        <p class="ayuda-nota">
+          Esta es una plataforma académica. No procesa pagos reales y los eventos
+          publicados son de prueba.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           Redes
+           ============================================================ -->
+      <section class="panel ayuda-bloque" id="ayuda-redes" aria-labelledby="ayuda-redes-t">
+        <div class="panel-head"><h3 id="ayuda-redes-t">Redes sociales</h3></div>
+        <p>
+          TUCKET no tiene cuentas en redes sociales. Los enlaces del pie de página
+          están previstos para cuando existan, pero crear perfiles a nombre de una
+          plataforma que todavía es un ejercicio académico sería confundir a quien
+          los encuentre.
+        </p>
+        <p class="ayuda-cierre">
+          Mientras tanto, la cartelera al día está en
+          <a href="#" onclick="return nav('events')">Todos los eventos</a>.
+        </p>
+      </section>
+
+      <!-- ============================================================
+           Legal
+           ============================================================ -->
+      <section class="panel ayuda-bloque" id="ayuda-legal" aria-labelledby="ayuda-legal-t">
+        <div class="panel-head"><h3 id="ayuda-legal-t">Privacidad, términos y datos</h3></div>
+
+        <h4 id="ayuda-privacidad" class="ayuda-sub">Política de privacidad</h4>
+        <p>
+          Guardamos lo necesario para que la reserva funcione: nombre, documento,
+          correo, teléfono y, si lo completas, tu ubicación y dirección. Las
+          contraseñas no se guardan: se almacena un resumen cifrado del que no se
+          puede recuperar la original. Los datos viven en una base de datos
+          PostgreSQL alojada en la nube y no se comparten con terceros ni se usan
+          con fines publicitarios.
+        </p>
+
+        <h4 id="ayuda-terminos" class="ayuda-sub">Términos de uso</h4>
+        <p>
+          Al usar TUCKET te comprometes a dar información veraz y a no suplantar a
+          otra persona. Las reservas son nominales y se verifican en taquilla con el
+          documento. Los organizadores responden por la veracidad de los eventos que
+          publican. Al ser un prototipo académico, el servicio puede interrumpirse
+          sin aviso y los datos de prueba pueden borrarse.
+        </p>
+
+        <h4 id="ayuda-datos" class="ayuda-sub">Tratamiento de datos</h4>
+        <p>
+          Conforme a la Ley 1581 de 2012 de Colombia, puedes conocer, actualizar,
+          rectificar y solicitar la supresión de tus datos personales. Los datos que
+          puedes editar tú mismo están en «Mi perfil»; para cualquier otra solicitud,
+          escríbenos por los medios de la sección de contacto. Los datos se tratan
+          únicamente para gestionar cuentas, eventos y reservas dentro de la
+          plataforma.
+        </p>
+      </section>
+
+      <div class="ayuda-volver">
+        <a href="#" onclick="return nav('home')" class="btn btn-outline">Volver al inicio</a>
+      </div>
+
+    </div>
+  </main>
+
+  <div data-parcial="footer"></div>
+
+</div>
+
+</div>

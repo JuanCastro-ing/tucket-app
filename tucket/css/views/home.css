@@ -11,11 +11,6 @@
 .home-hero::before{ content:""; position:absolute; left:-60px; bottom:-110px; width:220px; height:220px; border-radius:50%; background:rgba(46,156,130,.10); }
 /* La columna derecha aloja el carrusel de destacados: necesita más ancho que
    las antiguas cifras y se centra con el bloque de texto. */
-.home-hero-inner{ display:grid; grid-template-columns:1fr minmax(330px,392px); gap:56px; align-items:center; position:relative; z-index:var(--z-base); }
-@media (max-width:1080px){ .home-hero-inner{ grid-template-columns:1fr minmax(300px,340px); gap:36px; } }
-@media (max-width:900px){ .home-hero-inner{ grid-template-columns:1fr; gap:40px; } }
-.home-hero-copy h1{ color:var(--paper); font-size:clamp(36px,5.6vw,60px); line-height:1.02; letter-spacing:-1.4px; max-width:15ch; margin-top:14px; }
-.home-hero-copy > p{ color:var(--muted-lt); font-size:16px; margin-top:18px; max-width:46ch; line-height:1.6; }
 .home-search{
   display:flex; margin-top:28px; background:var(--paper); border-radius:4px; overflow:hidden;
   box-shadow:var(--shadow); max-width:640px;

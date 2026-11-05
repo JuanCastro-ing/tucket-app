@@ -32,8 +32,6 @@
 .layout-main th{ white-space:normal; }
 .layout-main .cell-strong{ min-width:11ch; }
 
-.icon-mini{ width:30px; height:30px; border-radius:50%; background:var(--paper-2); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; color:var(--navy); }
-
 /* Mensajes y ayudas del formulario de registro de eventos (API) */
 .form-message{ padding:12px 14px; margin:0 0 18px; border-radius:var(--radius); font-size:13px; line-height:1.5; }
 .form-message[hidden]{ display:none; }

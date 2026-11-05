@@ -131,10 +131,26 @@ function olvidarHistorialDeVistas(){
    El texto del enlace entra en el aviso para que quede claro cuál se
    pulsó, que con once juntos no es obvio.
 ------------------------------------------------------------------ */
-function seccionEnPreparacion(enlace){
-  var nombre = enlace && enlace.textContent ? enlace.textContent.trim() : 'Esa sección';
-  if(typeof showAccessNotice === 'function'){
-    showAccessNotice('«' + nombre + '» todavía no tiene contenido: es parte del prototipo.');
-  }
+/* Abre el centro de ayuda en una sección concreta.
+
+   Los enlaces del pie de página —«Cómo reservar», «Preguntas frecuentes»,
+   «Política de privacidad»…— apuntan todos a la misma vista y se
+   diferencian por el trozo al que saltan. Antes solo avisaban de que la
+   sección no existía todavía.
+
+   El salto se hace después de que nav() muestre la vista: mientras está
+   oculta no tiene altura y el navegador no puede desplazarse hasta ella. */
+function irAAyuda(seccion){
+  nav('ayuda');
+  var destino = document.getElementById(seccion || 'ayuda-titulo');
+  if(!destino) return false;
+  /* requestAnimationFrame espera al primer pintado con la vista ya visible. */
+  requestAnimationFrame(function(){
+    destino.scrollIntoView({ behavior:'smooth', block:'start' });
+    /* Para quien navega con teclado o lector de pantalla: además de mover
+       la página, se lleva el foco al título de la sección. */
+    if(!destino.hasAttribute('tabindex')) destino.setAttribute('tabindex', '-1');
+    destino.focus({ preventScroll:true });
+  });
   return false;
 }

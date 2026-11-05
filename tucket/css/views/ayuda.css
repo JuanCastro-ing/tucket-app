@@ -1,0 +1,63 @@
+/* TUCKET — Centro de ayuda */
+
+/* Índice de secciones: enlaces internos en una fila que envuelve. */
+.ayuda-indice{
+  display:flex; flex-wrap:wrap; gap:10px;
+  margin:0 0 22px;
+}
+.ayuda-indice a{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.3px;
+  color:var(--navy); background:var(--white);
+  border:1px solid var(--line); border-radius:20px;
+  padding:7px 14px; text-decoration:none;
+  transition:border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.ayuda-indice a:hover{ border-color:var(--gold-dark); color:var(--gold-dark); }
+
+.ayuda-bloque{ margin-bottom:20px; }
+/* scroll-margin deja aire sobre el título al saltar desde el índice: sin esto
+   la cabecera fija tapa justo la línea a la que se saltó. */
+.ayuda-bloque{ scroll-margin-top:90px; }
+.ayuda-bloque p{ color:var(--ink); font-size:14.5px; line-height:1.75; max-width:78ch; }
+.ayuda-bloque p + p{ margin-top:12px; }
+
+.ayuda-sub{
+  font-size:15px; color:var(--navy); margin:22px 0 8px;
+  scroll-margin-top:90px;
+}
+.ayuda-sub:first-of-type{ margin-top:4px; }
+
+/* Pasos numerados */
+.ayuda-pasos{ margin:4px 0 0; padding-left:22px; }
+.ayuda-pasos li{
+  color:var(--ink); font-size:14.5px; line-height:1.7;
+  margin-bottom:12px; max-width:76ch; padding-left:4px;
+}
+.ayuda-pasos li::marker{ font-family:var(--mono); color:var(--gold-dark); font-size:13px; }
+.ayuda-pasos strong{ color:var(--navy); }
+
+.ayuda-cierre{ margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); }
+.ayuda-nota{ margin-top:14px; font-size:13px; color:var(--muted); }
+
+/* Preguntas frecuentes: <details> nativo, sin JavaScript. */
+.ayuda-faq{
+  border-bottom:1px solid var(--line);
+  padding:2px 0;
+}
+.ayuda-faq:last-of-type{ border-bottom:none; }
+.ayuda-faq summary{
+  cursor:pointer; list-style:none;
+  padding:13px 30px 13px 0; position:relative;
+  font-weight:700; font-size:14.5px; color:var(--navy);
+}
+.ayuda-faq summary::-webkit-details-marker{ display:none; }
+.ayuda-faq summary::after{
+  content:"+"; position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  font-family:var(--mono); font-size:17px; color:var(--gold-dark); line-height:1;
+}
+.ayuda-faq[open] summary::after{ content:"–"; }
+.ayuda-faq summary:hover{ color:var(--gold-dark); }
+.ayuda-faq summary:focus-visible{ outline:2px solid var(--gold-dark); outline-offset:2px; border-radius:2px; }
+.ayuda-faq p{ padding:0 0 14px; font-size:14px; color:var(--muted); }
+
+.ayuda-volver{ margin:4px 0 10px; }

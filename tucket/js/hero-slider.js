@@ -198,6 +198,10 @@ function goHero(i){
     d.classList.toggle('is-active', n === heroIndex);
     d.setAttribute('aria-current', n === heroIndex ? 'true' : 'false');
   });
+
+  /* Si alguien cambió de diapositiva a mano, el reloj vuelve a empezar
+     para darle los 5 segundos completos de lectura. */
+  if(typeof reiniciarHeroAuto === 'function') reiniciarHeroAuto();
   return false;
 }
 
@@ -229,6 +233,50 @@ function fondoDelHero(ruta){
 
 function heroPrev(){ goHero(heroIndex - 1); return false; }
 function heroNext(){ goHero(heroIndex + 1); return false; }
+
+/* ------------------------------------------------------------------
+   Avance automático
+
+   El carrusel pasa solo cada 5 segundos. Tres reglas para que no
+   moleste en vez de ayudar:
+
+   · Se detiene mientras el cursor está encima o el foco está dentro.
+     Nada peor que leer un evento y que la página lo cambie a media
+     frase, o intentar pulsar «Ver evento» y que se mueva el botón.
+   · Se detiene cuando la pestaña no está visible: avanzar para nadie
+     solo gasta batería, y al volver se encontrarían ocho vueltas dadas.
+   · Respeta «reducir movimiento» del sistema operativo. Quien lo activa
+     suele hacerlo porque el movimiento le produce mareo, y un carrusel
+     que se mueve solo es justo lo que pidió evitar.
+
+   Tras tocar una flecha o un punto, el reloj se reinicia: así no cambia
+   de diapositiva medio segundo después de que alguien eligió una.
+------------------------------------------------------------------ */
+var HERO_INTERVALO = 5000;
+var heroReloj = null;
+var heroEnPausa = false;
+
+function heroSinMovimiento(){
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function detenerHeroAuto(){
+  if(heroReloj){ clearInterval(heroReloj); heroReloj = null; }
+}
+
+function arrancarHeroAuto(){
+  detenerHeroAuto();
+  if(heroEnPausa || heroSinMovimiento() || heroSlides.length < 2) return;
+  heroReloj = setInterval(function(){
+    if(document.hidden) return;
+    goHero(heroIndex + 1);
+  }, HERO_INTERVALO);
+}
+
+/* Lo llaman las flechas, los puntos y el teclado. */
+function reiniciarHeroAuto(){
+  if(heroReloj) arrancarHeroAuto();
+}
 
 /* La escena de fondo y la etiqueta salen del propio evento.
 
@@ -334,6 +382,26 @@ function initHeroSlider(){
     if(e.key === 'ArrowLeft'){ e.preventDefault(); heroPrev(); }
     if(e.key === 'ArrowRight'){ e.preventDefault(); heroNext(); }
   });
+
+  /* Pausa mientras alguien está mirando o usando el carrusel */
+  function pausar(){ heroEnPausa = true; detenerHeroAuto(); }
+  function reanudar(){ heroEnPausa = false; arrancarHeroAuto(); }
+  hero.addEventListener('mouseenter', pausar);
+  hero.addEventListener('mouseleave', reanudar);
+  hero.addEventListener('focusin', pausar);
+  hero.addEventListener('focusout', function(e){
+    /* focusout salta también al moverse ENTRE elementos del hero: solo se
+       reanuda cuando el foco se fue de verdad fuera. */
+    if(!hero.contains(e.relatedTarget)) reanudar();
+  });
+
+  /* Al volver a la pestaña, el reloj empieza de cero en vez de disparar
+     de golpe todo lo que se acumuló mientras no se veía. */
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden) arrancarHeroAuto();
+  });
+
+  arrancarHeroAuto();
 
   /* Arrastre horizontal en pantallas táctiles */
   var x0 = null, y0 = null;
