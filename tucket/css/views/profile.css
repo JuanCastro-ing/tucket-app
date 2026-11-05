@@ -1,7 +1,5 @@
-/* ------------------------------------------------------------------
-   Vista: Mi perfil
-   Dos columnas en escritorio (resumen + formulario) y una sola en móvil.
------------------------------------------------------------------- */
+/* Vista: Mi perfil
+   Dos columnas en escritorio (resumen + formulario) y una sola en móvil. */
 
 .profile-grid{
   display:grid;
@@ -85,15 +83,12 @@
   .profile-actions .btn{ width:100%; min-width:0; }
 }
 
-/* ------------------------------------------------------------------
-   Cambiar contraseña
-
+/* Cambiar contraseña
    La rejilla del perfil es de 300px + resto. Sin esto la tarjeta cae en
    la primera columna, debajo del resumen de la cuenta, y los tres campos
    quedan apretados en 300px mientras sobra media pantalla a la derecha.
    Se la ancla a la segunda columna para que quede alineada con «Editar
-   mis datos» y comparta su ancho.
------------------------------------------------------------------- */
+   mis datos» y comparta su ancho. */
 .profile-card-pwd{ grid-column:2; }
 
 .pwd-intro{
@@ -121,12 +116,9 @@
   .pwd-row{ grid-template-columns:1fr; }
 }
 
-/* ------------------------------------------------------------------
-   Perfil reducido del administrador
-
+/* Perfil reducido del administrador
    Su tabla solo guarda nombre y correo: no tiene teléfonos, dirección ni
    ubicación. En vez de enseñarle campos que no puede llenar, se ocultan.
    La marca la pone profile.js al pintar el perfil, con el rol que viene
-   del servidor.
------------------------------------------------------------------- */
+   del servidor. */
 :root[data-perfil="reducido"] #view-profile .solo-perfil-completo{ display:none; }

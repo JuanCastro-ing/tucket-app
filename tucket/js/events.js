@@ -23,6 +23,66 @@ function eventStatus(event){
 function eventMoney(value){ return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(value)||0); }
 function eventDateText(value, options){ var date = eventDate(value); return date ? new Intl.DateTimeFormat('es-CO',Object.assign({timeZone:'America/Bogota'},options)).format(date) : 'Fecha por confirmar'; }
 
+/* Construye la tarjeta de un evento, con forma de boleto: marquesina con el
+   afiche, estado y código arriba, datos en el medio y el talón con el precio.
+   La usan la cartelera y los destacados de la portada, para que una tarjeta
+   se vea y se comporte igual en los dos sitios. */
+function tarjetaDeEvento(event){
+  var status = eventStatus(event);
+  var card = document.createElement('article');
+  card.className = 'ev-card';
+
+  /* Cabecera del boleto: estado + código, sobre la marquesina troquelada */
+  var head = document.createElement('div'); head.className = 'ev-head';
+
+  /* Afiche del evento: viene de la base (image_path). Si el evento no
+     tiene imagen, la marquesina queda como antes, en azul. */
+  if(event.image_path){
+    var poster = document.createElement('img');
+    poster.className = 'ev-poster';
+    poster.src = event.image_path;
+    poster.alt = event.image_alt || ('Afiche del evento ' + event.name);
+    poster.loading = 'lazy';
+    poster.decoding = 'async';
+    /* Si el archivo no está, se quita la imagen y vuelve la marquesina. */
+    poster.addEventListener('error', function(){
+      head.classList.remove('has-poster');
+      poster.remove();
+    });
+    head.classList.add('has-poster');
+    head.append(poster);
+  }
+
+  var badge = document.createElement('span');
+  badge.className = 'badge ' + ({'En Boletería':'badge-boleteria','Programado':'badge-programado','En Vivo':'badge-vivo','Finalizado':'badge-finalizado','Cancelado':'badge-cancelado'}[status] || 'badge-programado');
+  badge.textContent = status;
+  var serial = document.createElement('span');
+  serial.className = 'ev-serial'; serial.textContent = event.code || '';
+  head.append(badge, serial);
+
+  var body = document.createElement('div'); body.className = 'ev-body';
+  var title = document.createElement('h3'); title.textContent = event.name;
+  var location = document.createElement('p'); location.className = 'ev-loc';
+  location.textContent = [event.venue, event.city, event.department].filter(Boolean).join(' · ');
+  var date = document.createElement('p'); date.className = 'ev-date';
+  date.textContent = eventDateText(event.starts_at, {dateStyle:'medium', timeStyle:'short'});
+  body.append(title, location, date);
+
+  /* Talón: precio y acceso al evento */
+  var stub = document.createElement('div'); stub.className = 'ev-stub';
+  var price = document.createElement('p'); price.className = 'ev-price';
+  var label = document.createElement('span'); label.textContent = 'DESDE';
+  price.append(label, document.createTextNode(eventMoney(event.base_price)));
+  var link = document.createElement('a');
+  link.href = '#'; link.className = 'btn btn-gold btn-sm'; link.textContent = 'Ver evento';
+  link.setAttribute('aria-label', 'Ver el evento ' + event.name);
+  link.addEventListener('click', function(ev){ ev.preventDefault(); openEventDetails(event.code); });
+  stub.append(price, link);
+
+  card.append(head, body, stub);
+  return card;
+}
+
 function renderExploreEvents(){
   var grid = document.getElementById('events-grid');
   if(!grid) return;
@@ -54,61 +114,9 @@ function renderExploreEvents(){
   });
   grid.replaceChildren();
   shown.forEach(function(event){
-    var status = eventStatus(event);
-    var card = document.createElement('article');
-    card.className = 'ev-card';
-
-    /* Cabecera del boleto: estado + código, sobre la marquesina troquelada */
-    var head = document.createElement('div'); head.className = 'ev-head';
-
-    /* Afiche del evento: viene de la base (image_path). Si el evento no
-       tiene imagen, la marquesina queda como antes, en azul. */
-    if(event.image_path){
-      var poster = document.createElement('img');
-      poster.className = 'ev-poster';
-      poster.src = event.image_path;
-      poster.alt = event.image_alt || ('Afiche del evento ' + event.name);
-      poster.loading = 'lazy';
-      poster.decoding = 'async';
-      /* Si el archivo no está, se quita la imagen y vuelve la marquesina. */
-      poster.addEventListener('error', function(){
-        head.classList.remove('has-poster');
-        poster.remove();
-      });
-      head.classList.add('has-poster');
-      head.append(poster);
-    }
-
-    var badge = document.createElement('span');
-    badge.className = 'badge ' + ({'En Boletería':'badge-boleteria','Programado':'badge-programado','En Vivo':'badge-vivo','Finalizado':'badge-finalizado','Cancelado':'badge-cancelado'}[status] || 'badge-programado');
-    badge.textContent = status;
-    var serial = document.createElement('span');
-    serial.className = 'ev-serial'; serial.textContent = event.code || '';
-    head.append(badge, serial);
-
-    /* Cuerpo */
-    var body = document.createElement('div'); body.className = 'ev-body';
-    var title = document.createElement('h3'); title.textContent = event.name;
-    var location = document.createElement('p'); location.className = 'ev-loc';
-    location.textContent = [event.venue, event.city, event.department].filter(Boolean).join(' · ');
-    var date = document.createElement('p'); date.className = 'ev-date';
-    date.textContent = eventDateText(event.starts_at, {dateStyle:'medium', timeStyle:'short'});
-    body.append(title, location, date);
-
-    /* Talón: precio y acceso al evento */
-    var stub = document.createElement('div'); stub.className = 'ev-stub';
-    var price = document.createElement('p'); price.className = 'ev-price';
-    var label = document.createElement('span'); label.textContent = 'DESDE';
-    price.append(label, document.createTextNode(eventMoney(event.base_price)));
-    var link = document.createElement('a');
-    link.href = '#'; link.className = 'btn btn-gold btn-sm'; link.textContent = 'Ver evento';
-    link.setAttribute('aria-label', 'Ver el evento ' + event.name);
-    link.addEventListener('click', function(ev){ ev.preventDefault(); openEventDetails(event.code); });
-    stub.append(price, link);
-
-    card.append(head, body, stub);
-    grid.append(card);
+    grid.append(tarjetaDeEvento(event));
   });
+
   grid.setAttribute('aria-busy','false');
   if(!shown.length){var empty=document.createElement('p');empty.className='events-empty';empty.textContent=publicEvents.length
     ? 'No hay eventos que coincidan con estos filtros.'

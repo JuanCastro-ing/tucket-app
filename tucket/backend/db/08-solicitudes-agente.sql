@@ -1,4 +1,3 @@
--- ============================================================
 -- TUCKET · Módulo 8: Solicitudes de cuenta de agente
 --
 -- Quien quiera publicar espectáculos llena un formulario público con sus
@@ -8,7 +7,6 @@
 --
 -- La solicitud se conserva después de resuelta: es el rastro de por qué
 -- existe cada cuenta de agente.
--- ============================================================
 
 CREATE TABLE IF NOT EXISTS agent_requests (
   id BIGSERIAL PRIMARY KEY,

@@ -42,9 +42,7 @@ function resTalon(valor){
     .format(d).toUpperCase().replace('.', '');
 }
 
-/* ------------------------------------------------------------------
-   Una tarjeta
------------------------------------------------------------------- */
+/* Una tarjeta */
 function resDato(etiqueta, valor){
   var bloque = document.createElement('div');
   bloque.className = 'rf';
@@ -133,9 +131,7 @@ function resTarjeta(r){
   return ticket;
 }
 
-/* ------------------------------------------------------------------
-   Lista y filtro
------------------------------------------------------------------- */
+/* Lista y filtro */
 function reservaNormalizar(texto){
   return String(texto || '')
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -196,9 +192,7 @@ function filtrarReservas(estado, tab){
   return false;
 }
 
-/* ------------------------------------------------------------------
-   Carga y cancelación
------------------------------------------------------------------- */
+/* Carga y cancelación */
 async function cargarMisReservas(){
   resMensaje('');
   try{

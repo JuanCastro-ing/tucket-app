@@ -52,9 +52,7 @@ textarea.input-invalid:focus{
 }
 input[type="checkbox"].input-invalid{ outline:2px solid var(--red); outline-offset:2px; }
 
-/* ------------------------------------------------------------------
-   Campo de afiche: selector de archivo + previsualización
------------------------------------------------------------------- */
+/* Campo de afiche: selector de archivo + previsualización */
 .field-optional{
   font-family:var(--mono); font-size:10px; letter-spacing:.6px;
   color:var(--muted); text-transform:uppercase;
@@ -100,11 +98,9 @@ input[type="checkbox"].input-invalid{ outline:2px solid var(--red); outline-offs
   .image-preview{ flex:none; width:100%; }
 }
 
-/* ============================================================
-   Campo de contraseña con botón de mostrar/ocultar.
+/* Campo de contraseña con botón de mostrar/ocultar.
    Vive aquí y no en login.css porque lo usan dos vistas: el inicio de
-   sesión y el cambio de contraseña del perfil.
-   ============================================================ */
+   sesión y el cambio de contraseña del perfil. */
 .pw-wrap{ position:relative; }
 .pw-wrap input{ padding-right:46px; width:100%; }
 

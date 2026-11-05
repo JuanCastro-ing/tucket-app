@@ -1,9 +1,7 @@
--- ============================================================
 -- TUCKET · Módulo 4: Clientes (quien reserva)
 -- Tabla separada de `agents` a propósito: son dos roles con datos y
 -- ciclo de vida distintos. El login identifica el rol por la tabla en
 -- la que encuentra el correo.
--- ============================================================
 
 CREATE TABLE IF NOT EXISTS clients (
   id BIGSERIAL PRIMARY KEY,

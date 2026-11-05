@@ -1,4 +1,3 @@
--- ============================================================
 -- TUCKET · Módulo 7: Administradores
 --
 -- Tercer rol del sistema, junto a agentes y clientes. Su trabajo es
@@ -7,7 +6,6 @@
 -- Igual que los agentes, estas cuentas NO se crean desde ningún formulario
 -- público: se aprovisionan con `npm run admin:create`. Si el panel de
 -- administración pudiera auto-registrarse, no serviría de nada.
--- ============================================================
 
 CREATE TABLE IF NOT EXISTS admins (
   id BIGSERIAL PRIMARY KEY,

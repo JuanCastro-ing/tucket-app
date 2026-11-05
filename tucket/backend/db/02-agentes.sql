@@ -1,8 +1,6 @@
--- ============================================================
 -- TUCKET · Módulo 2: Agentes (quien publica y administra eventos)
 -- Las cuentas se crean con `npm run agent:create`, nunca desde el
 -- formulario público de registro.
--- ============================================================
 
 CREATE TABLE IF NOT EXISTS agents (
   id BIGSERIAL PRIMARY KEY,

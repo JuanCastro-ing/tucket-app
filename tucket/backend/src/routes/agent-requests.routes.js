@@ -34,9 +34,7 @@ const SELECT_SOLICITUD = `
     FROM agent_requests s
     LEFT JOIN admins a ON a.id = s.reviewed_by`;
 
-/* ------------------------------------------------------------------
-   Crear una solicitud — público
------------------------------------------------------------------- */
+/* Crear una solicitud — público */
 router.post('/', async (req, res, next) => {
   const body = req.body || {};
   const fullName = String(body.fullName || '').trim();
@@ -109,9 +107,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Bandeja del administrador
------------------------------------------------------------------- */
+/* Bandeja del administrador */
 router.get('/', requireAdmin, async (req, res, next) => {
   const estado = String(req.query.status || '').trim();
   try {
@@ -133,9 +129,7 @@ router.get('/', requireAdmin, async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Aprobar: crea la cuenta de agente
------------------------------------------------------------------- */
+/* Aprobar: crea la cuenta de agente */
 router.patch('/:id/approve', requireAdmin, async (req, res, next) => {
   const id = Number(req.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
@@ -199,9 +193,7 @@ router.patch('/:id/approve', requireAdmin, async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Rechazar: exige el motivo
------------------------------------------------------------------- */
+/* Rechazar: exige el motivo */
 router.patch('/:id/reject', requireAdmin, async (req, res, next) => {
   const id = Number(req.params.id);
   const motivo = String((req.body || {}).reviewNotes || '').trim();

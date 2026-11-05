@@ -32,9 +32,7 @@ function agresBadge(estado){
             Cancelada:'badge-cancelado', Usada:'badge-finalizado' })[estado] || 'badge-programado';
 }
 
-/* ------------------------------------------------------------------
-   Tabla
------------------------------------------------------------------- */
+/* Tabla */
 function renderReservasAgente(){
   var cuerpo = document.getElementById('agres-body');
   if(!cuerpo) return;
@@ -134,9 +132,7 @@ function agresResumen(counts, ingresos){
   poner('agres-valor', agresMoneda(ingresos));
 }
 
-/* ------------------------------------------------------------------
-   Carga
------------------------------------------------------------------- */
+/* Carga */
 async function cargarReservasAgente(){
   agresMensaje('');
   try{

@@ -124,25 +124,19 @@
     })[status] || 'badge-programado';
   }
 
-  /* ----------------------------------------------------------------
-     Afiche del evento.
+  /* Afiche del evento.
      El archivo se lee en el navegador y viaja como base64 dentro del
-     JSON; el backend lo guarda en disco y en la base queda solo la ruta.
-  ---------------------------------------------------------------- */
+     JSON; el backend lo guarda en disco y en la base queda solo la ruta. */
   var MAX_AFICHE = 4 * 1024 * 1024;
   var TIPOS_AFICHE = ['image/jpeg', 'image/png', 'image/webp'];
-  /* ----------------------------------------------------------------
-     Imágenes del evento: afiche y banner
-
+  /* Imágenes del evento: afiche y banner
      Son dos campos con el mismo comportamiento —elegir, previsualizar,
      quitar— así que comparten código y solo cambian los identificadores
      y los textos. Antes esto estaba escrito una vez; duplicarlo para el
      banner habría dejado dos copias que se desincronizan.
-
      · Afiche: la imagen que se ve en la ficha y en la cartelera.
      · Banner: la imagen ancha del fondo del detalle. Es opcional, y si
-       no se pone, el detalle usa el afiche.
-  ---------------------------------------------------------------- */
+       no se pone, el detalle usa el afiche. */
   var CAMPOS_IMAGEN = {
     afiche: { input:'event-image',  caja:'event-image-preview',  thumb:'event-image-thumb',
               quitar:'event-image-clear', pista:'event-image-hint',
@@ -308,11 +302,9 @@
     if(scheduled) scheduled.textContent = events.filter(function(item){ return item.status === 'Programado'; }).length.toLocaleString('es-CO');
   }
 
-  /* ----------------------------------------------------------------
-     Ciclo de vida del evento (HU del agente).
+  /* Ciclo de vida del evento (HU del agente).
      Finalizado y Cancelado son estados finales: la fila deja de ofrecer
-     cambios. Cancelar abre una fila con el campo de causa, obligatorio.
-  ---------------------------------------------------------------- */
+     cambios. Cancelar abre una fila con el campo de causa, obligatorio. */
   var ESTADOS = ['Programado', 'En Boletería', 'En Vivo', 'Finalizado', 'Cancelado'];
   var ESTADOS_FINALES = ['Finalizado', 'Cancelado'];
 
@@ -367,13 +359,10 @@
     return celda;
   }
 
-  /* ----------------------------------------------------------------
-     Eliminar un evento.
-
+  /* Eliminar un evento.
      Se pide confirmación escrita en la propia fila y no con un
      confirm() del navegador: el aviso puede explicar que esto no es lo
-     mismo que cancelar, y que lo borrado no vuelve.
-  ---------------------------------------------------------------- */
+     mismo que cancelar, y que lo borrado no vuelve. */
   function botonEliminar(event){
     var boton = document.createElement('button');
     boton.type = 'button';
@@ -537,17 +526,13 @@
     }
   }
 
-  /* ----------------------------------------------------------------
-     Edición de un evento.
-
+  /* Edición de un evento.
      Se reutiliza el mismo formulario en vez de abrir otro: son los
      mismos campos y las mismas validaciones, y así no hay dos sitios
      que mantener. Lo único que cambia es a dónde se envía y el texto
      de los botones.
-
      editandoCodigo guarda el código del evento abierto, o null cuando
-     el formulario está creando uno nuevo.
-  ---------------------------------------------------------------- */
+     el formulario está creando uno nuevo. */
   var editandoCodigo = null;
   var imagenesQuitadas = { afiche:false, banner:false };
 

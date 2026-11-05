@@ -1,4 +1,3 @@
--- ============================================================
 -- TUCKET · Módulo 6: Datos de perfil editables
 -- HU: "Como usuario autenticado quiero modificar mis datos personales
 --      (nombre completo, dirección, ciudad y teléfonos de contacto)".
@@ -6,7 +5,6 @@
 -- Los clientes ya tenían teléfono y dirección; les falta el segundo
 -- número. Los agentes no tenían ninguno de esos campos, así que se
 -- agregan aquí para que ambos roles editen el mismo formulario.
--- ============================================================
 
 -- ---------- Clientes ----------
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS phone_alt VARCHAR(32);
@@ -38,10 +36,8 @@ ALTER TABLE agents ADD CONSTRAINT agents_city_matches_location
   FOREIGN KEY (city_id, department_code, country_code)
   REFERENCES cities(id, department_code, country_code) ON UPDATE CASCADE;
 
--- ============================================================
 -- Marca de tiempo de la última edición. Se hace con trigger y no desde
 -- la API para que quede registrada venga el cambio de donde venga.
--- ============================================================
 CREATE OR REPLACE FUNCTION perfil_touch_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

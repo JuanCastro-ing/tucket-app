@@ -18,16 +18,12 @@ function changeQty(delta){
   return false;
 }
 
-/* ------------------------------------------------------------------
-   Confirmar la reserva
-
+/* Confirmar la reserva
    El botón «Confirmar reserva» solo navegaba a Mis reservas: no guardaba
    nada. Ahora llama a POST /api/reservations, que es quien descuenta el
    cupo, congela el precio y emite las boletas.
-
    El máximo de 10 por reserva y la disponibilidad los decide el servidor;
-   aquí solo se muestra lo que responda.
------------------------------------------------------------------- */
+   aquí solo se muestra lo que responda. */
 function reservaMensaje(texto, tipo){
   var caja = document.getElementById('detalle-message');
   if(!caja) return;

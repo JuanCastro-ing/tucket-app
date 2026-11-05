@@ -318,56 +318,10 @@
           <a href="#" onclick="return nav('events')" class="btn btn-outline btn-sm">Ver toda la cartelera <span aria-hidden="true">→</span></a>
         </div>
 
-        <div class="events-grid events-grid-feature">
-
-          <a href="#" onclick="return nav('event-detail')" class="ev-card">
-              <div class="ev-head">
-                <span class="badge badge-boleteria">En Boletería</span>
-                <span class="ev-serial">EVT-2026-0184</span>
-              </div>
-              <div class="ev-body">
-                <h3>Noche de Salsa — Grupo Niche Tributo</h3>
-                <p class="ev-loc">Teatro Los Cristales · Cali</p>
-                <p class="ev-date">14 NOV · 8:00 PM</p>
-              </div>
-              <div class="ev-stub">
-                <p class="ev-price"><span>DESDE</span>$85.000</p>
-                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
-              </div>
-            </a>
-
-          <a href="#" onclick="return nav('event-detail')" class="ev-card">
-              <div class="ev-head">
-                <span class="badge badge-vivo">En Vivo</span>
-                <span class="ev-serial">EVT-2026-0176</span>
-              </div>
-              <div class="ev-body">
-                <h3>Festival Rock a la Cañada</h3>
-                <p class="ev-loc">Parque de la Salsa · Cali</p>
-                <p class="ev-date">HOY · 9:00 PM</p>
-              </div>
-              <div class="ev-stub">
-                <p class="ev-price"><span>DESDE</span>$120.000</p>
-                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
-              </div>
-            </a>
-
-          <a href="#" onclick="return nav('event-detail')" class="ev-card">
-              <div class="ev-head">
-                <span class="badge badge-programado">Programado</span>
-                <span class="ev-serial">EVT-2026-0201</span>
-              </div>
-              <div class="ev-body">
-                <h3>Romeo y Julieta — Compañía Nacional de Teatro</h3>
-                <p class="ev-loc">Teatro Municipal Enrique Buenaventura · Cali</p>
-                <p class="ev-date">02 DIC · 7:30 PM</p>
-              </div>
-              <div class="ev-stub">
-                <p class="ev-price"><span>DESDE</span>$52.000</p>
-                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
-              </div>
-            </a>
-
+        <!-- Se llena desde la base al cargar la portada: los eventos con más
+             entradas vendidas. Ver pintarDestacados() en js/home-featured.js. -->
+        <div class="events-grid events-grid-feature" id="featured-grid" aria-busy="true">
+          <p class="events-empty" id="featured-estado">Cargando eventos destacados…</p>
         </div>
       </section>
 
@@ -388,56 +342,10 @@
           <a href="#" onclick="return nav('events')" class="btn btn-outline btn-sm">Ver todos <span aria-hidden="true">→</span></a>
         </div>
 
-        <div class="events-grid">
-
-          <a href="#" onclick="return nav('event-detail')" class="ev-card">
-              <div class="ev-head">
-                <span class="badge badge-programado">Programado</span>
-                <span class="ev-serial">EVT-2026-0219</span>
-              </div>
-              <div class="ev-body">
-                <h3>Concierto de Fin de Año — Orquesta Filarmónica</h3>
-                <p class="ev-loc">Teatro Jorge Isaacs · Cali</p>
-                <p class="ev-date">20 DIC · 6:00 PM</p>
-              </div>
-              <div class="ev-stub">
-                <p class="ev-price"><span>DESDE</span>$65.000</p>
-                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
-              </div>
-            </a>
-
-          <a href="#" onclick="return nav('event-detail')" class="ev-card">
-              <div class="ev-head">
-                <span class="badge badge-boleteria">En Boletería</span>
-                <span class="ev-serial">EVT-2026-0163</span>
-              </div>
-              <div class="ev-body">
-                <h3>Stand Up Comedy Night</h3>
-                <p class="ev-loc">Sala Beethoven · Bogotá</p>
-                <p class="ev-date">28 NOV · 8:30 PM</p>
-              </div>
-              <div class="ev-stub">
-                <p class="ev-price"><span>DESDE</span>$40.000</p>
-                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
-              </div>
-            </a>
-
-          <a href="#" onclick="return nav('event-detail')" class="ev-card">
-              <div class="ev-head">
-                <span class="badge badge-finalizado">Finalizado</span>
-                <span class="ev-serial">EVT-2026-0098</span>
-              </div>
-              <div class="ev-body">
-                <h3>Feria de Cali — Show de Salsódromo</h3>
-                <p class="ev-loc">Autódromo de Palmaseca · Cali</p>
-                <p class="ev-date">03 SEP · 7:00 PM</p>
-              </div>
-              <div class="ev-stub">
-                <p class="ev-price"><span>DESDE</span>$95.000</p>
-                <span class="btn btn-gold btn-sm" aria-hidden="true">Ver evento</span>
-              </div>
-            </a>
-
+        <!-- También desde la base: los siguientes eventos por fecha, sin repetir
+             los destacados de arriba. -->
+        <div class="events-grid" id="more-events-grid" aria-busy="true">
+          <p class="events-empty" id="more-events-estado">Cargando cartelera…</p>
         </div>
       </section>
 

@@ -54,9 +54,7 @@ function consultaPerfil(tabla) {
      WHERE u.id = $1 AND u.active = TRUE`;
 }
 
-/* ------------------------------------------------------------------
-   Ver mi perfil
------------------------------------------------------------------- */
+/* Ver mi perfil */
 router.get('/', requireSession, async (req, res, next) => {
   try {
     const tabla = tablaDe(req);
@@ -79,9 +77,7 @@ router.get('/', requireSession, async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Actualizar mi perfil
------------------------------------------------------------------- */
+/* Actualizar mi perfil */
 router.put('/', requireSession, async (req, res, next) => {
   const tabla = tablaDe(req);
   if (!tabla) return res.status(403).json({ error: 'Este rol no tiene perfil editable.' });
@@ -188,14 +184,11 @@ router.put('/', requireSession, async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Cambiar mi contraseña
-
+/* Cambiar mi contraseña
    Se exige la actual aunque haya sesión abierta. La sesión demuestra que
    alguien entró con esa cuenta, no que siga siendo su dueño: un equipo
    prestado o desatendido basta para cambiarle la clave a otro y dejarlo
-   fuera. Pedir la anterior lo impide.
------------------------------------------------------------------- */
+   fuera. Pedir la anterior lo impide. */
 router.put('/password', requireSession, async (req, res, next) => {
   const tabla = tablaDe(req);
   if (!tabla) return res.status(403).json({ error: 'Este rol no tiene perfil editable.' });

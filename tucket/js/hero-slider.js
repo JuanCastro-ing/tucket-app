@@ -234,12 +234,9 @@ function fondoDelHero(ruta){
 function heroPrev(){ goHero(heroIndex - 1); return false; }
 function heroNext(){ goHero(heroIndex + 1); return false; }
 
-/* ------------------------------------------------------------------
-   Avance automático
-
+/* Avance automático
    El carrusel pasa solo cada 5 segundos. Tres reglas para que no
    moleste en vez de ayudar:
-
    · Se detiene mientras el cursor está encima o el foco está dentro.
      Nada peor que leer un evento y que la página lo cambie a media
      frase, o intentar pulsar «Ver evento» y que se mueva el botón.
@@ -248,10 +245,8 @@ function heroNext(){ goHero(heroIndex + 1); return false; }
    · Respeta «reducir movimiento» del sistema operativo. Quien lo activa
      suele hacerlo porque el movimiento le produce mareo, y un carrusel
      que se mueve solo es justo lo que pidió evitar.
-
    Tras tocar una flecha o un punto, el reloj se reinicia: así no cambia
-   de diapositiva medio segundo después de que alguien eligió una.
------------------------------------------------------------------- */
+   de diapositiva medio segundo después de que alguien eligió una. */
 var HERO_INTERVALO = 5000;
 var heroReloj = null;
 var heroEnPausa = false;
@@ -319,18 +314,14 @@ function setHeroFeatured(events){
   renderHero();
 }
 
-/* ------------------------------------------------------------------
-   Qué eventos salen en la portada.
-
+/* Qué eventos salen en la portada.
    No existe una marca de "destacado" en la base, así que se decide con los
    datos que ya hay: primero los que más entradas llevan vendidas, y a
    igualdad de reservas, el que ocurre antes. Mientras nadie haya reservado
    todavía, el orden se reduce a los próximos espectáculos, que es justo lo
    que conviene mostrar en una cartelera recién estrenada.
-
    Quedan fuera los cancelados, los finalizados y los que ya pasaron: la
-   portada es para lo que todavía se puede comprar.
------------------------------------------------------------------- */
+   portada es para lo que todavía se puede comprar. */
 function heroDestacados(events){
   var ahora = Date.now();
   return (Array.isArray(events) ? events : [])
@@ -361,8 +352,13 @@ async function loadHeroFeatured(){
     var resultado = await tucketApi('/api/events');
     var destacados = heroDestacados(resultado && resultado.events);
     if(destacados.length) setHeroFeatured(destacados);
+
+    /* Con la misma respuesta se llenan las dos rejillas de más abajo, para
+       no pedir tres veces lo mismo al servidor. */
+    if(typeof pintarDestacados === 'function') pintarDestacados(resultado && resultado.events);
   }catch(_error){
     /* Sin backend la portada se queda con su versión de presentación. */
+    if(typeof portadaSinConexion === 'function') portadaSinConexion();
   }
 }
 

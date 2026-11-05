@@ -12,9 +12,7 @@ const MAX_POR_RESERVA = 10;
 /* Solo se puede reservar un evento que todavía no empieza y está abierto. */
 const ESTADOS_RESERVABLES = new Set(['Programado', 'En Boletería']);
 
-/* ------------------------------------------------------------------
-   Crear una reserva
------------------------------------------------------------------- */
+/* Crear una reserva */
 router.post('/', requireClient, async (req, res, next) => {
   const eventCode = String(req.body?.eventCode || '').trim().toUpperCase();
   const quantity = Number(req.body?.quantity);
@@ -100,9 +98,7 @@ router.post('/', requireClient, async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Mis reservas
------------------------------------------------------------------- */
+/* Mis reservas */
 router.get('/mine', requireClient, async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -123,9 +119,7 @@ router.get('/mine', requireClient, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Detalle con las boletas
------------------------------------------------------------------- */
+/* Detalle con las boletas */
 router.get('/:code', requireClient, async (req, res, next) => {
   try {
     const code = String(req.params.code || '').trim().toUpperCase();
@@ -148,9 +142,7 @@ router.get('/:code', requireClient, async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Cancelar una reserva (el cupo vuelve al evento)
------------------------------------------------------------------- */
+/* Cancelar una reserva (el cupo vuelve al evento) */
 router.patch('/:code/cancel', requireClient, async (req, res, next) => {
   const code = String(req.params.code || '').trim().toUpperCase();
   const crudo = req.body?.reason;

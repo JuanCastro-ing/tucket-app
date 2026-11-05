@@ -52,9 +52,7 @@
 }
 .chart-tip.visible{ opacity:1; }
 
-/* ============================================================
-   Bandeja de solicitudes de cuenta de agente
-   ============================================================ */
+/* Bandeja de solicitudes de cuenta de agente */
 .adm-card{
   background:var(--white);
   border:1px solid var(--line);

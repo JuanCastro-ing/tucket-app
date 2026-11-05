@@ -31,9 +31,7 @@ function solBadgeClase(estado){
   return ({ Pendiente:'badge-programado', Aprobada:'badge-boleteria', Rechazada:'badge-cancelado' })[estado] || 'badge-programado';
 }
 
-/* ------------------------------------------------------------------
-   Contadores: pestañas, chip del encabezado y marca del menú lateral
------------------------------------------------------------------- */
+/* Contadores: pestañas, chip del encabezado y marca del menú lateral */
 function solPintarConteos(conteos){
   var total = (conteos.Pendiente || 0) + (conteos.Aprobada || 0) + (conteos.Rechazada || 0);
   var porPestana = {
@@ -67,9 +65,7 @@ function solPintarConteos(conteos){
   }
 }
 
-/* ------------------------------------------------------------------
-   Tarjeta de una solicitud
------------------------------------------------------------------- */
+/* Tarjeta de una solicitud */
 function solDato(etiqueta, valor){
   var bloque = document.createElement('div');
   bloque.className = 'sol-dato';
@@ -187,9 +183,7 @@ function abrirRechazo(card){
   if(!motivo.hidden){ motivo.querySelector('textarea').focus(); }
 }
 
-/* ------------------------------------------------------------------
-   Carga y filtros
------------------------------------------------------------------- */
+/* Carga y filtros */
 async function cargarSolicitudes(){
   if(solCargando) return;
   solCargando = true;
@@ -241,9 +235,7 @@ function filtrarSolicitudes(estado, tab){
   return false;
 }
 
-/* ------------------------------------------------------------------
-   Resolver
------------------------------------------------------------------- */
+/* Resolver */
 async function aprobarSolicitud(id, boton){
   if(boton){ boton.disabled = true; boton.textContent = 'Creando la cuenta…'; }
   try{

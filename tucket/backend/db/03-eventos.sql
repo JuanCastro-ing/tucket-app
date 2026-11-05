@@ -1,8 +1,6 @@
--- ============================================================
 -- TUCKET · Módulo 3: Eventos
 -- Incluye el afiche del evento (image_path / image_alt) y el ciclo
 -- de vida del estado.
--- ============================================================
 
 CREATE TABLE IF NOT EXISTS events (
   id BIGSERIAL PRIMARY KEY,
@@ -43,11 +41,9 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE INDEX IF NOT EXISTS events_agent_created_idx ON events(agent_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS events_starts_at_idx ON events(starts_at);
 
--- ============================================================
 -- Migraciones idempotentes para bases ya creadas.
 -- CREATE TABLE IF NOT EXISTS no modifica una tabla existente, así que
 -- los cambios posteriores se reaplican aquí.
--- ============================================================
 
 -- Ciclo de vida del evento
 ALTER TABLE events ADD COLUMN IF NOT EXISTS cancellation_reason TEXT;
@@ -64,7 +60,6 @@ ALTER TABLE events ADD COLUMN IF NOT EXISTS image_alt VARCHAR(200);
 ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_path VARCHAR(255);
 ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_alt VARCHAR(200);
 
--- ============================================================
 -- Código del evento: secuencial y asignado por el sistema.
 --
 -- Antes lo escribía el agente a mano, y eso abría dos problemas: dos
@@ -76,7 +71,6 @@ ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_alt VARCHAR(200);
 --
 -- El formato es EVT-00001, EVT-00002… Al pasar de 99999 simplemente
 -- crece a seis dígitos; no se reinicia ni se reutiliza.
--- ============================================================
 CREATE SEQUENCE IF NOT EXISTS events_code_seq AS BIGINT START WITH 1 MINVALUE 1;
 
 -- Si la base ya tiene eventos con el formato nuevo, la secuencia se

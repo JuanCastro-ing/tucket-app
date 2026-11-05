@@ -25,13 +25,10 @@
 #access-notice.is-visible{ opacity:1; transform:translate(-50%,0); }
 #access-notice[hidden]{ display:none; }
 
-/* ============================================================
-   Botón «Volver» a la vista anterior
-
+/* Botón «Volver» a la vista anterior
    Convive con «Volver al inicio»: son dos destinos distintos, así que se
    distinguen por peso visual — este es un control secundario y queda a su
-   izquierda. Lo inyecta montarBotonesVolver() en navigation.js.
-   ============================================================ */
+   izquierda. Lo inyecta montarBotonesVolver() en navigation.js. */
 .btn-volver{
   display:inline-flex; align-items:center; gap:6px;
   padding:6px 12px; margin-right:10px;

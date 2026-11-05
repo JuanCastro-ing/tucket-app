@@ -15,9 +15,7 @@
 var MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 var admAnio = null;
 
-/* ------------------------------------------------------------------
-   Utilidades
------------------------------------------------------------------- */
+/* Utilidades */
 function admNumero(valor){
   return new Intl.NumberFormat('es-CO').format(Number(valor) || 0);
 }
@@ -65,9 +63,7 @@ function svgVacio(svg, mensaje){
   svg.append(svgTexto(caja.width / 2, caja.height / 2, mensaje, 'g-axis'));
 }
 
-/* ------------------------------------------------------------------
-   Gráfica de línea: ingresos por mes
------------------------------------------------------------------- */
+/* Gráfica de línea: ingresos por mes */
 function admLinea(svg, datos){
   svg.replaceChildren();
   var total = datos.reduce(function(a, d){ return a + d.total; }, 0);
@@ -103,9 +99,7 @@ function admLinea(svg, datos){
   });
 }
 
-/* ------------------------------------------------------------------
-   Gráfica de barras: reservas por mes
------------------------------------------------------------------- */
+/* Gráfica de barras: reservas por mes */
 function admBarras(svg, datos){
   svg.replaceChildren();
   var total = datos.reduce(function(a, d){ return a + d.total; }, 0);
@@ -140,9 +134,7 @@ function admBarras(svg, datos){
   });
 }
 
-/* ------------------------------------------------------------------
-   Barras horizontales: ingresos por agente
------------------------------------------------------------------- */
+/* Barras horizontales: ingresos por agente */
 function admBarrasHorizontales(svg, filas){
   svg.replaceChildren();
   if(!filas.length){ return svgVacio(svg, 'Ningún agente ha recaudado todavía'); }
@@ -163,9 +155,7 @@ function admBarrasHorizontales(svg, filas){
   });
 }
 
-/* ------------------------------------------------------------------
-   Dona: eventos por ciudad
------------------------------------------------------------------- */
+/* Dona: eventos por ciudad */
 function admDona(svg, filas, total){
   svg.replaceChildren();
   if(!filas.length || !total){ return svgVacio(svg, 'Todavía no hay eventos publicados'); }
@@ -207,9 +197,7 @@ function admDona(svg, filas, total){
   });
 }
 
-/* ------------------------------------------------------------------
-   Tablas
------------------------------------------------------------------- */
+/* Tablas */
 function admFilaVacia(cuerpo, columnas, texto){
   var tr = document.createElement('tr');
   var td = document.createElement('td');
@@ -241,9 +229,7 @@ function admCeldaCausa(texto){
   return td;
 }
 
-/* ------------------------------------------------------------------
-   Pintar todo
------------------------------------------------------------------- */
+/* Pintar todo */
 function admPintar(datos){
   admAnio = datos.year;
 
@@ -311,9 +297,7 @@ function admPintar(datos){
   });
 }
 
-/* ------------------------------------------------------------------
-   Carga
------------------------------------------------------------------- */
+/* Carga */
 async function cargarPanelAdmin(anio){
   admMensaje('');
   try{

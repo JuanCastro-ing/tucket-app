@@ -34,9 +34,7 @@ const DIRECTORIO = path.join(__dirname, '..', 'uploads', 'events');
 const RUTA_PUBLICA = '/uploads/events';
 const MAX_BYTES = 4 * 1024 * 1024; // 4 MB ya decodificados
 
-/* ------------------------------------------------------------------
-   Cloudinary
------------------------------------------------------------------- */
+/* Cloudinary */
 const CARPETA_REMOTA = 'tucket/events';
 const ESPERA_SUBIDA = 25_000;   // ms antes de darse por vencido
 

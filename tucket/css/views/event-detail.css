@@ -12,20 +12,16 @@
   border-radius:50%; background:rgba(232,180,76,.10);
 }
 
-/* ------------------------------------------------------------------
-   Fondo con el afiche difuminado
-
+/* Fondo con el afiche difuminado
    La cabecera era un azul plano con dos manchas de color. Con el afiche
    detrás, cada evento trae su propia atmósfera y el espacio deja de verse
    vacío.
-
    Tres cuidados:
    · scale(1.1) porque el desenfoque come los bordes y dejaría un halo
      claro alrededor;
    · la capa oscura encima, porque el titular es blanco y sobre un afiche
      claro desaparecería;
-   · z-index por debajo del contenido, que va en posición relativa.
------------------------------------------------------------------- */
+   · z-index por debajo del contenido, que va en posición relativa. */
 .hero-event-bg{
   position:absolute; inset:0;
   background-position:center; background-size:cover; background-repeat:no-repeat;

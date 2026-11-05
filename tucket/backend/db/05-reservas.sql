@@ -1,7 +1,5 @@
--- ============================================================
 -- TUCKET · Módulo 5: Reservas y boletas
 -- Una reserva agrupa N boletas de un mismo evento para un cliente.
--- ============================================================
 
 -- Consecutivo del código visible de la reserva (RES-00842, RES-00843, …).
 -- Arranca en 842 para continuar la numeración que ya mostraba la maqueta.
@@ -45,10 +43,8 @@ CREATE TABLE IF NOT EXISTS tickets (
 
 CREATE INDEX IF NOT EXISTS tickets_reservation_idx ON tickets(reservation_id);
 
--- ============================================================
 -- Disponibilidad: capacidad del evento menos lo reservado vigente.
 -- Las canceladas no ocupan cupo.
--- ============================================================
 CREATE OR REPLACE VIEW event_availability AS
 SELECT
   e.id   AS event_id,
@@ -62,11 +58,9 @@ LEFT JOIN reservations r
  AND r.status IN ('Reservada', 'Confirmada', 'Usada')
 GROUP BY e.id, e.code, e.total_capacity;
 
--- ============================================================
 -- Regla de integridad: no se puede sobrevender un evento.
 -- Vive en la base y no solo en la API, para que tampoco se pueda romper
 -- insertando a mano desde psql o desde la consola de Neon.
--- ============================================================
 CREATE OR REPLACE FUNCTION reservations_check_capacity()
 RETURNS TRIGGER AS $$
 DECLARE

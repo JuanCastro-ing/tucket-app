@@ -121,18 +121,14 @@ function submitLogin(event){
   return false;
 }
 
-/* ------------------------------------------------------------------
-   «¿Olvidaste tu contraseña?»
-
+/* «¿Olvidaste tu contraseña?»
    Era un enlace muerto: prometía una recuperación que no existe. Mandar
    un correo de restablecimiento exige un servicio de envío y credenciales,
    y eso es una historia aparte.
-
    Mientras tanto dice la verdad y explica el camino que sí funciona hoy,
    que es distinto según el rol: un cliente se registra de nuevo con otro
    correo, y a un agente o a un administrador le recrean la cuenta desde
-   la terminal.
------------------------------------------------------------------- */
+   la terminal. */
 function explicarRecuperacion(){
   var message = document.getElementById('login-message');
   if(message){

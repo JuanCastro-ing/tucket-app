@@ -14,16 +14,12 @@ function syncSkipLink(view){
   link.hidden = false;
 }
 
-/* ------------------------------------------------------------------
-   Historial de vistas
-
+/* Historial de vistas
    No se usa el historial del navegador porque las vistas no cambian la
    URL: todas viven en la misma página. Se lleva una pila propia con las
    vistas por las que se ha pasado.
-
    Se guarda un tope de 20: suficiente para deshacer un recorrido y sin
-   crecer sin control en una sesión larga.
------------------------------------------------------------------- */
+   crecer sin control en una sesión larga. */
 var historialVistas = [];
 var navegandoAtras = false;
 
@@ -121,16 +117,12 @@ function olvidarHistorialDeVistas(){
   historialVistas = [];
 }
 
-/* ------------------------------------------------------------------
-   Enlaces del pie que todavía no tienen contenido
-
+/* Enlaces del pie que todavía no tienen contenido
    Eran href="#" sin más: al pulsarlos no pasaba nada y parecía que la
    página estaba rota. Ahora dicen lo que son. Se resuelve en un solo
    sitio porque son once por vista y siete vistas.
-
    El texto del enlace entra en el aviso para que quede claro cuál se
-   pulsó, que con once juntos no es obvio.
------------------------------------------------------------------- */
+   pulsó, que con once juntos no es obvio. */
 /* Abre el centro de ayuda en una sección concreta.
 
    Los enlaces del pie de página —«Cómo reservar», «Preguntas frecuentes»,

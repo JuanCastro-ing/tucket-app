@@ -32,18 +32,14 @@ const estadosCicloVida = new Set(['Programado', 'En Boletería', 'En Vivo', 'Fin
 /* Una vez aquí, el evento no cambia más */
 const estadosFinales = new Set(['Finalizado', 'Cancelado']);
 
-/* ------------------------------------------------------------------
-   Código del evento.
-
+/* Código del evento.
    Lo asigna el sistema con una secuencia de PostgreSQL, no el agente.
    nextval() nunca devuelve el mismo número dos veces, ni aunque dos
    agentes guarden en el mismo instante, así que el código es único por
    construcción y además queda ordenado por antigüedad.
-
    La comprobación contra la tabla es por si la base ya traía un evento
    con ese mismo código escrito a mano: en ese caso se pide el siguiente
-   número en vez de fallar.
------------------------------------------------------------------- */
+   número en vez de fallar. */
 const PREFIJO_CODIGO = 'EVT-';
 function formatearCodigo(numero) {
   return PREFIJO_CODIGO + String(numero).padStart(5, '0');
@@ -69,9 +65,7 @@ const ESTADO_CALCULADO = `
     ELSE e.status
   END`;
 
-/* ------------------------------------------------------------------
-   Catálogo público
------------------------------------------------------------------- */
+/* Catálogo público */
 router.get('/', async (_req, res, next) => {
   try {
     const result = await pool.query(
@@ -92,9 +86,7 @@ router.get('/', async (_req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Eventos del agente autenticado
------------------------------------------------------------------- */
+/* Eventos del agente autenticado */
 router.get('/mine', requireAgent, async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -121,15 +113,12 @@ router.get('/mine', requireAgent, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Vista previa del próximo código.
-
+/* Vista previa del próximo código.
    Solo para mostrarlo en el formulario: el código definitivo se asigna
    al guardar, porque entre que se abre el formulario y se envía puede
    haber guardado otro agente. Va declarada antes que /:code porque
    Express resuelve por orden y si no «next-code» se leería como el
-   código de un evento.
------------------------------------------------------------------- */
+   código de un evento. */
 router.get('/next-code', requireAgent, async (_req, res, next) => {
   try {
     /* last_value con is_called = false significa que ese número todavía
@@ -142,9 +131,7 @@ router.get('/next-code', requireAgent, async (_req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Detalle de un evento
------------------------------------------------------------------- */
+/* Detalle de un evento */
 router.get('/:code', async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -167,9 +154,7 @@ router.get('/:code', async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Crear evento (con afiche opcional)
------------------------------------------------------------------- */
+/* Crear evento (con afiche opcional) */
 router.post('/', requireAgent, async (req, res, next) => {
   const body = req.body || {};
   const name = String(body.name || '').trim();
@@ -296,19 +281,15 @@ router.post('/', requireAgent, async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Editar un evento ya publicado.
-
+/* Editar un evento ya publicado.
    Corrige los datos sin tener que crear otro evento: el código y el
    agente dueño no se tocan, así que las reservas ya hechas siguen
    apuntando al mismo espectáculo.
-
    Dos reglas cuidan a quien ya compró:
    · Un evento Finalizado o Cancelado no se edita. Cambiar la fecha de
      algo que ya terminó solo sirve para confundir.
    · La capacidad no puede bajar de las butacas ya reservadas, porque
-     dejaría reservas vendidas sin silla.
------------------------------------------------------------------- */
+     dejaría reservas vendidas sin silla. */
 router.put('/:code', requireAgent, async (req, res, next) => {
   const code = String(req.params.code || '').trim().toUpperCase();
   const body = req.body || {};
@@ -477,17 +458,13 @@ router.put('/:code', requireAgent, async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Eliminar un evento.
-
+/* Eliminar un evento.
    Borrar no es lo mismo que cancelar: cancelar deja el registro y avisa
    a quien tenía boleta, borrar lo hace desaparecer. Por eso solo se
    permite cuando nadie tiene una reserva viva ni usada; si las hay, el
    camino correcto es cancelar el evento, que ya avisa a los clientes.
-
    Las reservas canceladas sí se van con el evento: no son boletas de
-   nadie, solo el rastro de algo que ya no existe.
------------------------------------------------------------------- */
+   nadie, solo el rastro de algo que ya no existe. */
 router.delete('/:code', requireAgent, async (req, res, next) => {
   const code = String(req.params.code || '').trim().toUpperCase();
   const client = await pool.connect();
@@ -535,9 +512,7 @@ router.delete('/:code', requireAgent, async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Cambiar o quitar el afiche de un evento ya creado
------------------------------------------------------------------- */
+/* Cambiar o quitar el afiche de un evento ya creado */
 router.put('/:code/image', requireAgent, async (req, res, next) => {
   const code = String(req.params.code || '').trim().toUpperCase();
   const body = req.body || {};
@@ -578,10 +553,8 @@ router.put('/:code/image', requireAgent, async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Ciclo de vida del espectáculo.
-   Estados finales no admiten más cambios, y cancelar exige el motivo.
------------------------------------------------------------------- */
+/* Ciclo de vida del espectáculo.
+   Estados finales no admiten más cambios, y cancelar exige el motivo. */
 router.patch('/:code/status', requireAgent, async (req, res, next) => {
   const code = String(req.params.code || '').trim().toUpperCase();
   const status = String((req.body || {}).status || '').trim();
@@ -658,17 +631,13 @@ router.patch('/:code/status', requireAgent, async (req, res, next) => {
   }
 });
 
-/* ------------------------------------------------------------------
-   Reservas de TODOS los eventos del agente.
-
+/* Reservas de TODOS los eventos del agente.
    Alimenta el panel «Reservas», que antes mostraba filas escritas a mano.
    El filtro por agent_id va en el JOIN: un agente no puede ver, ni por
    accidente ni a propósito, las reservas de los eventos de otro.
-
    Esta ruta va declarada ANTES que /:code/reservations porque Express
    resuelve por orden: si estuviera después, «mine» se leería como un
-   código de evento y nunca llegaría aquí.
------------------------------------------------------------------- */
+   código de evento y nunca llegaría aquí. */
 router.get('/mine/reservations', requireAgent, async (req, res, next) => {
   const estado = String(req.query.status || '').trim();
   const estadosValidos = new Set(['Reservada', 'Confirmada', 'Cancelada', 'Usada']);
@@ -711,9 +680,7 @@ router.get('/mine/reservations', requireAgent, async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
-/* ------------------------------------------------------------------
-   Reservas de UN evento del agente
------------------------------------------------------------------- */
+/* Reservas de UN evento del agente */
 router.get('/:code/reservations', requireAgent, async (req, res, next) => {
   const code = String(req.params.code).trim().toUpperCase();
   try {

@@ -1,7 +1,5 @@
--- ============================================================
 -- TUCKET · Módulo 1: Geografía (países, departamentos, ciudades)
 -- Catálogo DIVIPOLA del DANE. Lo cargan los scripts de setup.
--- ============================================================
 
 CREATE TABLE IF NOT EXISTS countries (
   code VARCHAR(3) PRIMARY KEY,

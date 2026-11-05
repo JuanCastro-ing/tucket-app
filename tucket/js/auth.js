@@ -33,17 +33,14 @@ function setAuthState(state, role){
   pintarPastillasDeRol();
 }
 
-/* ------------------------------------------------------------------
-   HU — Cada rol solo entra a sus vistas.
+/* HU — Cada rol solo entra a sus vistas.
    Una vista sin entrada en el mapa es pública. El control vive aquí y lo
    consulta nav(), de modo que ningún enlace, menú ni llamada directa pueda
    saltárselo desde la interfaz.
-
    Aviso importante: esto protege la INTERFAZ, no los datos. La barrera real
    son los endpoints del backend (requireAgent, requireClient y requireAdmin
    sobre la cookie de sesión firmada), que es donde se decide de verdad quién
-   puede leer y escribir qué.
------------------------------------------------------------------- */
+   puede leer y escribir qué. */
 var VIEW_ROLES = {
   'profile':           ['cliente', 'agente', 'administrador'],
   'reservations':      ['cliente'],

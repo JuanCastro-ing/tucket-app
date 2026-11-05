@@ -31,11 +31,9 @@
     }).format(fecha);
   }
 
-  /* ----------------------------------------------------------------
-     Selects encadenados: país → departamento → ciudad.
+  /* Selects encadenados: país → departamento → ciudad.
      Mismo comportamiento que el formulario de eventos, pero aquí los
-     tres pueden quedar vacíos porque la ubicación es opcional.
-  ---------------------------------------------------------------- */
+     tres pueden quedar vacíos porque la ubicación es opcional. */
   function llenarSelect(select, filas, textoVacio, valorElegido){
     select.replaceChildren(new Option(textoVacio, ''));
     filas.forEach(function(fila){
@@ -88,9 +86,7 @@
     }
   }
 
-  /* ----------------------------------------------------------------
-     Pintar el perfil en pantalla
-  ---------------------------------------------------------------- */
+  /* Pintar el perfil en pantalla */
   /* El administrador tiene un perfil reducido: su tabla solo guarda nombre
      y correo. Se marca en el <html> para que el CSS esconda las secciones
      de contacto y ubicación, y para que guardar() se salte sus reglas. */
@@ -191,9 +187,7 @@
     }
   }
 
-  /* ----------------------------------------------------------------
-     Guardar
-  ---------------------------------------------------------------- */
+  /* Guardar */
   function soloDigitos(valor){ return String(valor).replace(/\D/g, '').length; }
 
   async function guardar(evento){
@@ -287,9 +281,7 @@
     setMessage('Se descartaron los cambios sin guardar.', '');
   }
 
-  /* ----------------------------------------------------------------
-     Arranque de la vista
-  ---------------------------------------------------------------- */
+  /* Arranque de la vista */
   window.initProfile = function(){
     var vista = el('view-profile');
     if(!vista) return;
