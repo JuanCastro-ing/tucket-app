@@ -83,13 +83,13 @@
 
           <div class="charts-grid">
             <div class="chart-card">
-              <h3 id="adm-ingresos-titulo">Ingresos totales por mes</h3>
+              <h2 id="adm-ingresos-titulo">Ingresos totales por mes</h2>
               <span class="hint">Suma del valor de las reservas vigentes, en pesos colombianos</span>
               <svg class="chart-svg" id="adm-ingresos" viewBox="0 0 460 220" role="img"
                    aria-label="Ingresos mensuales" xmlns="http://www.w3.org/2000/svg"></svg>
             </div>
             <div class="chart-card">
-              <h3>Reservas por mes</h3>
+              <h2>Reservas por mes</h2>
               <span class="hint" id="adm-reservas-hint">&nbsp;</span>
               <svg class="chart-svg" id="adm-reservas" viewBox="0 0 360 220" role="img"
                    aria-label="Reservas mensuales" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -98,13 +98,13 @@
 
           <div id="reportes-comerciales" class="charts-grid-2">
             <div class="chart-card">
-              <h3>Ingresos por agente</h3>
+              <h2>Ingresos por agente</h2>
               <span class="hint">El sistema no maneja comisiones: se muestra lo recaudado por los eventos de cada agente</span>
               <svg class="chart-svg" id="adm-agentes-chart" viewBox="0 0 460 220" role="img"
                    aria-label="Ingresos por agente" xmlns="http://www.w3.org/2000/svg"></svg>
             </div>
             <div class="chart-card">
-              <h3>Eventos creados por ciudad</h3>
+              <h2>Eventos creados por ciudad</h2>
               <span class="hint" id="adm-ciudades-hint">&nbsp;</span>
               <svg class="chart-svg" id="adm-ciudades" viewBox="0 0 460 220" role="img"
                    aria-label="Eventos por ciudad" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -113,11 +113,12 @@
 
           <div class="panel" id="cobertura">
             <div class="panel-head">
-              <h3>Cobertura de eventos por ubicación</h3>
+              <h2>Cobertura de eventos por ubicación</h2>
               <span class="hint">País · Departamento · Ciudad</span>
             </div>
             <div class="table-wrap">
               <table>
+                <caption class="sr-only">Cobertura de eventos por ubicación</caption>
                 <thead><tr><th>País</th><th>Departamento</th><th>Ciudad</th><th>Eventos</th><th>Reservas asociadas</th></tr></thead>
                 <tbody id="adm-cobertura">
                   <tr><td colspan="5" class="cell-muted">Cargando…</td></tr>
@@ -128,11 +129,12 @@
 
           <div class="panel" id="operacion">
             <div class="panel-head">
-              <h3>Reservas canceladas y su causa</h3>
+              <h2>Reservas canceladas y su causa</h2>
               <span class="hint">Últimas 30 reservas canceladas</span>
             </div>
             <div class="table-wrap">
               <table>
+                <caption class="sr-only">Reservas canceladas y su causa</caption>
                 <thead><tr><th>Reserva</th><th>Cliente</th><th>Evento</th><th>Fecha cancelación</th><th>Causa</th></tr></thead>
                 <tbody id="adm-res-canceladas">
                   <tr><td colspan="5" class="cell-muted">Cargando…</td></tr>
@@ -143,10 +145,11 @@
 
           <div class="panel">
             <div class="panel-head">
-              <h3>Eventos cancelados y su causa</h3>
+              <h2>Eventos cancelados y su causa</h2>
             </div>
             <div class="table-wrap">
               <table>
+                <caption class="sr-only">Eventos cancelados y su causa</caption>
                 <thead><tr><th>Evento</th><th>Ciudad</th><th>Fecha</th><th>Causa</th></tr></thead>
                 <tbody id="adm-ev-cancelados">
                   <tr><td colspan="4" class="cell-muted">Cargando…</td></tr>

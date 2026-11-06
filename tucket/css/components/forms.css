@@ -124,3 +124,13 @@ input[type="checkbox"].input-invalid{ outline:2px solid var(--red); outline-offs
 .pw-toggle[aria-pressed="true"] .pw-icon-ver{ display:none; }
 .pw-toggle[aria-pressed="true"] .pw-icon-ocultar{ display:block; }
 .pw-toggle[aria-pressed="true"]{ color:var(--navy); }
+
+/* Casillas de verificación en móvil: el tamaño nativo es de 13 px, muy
+   poco para acertar con el dedo. Va en este archivo y no en buttons.css
+   porque forms.css se carga después y sus reglas de campos ganarían. */
+@media (max-width: 760px){
+  input[type="checkbox"],
+  input[type="radio"]{
+    width:20px; height:20px; min-width:20px; flex-shrink:0;
+  }
+}

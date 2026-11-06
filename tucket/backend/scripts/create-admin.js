@@ -10,6 +10,7 @@ const readline = require('node:readline/promises');
 const { stdin, stdout, argv } = require('node:process');
 const bcrypt = require('bcryptjs');
 const pool = require('../src/db');
+const { rolQueYaUsaElCorreo } = require('../src/correos');
 
 async function pedirDatos() {
   /* Los tres argumentos permiten crearlo desde un script. Sin ellos se
@@ -38,17 +39,13 @@ async function createAdmin() {
   /* Un correo no puede ser administrador y agente o cliente a la vez: el
      login busca en las tres tablas y el rol saldría de cuál se consulte
      primero, que es justo el tipo de ambigüedad que no debe existir. */
-  const ocupado = await pool.query(
-    `SELECT 'agente' AS rol FROM agents WHERE email = $1
-     UNION ALL
-     SELECT 'cliente' FROM clients WHERE email = $1`,
-    [email]
-  );
-  if (ocupado.rowCount) {
-    throw new Error(`ese correo ya está registrado como ${ocupado.rows[0].rol}. Usa otro.`);
+  const ocupado = await rolQueYaUsaElCorreo(email);
+  if (ocupado) {
+    throw new Error(`ese correo ya está registrado como ${ocupado}. Usa otro.`);
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
+
   await pool.query(
     'INSERT INTO admins (full_name, email, password_hash) VALUES ($1, $2, $3)',
     [fullName, email, passwordHash]

@@ -4,6 +4,7 @@ const express = require('express');
 const pool = require('../db');
 const { requireAgent } = require('../auth');
 const { guardarAfiche, borrarAfiche, normalizarAlt, ImagenInvalida, ErrorDeAlmacenamiento } = require('../images');
+const { cargar: estadosDelSistema } = require('../estados');
 
 /* Las dos cosas que pueden salir mal al guardar una imagen y que no son
    un fallo del sistema: que el archivo no sirva (culpa de quien lo sube)
@@ -26,11 +27,11 @@ const router = express.Router();
 router.use(express.json({ limit: '7mb' }));
 
 /* Estados admitidos al CREAR un evento */
-const estadosIniciales = new Set(['Programado', 'En Boletería']);
 /* Estados admitidos al ACTUALIZAR: el ciclo de vida completo */
-const estadosCicloVida = new Set(['Programado', 'En Boletería', 'En Vivo', 'Finalizado', 'Cancelado']);
+/* Los estados y sus reglas salen del catálogo de la base (tablas
+   event_statuses y reservation_statuses), no de listas escritas aquí.
+   Agregar un estado es un INSERT: este archivo no se toca. */
 /* Una vez aquí, el evento no cambia más */
-const estadosFinales = new Set(['Finalizado', 'Cancelado']);
 
 /* Código del evento.
    Lo asigna el sistema con una secuencia de PostgreSQL, no el agente.
@@ -195,8 +196,10 @@ router.post('/', requireAgent, async (req, res, next) => {
   if (startsAt.getTime() < Date.now() - 60_000) {
     return res.status(400).json({ error: 'La fecha de inicio ya pasó. Elige una fecha y hora futuras.' });
   }
-  if (!estadosIniciales.has(status)) {
-    return res.status(400).json({ error: 'El estado inicial debe ser Programado o En Boletería.' });
+  const catalogo = await estadosDelSistema();
+  const iniciales = catalogo.eventos.filter((e) => e.allowed_as_initial).map((e) => e.code);
+  if (!iniciales.includes(status)) {
+    return res.status(400).json({ error: `El estado inicial debe ser ${iniciales.join(' o ')}.` });
   }
 
   /* Con el formulario ya validado se pide el código a la secuencia. Hace
@@ -356,7 +359,7 @@ router.put('/:code', requireAgent, async (req, res, next) => {
     );
     evento.reserved_seats = ocupadas.rows[0].reservadas;
 
-    if (estadosFinales.has(evento.status)) {
+    if ((await estadosDelSistema()).eventosFinales.has(evento.status)) {
       await client.query('ROLLBACK');
       return res.status(409).json({ error: `El evento está ${evento.status} y ya no se puede editar.` });
     }
@@ -561,7 +564,7 @@ router.patch('/:code/status', requireAgent, async (req, res, next) => {
   const crudo = (req.body || {}).cancellationReason;
   const motivo = crudo === undefined || crudo === null ? '' : String(crudo).trim();
 
-  if (!estadosCicloVida.has(status)) {
+  if (!(await estadosDelSistema()).eventosValidos.has(status)) {
     return res.status(400).json({ error: 'Estado no válido. Usa Programado, En Boletería, En Vivo, Finalizado o Cancelado.' });
   }
   if (status === 'Cancelado' && (motivo.length < 10 || motivo.length > 500)) {
@@ -580,7 +583,7 @@ router.patch('/:code/status', requireAgent, async (req, res, next) => {
       return res.status(404).json({ error: 'No encontramos ese evento entre los tuyos.' });
     }
     const anterior = actual.rows[0].status;
-    if (estadosFinales.has(anterior)) {
+    if ((await estadosDelSistema()).eventosFinales.has(anterior)) {
       await client.query('ROLLBACK');
       return res.status(409).json({ error: `El evento ya está ${anterior} y no admite más cambios de estado.` });
     }
@@ -640,12 +643,12 @@ router.patch('/:code/status', requireAgent, async (req, res, next) => {
    código de evento y nunca llegaría aquí. */
 router.get('/mine/reservations', requireAgent, async (req, res, next) => {
   const estado = String(req.query.status || '').trim();
-  const estadosValidos = new Set(['Reservada', 'Confirmada', 'Cancelada', 'Usada']);
+  const estadosValidos = (await estadosDelSistema()).reservasValidos;
 
   try {
     const filtro = estadosValidos.has(estado) ? 'AND r.status = $2' : '';
     const result = await pool.query(
-      `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status,
+      `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.observations,
               r.created_at, r.status_updated_at, r.cancellation_reason,
               e.code AS event_code, e.name AS event_name, e.starts_at,
               ci.name AS event_city,
@@ -697,7 +700,7 @@ router.get('/:code/reservations', requireAgent, async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.created_at,
+      `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.created_at, r.observations,
               c.full_name AS client_name, c.email AS client_email, c.phone AS client_phone
        FROM reservations r
        JOIN events e ON e.id = r.event_id

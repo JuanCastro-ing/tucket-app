@@ -93,6 +93,14 @@ Al iniciar sesión, el servidor firma un **JWT** y lo manda en una cookie
 - Dentro del token va el rol, así que cada petición ya sabe quién la hace sin
   volver a consultar la base.
 
+### Qué protege al servidor
+
+| Qué | Dónde | Para qué |
+|---|---|---|
+| Cabeceras de seguridad | `backend/src/seguridad.js` | Le dicen al navegador qué permitir: nada de iframes ajenos, nada de adivinar tipos de archivo, y una política que impide cargar scripts de otros dominios |
+| Límite de intentos | `backend/src/seguridad.js` | 8 fallos de login por IP cada 15 minutos. Sin esto, probar contraseñas a ciegas no cuesta nada |
+| Correo único entre roles | `backend/src/correos.js` | El `UNIQUE` es por tabla; esto impide el mismo correo como cliente y como agente, que dejaría una de las dos cuentas inaccesible |
+
 ### Las dos barreras, y cuál es la de verdad
 
 | Dónde | Qué hace | ¿Es segura? |
@@ -140,13 +148,21 @@ events(id PK, code, name, description, venue, starts_at, ends_at, total_capacity
        country_code FK, department_code FK, city_id FK, agent_id FK, created_at)
 
 reservations(id PK, code, client_id FK, event_id FK, quantity, unit_price,
-             total_amount, status, cancellation_reason, created_at, status_updated_at)
+             total_amount, status, cancellation_reason, observations,
+             created_at, status_updated_at)
 
 tickets(id PK, reservation_id FK, serial, holder_name, seat_label, used_at, created_at)
 
 agent_requests(id PK, full_name, document_number, email, phone, organization, nit,
                justification, status, review_notes, reviewed_by FK, reviewed_at,
                agent_id FK, created_at)
+```
+
+```
+event_statuses(code PK, label, display_order, allows_reservation, is_final,
+               requires_reason, allowed_as_initial, badge_class)
+reservation_statuses(code PK, label, display_order, occupies_seat, is_final, badge_class)
+request_statuses(code PK, label, display_order, is_final, badge_class)
 ```
 
 Más la vista `event_availability`, que calcula cuántas butacas quedan libres.
@@ -169,6 +185,27 @@ FOREIGN KEY (city_id, department_code, country_code)
 ```
 
 Así la base rechaza «Cali, Antioquia» aunque la API tuviera un error.
+
+**Los estados son tablas, no cadenas sueltas.** Antes cada estado era un
+texto validado con un `CHECK`, y lo que significaba estaba repartido por el
+código: un `Set` decía en qué estados se puede reservar, otro cuáles cierran
+el ciclo, y un objeto en JavaScript daba el color de cada etiqueta. Agregar
+un estado obligaba a tocar seis sitios y olvidar uno fallaba en silencio.
+
+Ahora cada estado es una fila con su comportamiento al lado, y las columnas
+son las que mandan: `allows_reservation` decide si se puede reservar,
+`is_final` si el ciclo está cerrado, `occupies_seat` si esa reserva ocupa
+butaca —lo usan la vista de disponibilidad y el disparador que impide
+sobrevender—, `allowed_as_initial` con qué estado puede nacer un evento, y
+`badge_class` de qué color se pinta.
+
+La clave primaria es el propio texto (`'En Boletería'`), no un número: así
+no hubo que migrar ni una fila, mostrar el estado no exige un JOIN, y la
+integridad la garantiza una clave foránea igual que antes el `CHECK`.
+
+Está probado: se insertó un estado «Aplazado» en la base, se reinició el
+servidor, y apareció solo en los desplegables, con su color y respetando su
+regla de no admitir reservas. Sin tocar una línea de código.
 
 **Las reglas de negocio están en la base, no solo en la API.** Un trigger impide
 sobrevender un evento, un `CHECK` obliga a registrar la causa al cancelar, y
@@ -268,8 +305,11 @@ archivos subidos por usuarios.
 | Cambiar un texto o enlace del pie | `views/partials/footer.html` (uno solo para todas) |
 | Cambiar la ayuda, las preguntas frecuentes o lo legal | `views/ayuda.html` |
 | Cambiar cada cuánto pasa el carrusel | `HERO_INTERVALO` en `js/hero-slider.js` |
+| Cambiar los intentos de login permitidos | La llamada a `limitarIntentos()` en `backend/src/server.js` |
+| Añadir un campo con ubicación | `montarUbicacion()` de `js/geo-selects.js` |
 | Cambiar colores, sombras o tipografías | `css/base/base.css` (están como variables) |
 | Agregar un campo a un evento | `backend/db/03-eventos.sql`, luego la ruta en `events.routes.js` y el formulario en `views/agent-events.html` |
+| Agregar o cambiar un estado | Un `INSERT` o `UPDATE` en `event_statuses` (o las otras dos). Nada de código |
 | Cambiar quién entra a una pantalla | `VIEW_ROLES` en `js/auth.js` **y** el guardia de la ruta en el backend |
 | Agregar una pantalla | Ver el final del [README](README.md) |
 

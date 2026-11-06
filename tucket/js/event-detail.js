@@ -58,10 +58,19 @@ async function confirmarReserva(){
   if(boton){ boton.classList.add('is-busy'); boton.textContent = 'Reservando…'; }
 
   try{
+    /* Las observaciones del cliente (silla de ruedas, acceso preferencial)
+       viajan con la reserva y las ve el agente en su panel. Antes el campo
+       estaba en pantalla pero su contenido se descartaba al enviar. */
+    var notas = document.getElementById('obs');
     var r = await tucketApi('/api/reservations', {
       method: 'POST',
-      body: JSON.stringify({ eventCode: evento.code, quantity: eventQty })
+      body: JSON.stringify({
+        eventCode: evento.code,
+        quantity: eventQty,
+        observations: notas ? notas.value.trim() : ''
+      })
     });
+    if(notas) notas.value = '';
     reservaMensaje(r.message || 'Reserva creada.', 'success');
     /* Se recarga la cartelera para que el cupo disponible quede al día. */
     if(typeof loadPublicEvents === 'function') loadPublicEvents();

@@ -82,6 +82,17 @@ function renderReservasAgente(){
     var entradas = document.createElement('td');
     entradas.textContent = r.quantity;
 
+    /* Lo que pidió el cliente al reservar: silla de ruedas, acceso
+       preferencial… Va junto al número de entradas porque es ahí donde el
+       agente mira para preparar la sala. */
+    if(r.observations){
+      var nota = document.createElement('div');
+      nota.className = 'cell-muted cell-reason';
+      nota.textContent = r.observations;
+      nota.title = r.observations;
+      entradas.append(nota);
+    }
+
     var valor = document.createElement('td');
     valor.textContent = agresMoneda(r.total_amount);
 

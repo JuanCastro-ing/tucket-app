@@ -4,6 +4,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const pool = require('../db');
 const { abrirSesion, requireClient } = require('../auth');
+const { rolQueYaUsaElCorreo, mensajeCorreoOcupado } = require('../correos');
 
 const router = express.Router();
 router.use(express.json({ limit: '32kb' }));
@@ -54,6 +55,13 @@ router.post('/register', async (req, res, next) => {
   }
 
   try {
+    /* El correo debe estar libre en las tres tablas, no solo en clients:
+       si ya existe como agente o administrador, esta cuenta nacería
+       inaccesible (al iniciar sesión entraría siempre la otra). */
+    if (await rolQueYaUsaElCorreo(email)) {
+      return res.status(409).json({ error: mensajeCorreoOcupado() });
+    }
+
     /* Coste 12: el estándar razonable hoy para bcrypt. */
     const passwordHash = await bcrypt.hash(password, 12);
     const result = await pool.query(

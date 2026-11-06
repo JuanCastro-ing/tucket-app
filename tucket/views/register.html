@@ -21,7 +21,7 @@
     <div class="reg-box">
       <div class="reg-head">
         <span class="kicker">CREAR CUENTA</span>
-        <h2>Regístrate en TUCKET</h2>
+        <h1>Regístrate en TUCKET</h1>
         <div class="type-switch" role="radiogroup" aria-label="Tipo de cuenta">
           <button type="button" class="type-card active" role="radio" aria-checked="true" onclick="setRegType(this)">
             <span class="t">Cliente</span>
@@ -53,26 +53,32 @@
           <input id="mail" type="email" placeholder="nombre@correo.com" required>
         </div>
 
+        <!-- Ubicación: las tres listas se llenan desde la base (tabla DIVIPOLA
+             del DANE) y cada una depende de la anterior. Antes estaban
+             escritas a mano con cuatro ciudades inventadas y, peor, el
+             formulario ni siquiera las leía: todos los clientes quedaban
+             guardados sin ubicación. -->
         <div class="field-row">
           <div class="field">
-            <label for="dep">Departamento</label>
-            <select id="dep">
-              <option>Valle del Cauca</option>
-              <option>Antioquia</option>
-              <option>Cundinamarca</option>
-              <option>Atlántico</option>
+            <label for="reg-country">País</label>
+            <select id="reg-country" aria-describedby="reg-ubicacion-ayuda">
+              <option value="">Cargando…</option>
             </select>
           </div>
           <div class="field">
-            <label for="city">Ciudad</label>
-            <select id="city">
-              <option>Cali</option>
-              <option>Palmira</option>
-              <option>Buenaventura</option>
-              <option>Tuluá</option>
+            <label for="reg-department">Departamento</label>
+            <select id="reg-department" disabled>
+              <option value="">Selecciona primero un país</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="reg-city">Ciudad</label>
+            <select id="reg-city" disabled>
+              <option value="">Selecciona primero un departamento</option>
             </select>
           </div>
         </div>
+        <small id="reg-ubicacion-ayuda" class="field-help">Opcional, pero si la indicas deben ir los tres datos.</small>
 
         <div class="field">
           <label for="addr">Dirección</label>

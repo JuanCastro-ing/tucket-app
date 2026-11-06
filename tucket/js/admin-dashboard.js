@@ -28,7 +28,7 @@ function solFecha(valor){
 }
 
 function solBadgeClase(estado){
-  return ({ Pendiente:'badge-programado', Aprobada:'badge-boleteria', Rechazada:'badge-cancelado' })[estado] || 'badge-programado';
+  return claseDeEstado('solicitudes', estado).replace('badge ', '');
 }
 
 /* Contadores: pestañas, chip del encabezado y marca del menú lateral */

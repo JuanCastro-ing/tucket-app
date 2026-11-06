@@ -79,6 +79,14 @@ function resTarjeta(r){
     causa.textContent = 'Causa: ' + r.cancellation_reason;
     info.append(causa);
   }
+  /* Lo que el cliente pidió al reservar, para que pueda comprobar que
+     quedó registrado y no tenga que fiarse. */
+  if(r.observations){
+    var nota = document.createElement('div');
+    nota.className = 'cell-muted cell-reason';
+    nota.textContent = 'Tu nota: ' + r.observations;
+    info.append(nota);
+  }
 
   var cifras = document.createElement('div');
   cifras.className = 'res-figures';

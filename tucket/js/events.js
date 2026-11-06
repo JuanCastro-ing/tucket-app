@@ -54,7 +54,7 @@ function tarjetaDeEvento(event){
   }
 
   var badge = document.createElement('span');
-  badge.className = 'badge ' + ({'En Boletería':'badge-boleteria','Programado':'badge-programado','En Vivo':'badge-vivo','Finalizado':'badge-finalizado','Cancelado':'badge-cancelado'}[status] || 'badge-programado');
+  badge.className = claseDeEstado('eventos', status);
   badge.textContent = status;
   var serial = document.createElement('span');
   serial.className = 'ev-serial'; serial.textContent = event.code || '';
@@ -177,6 +177,12 @@ async function loadPublicEvents(){
   }
 }
 function initExploreEvents(){
+  /* El filtro de estado se llena con el catálogo de la base. */
+  cargarEstados().then(function(){
+    llenarSelectDeEstados(document.getElementById('event-status'), 'eventos', {
+      incluirTodos: true, textoTodos: 'Todos los estados', excluir: ['Cancelado']
+    });
+  });
   if(!publicEvents.length && !publicEventsLoading) loadPublicEvents();
   if(!publicEventsTimer){
     publicEventsTimer=setInterval(function(){updateEventClock();renderExploreEvents();},15000);
@@ -242,7 +248,7 @@ function openEventDetails(code){
   };
   Object.keys(values).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=values[id];});
   var detailBadge=document.getElementById('detail-status');
-  if(detailBadge){var status=eventStatus(event);detailBadge.className='badge '+({'En Boletería':'badge-boleteria','Programado':'badge-programado','En Vivo':'badge-vivo','Finalizado':'badge-finalizado'}[status]||'badge-programado');}
+  if(detailBadge){var status=eventStatus(event);detailBadge.className=claseDeEstado('eventos', status);}
   var address=document.getElementById('detail-address');if(address)address.textContent=[event.venue,event.city,event.department].filter(Boolean).join(' · ');
   /* Afiche del evento, si lo tiene. El mismo archivo se usa dos veces: la
      ficha de la cabecera y el fondo difuminado de la sección. */

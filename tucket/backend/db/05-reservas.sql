@@ -118,3 +118,9 @@ DROP TRIGGER IF EXISTS reservations_status_touch ON reservations;
 CREATE TRIGGER reservations_status_touch
   BEFORE UPDATE ON reservations
   FOR EACH ROW EXECUTE FUNCTION reservations_touch_status();
+
+-- Observaciones del cliente al reservar: silla de ruedas, acceso
+-- preferencial, acompañante… El formulario ya las pedía, pero no había
+-- dónde guardarlas y se perdían al enviar. Son peticiones de
+-- accesibilidad: perderlas en silencio es peor que no preguntarlas.
+ALTER TABLE reservations ADD COLUMN IF NOT EXISTS observations VARCHAR(500);

@@ -46,11 +46,12 @@
             <div>
               <div class="panel">
                 <div class="panel-head">
-                  <h3>Eventos registrados</h3>
+                  <h2>Eventos registrados</h2>
                   <span class="hint" id="agent-event-total">Cargando eventos…</span>
                 </div>
                 <div class="table-wrap">
                   <table>
+                    <caption class="sr-only">Mis eventos publicados</caption>
                     <thead>
                       <tr><th>Evento</th><th>Ciudad</th><th>Inicio</th><th>Recinto</th><th>Capacidad</th><th>Precio base</th><th>Estado</th><th>Acción</th></tr>
                     </thead>
@@ -62,7 +63,7 @@
 
             <div class="new-event-panel">
               <div class="panel">
-                <div class="panel-head"><h3 id="event-form-title">Registrar nuevo evento</h3></div>
+                <div class="panel-head"><h2 id="event-form-title">Registrar nuevo evento</h2></div>
                 <form id="agent-event-form">
                   <p id="event-form-message" class="form-message" role="status" aria-live="polite" hidden></p>
 
@@ -126,10 +127,9 @@
                   </div>
                   <div class="field" id="event-status-field">
                     <label for="agent-event-status">Estado inicial</label>
-                    <select id="agent-event-status" name="status" required>
-                      <option value="Programado" selected>Programado</option>
-                      <option value="En Boletería">En Boletería</option>
-                    </select>
+                    <!-- Lo llena el catálogo de estados: ver
+                         llenarSelectDeEstados() en js/estados.js -->
+                    <select id="agent-event-status" name="status" required></select>
                   </div>
                   <div class="field">
                     <label for="event-observations">Observaciones</label>

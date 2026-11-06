@@ -101,6 +101,7 @@ function nav(viewId){
   if(typeof pintarPastillasDeRol === 'function') pintarPastillasDeRol();
   if(viewId === 'agent-events' && typeof initAgentEvents === 'function') initAgentEvents();
   if(viewId === 'events' && typeof initExploreEvents === 'function') initExploreEvents();
+  if(viewId === 'register' && typeof initRegister === 'function') initRegister();
   if(viewId === 'profile' && typeof initProfile === 'function') initProfile();
   if(viewId === 'profile' && typeof initProfilePassword === 'function') initProfilePassword();
   if(viewId === 'reservations' && typeof initReservations === 'function') initReservations();

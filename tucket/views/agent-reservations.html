@@ -44,7 +44,7 @@
 
           <div class="panel">
             <div class="panel-head">
-              <h3>Reservas de mis eventos</h3>
+              <h2>Reservas de mis eventos</h2>
               <div class="filters-inline">
                 <select id="agres-filtro-evento" aria-label="Filtrar por evento" onchange="renderReservasAgente()">
                   <option value="">Todos mis eventos</option>
@@ -63,6 +63,7 @@
 
             <div class="table-wrap">
               <table>
+                <caption class="sr-only">Reservas recibidas en mis eventos</caption>
                 <thead>
                   <tr><th>Reserva</th><th>Cliente</th><th>Evento</th><th>Entradas</th><th>Valor</th><th>Fecha</th><th>Estado</th></tr>
                 </thead>

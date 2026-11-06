@@ -9,17 +9,26 @@ const router = express.Router();
 router.use(express.json({ limit: '32kb' }));
 
 const MAX_POR_RESERVA = 10;
-/* Solo se puede reservar un evento que todavía no empieza y está abierto. */
-const ESTADOS_RESERVABLES = new Set(['Programado', 'En Boletería']);
+/* En qué estados se admite reservar lo dice la columna allows_reservation
+   del catálogo, no una lista escrita aquí. */
+const { cargar: estadosDelSistema } = require('../estados');
 
 /* Crear una reserva */
 router.post('/', requireClient, async (req, res, next) => {
   const eventCode = String(req.body?.eventCode || '').trim().toUpperCase();
   const quantity = Number(req.body?.quantity);
 
+  /* Peticiones del cliente: silla de ruedas, acceso preferencial… Son
+     opcionales, pero si vienen hay que guardarlas: el agente las necesita
+     para preparar la sala. */
+  const observations = String(req.body?.observations || '').trim();
+
   if (!eventCode) return res.status(400).json({ error: 'Indica el evento que quieres reservar.' });
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_POR_RESERVA) {
     return res.status(400).json({ error: `Puedes reservar entre 1 y ${MAX_POR_RESERVA} entradas por reserva.` });
+  }
+  if (observations.length > 500) {
+    return res.status(400).json({ error: 'Las observaciones no pueden superar los 500 caracteres.' });
   }
 
   const client = await pool.connect();
@@ -39,7 +48,7 @@ router.post('/', requireClient, async (req, res, next) => {
     }
     const e = evento.rows[0];
 
-    if (!ESTADOS_RESERVABLES.has(e.status)) {
+    if (!(await estadosDelSistema()).eventosReservables.has(e.status)) {
       await client.query('ROLLBACK');
       return res.status(409).json({ error: `El evento está ${e.status} y ya no admite reservas.` });
     }
@@ -66,10 +75,10 @@ router.post('/', requireClient, async (req, res, next) => {
 
     const unitPrice = Number(e.base_price);
     const reserva = await client.query(
-      `INSERT INTO reservations (client_id, event_id, quantity, unit_price, total_amount)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, code, quantity, unit_price, total_amount, status, created_at`,
-      [req.client.id, e.id, quantity, unitPrice, (unitPrice * quantity).toFixed(2)]
+      `INSERT INTO reservations (client_id, event_id, quantity, unit_price, total_amount, observations)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, code, quantity, unit_price, total_amount, status, observations, created_at`,
+      [req.client.id, e.id, quantity, unitPrice, (unitPrice * quantity).toFixed(2), observations || null]
     );
     const nueva = reserva.rows[0];
 
@@ -103,7 +112,7 @@ router.get('/mine', requireClient, async (req, res, next) => {
   try {
     const result = await pool.query(
       `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status,
-              r.created_at, r.cancellation_reason,
+              r.created_at, r.cancellation_reason, r.observations,
               e.code AS event_code, e.name AS event_name, e.venue, e.starts_at,
               e.image_path, e.image_alt,
               ci.name AS city,
@@ -124,7 +133,7 @@ router.get('/:code', requireClient, async (req, res, next) => {
   try {
     const code = String(req.params.code || '').trim().toUpperCase();
     const reserva = await pool.query(
-      `SELECT r.id, r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.created_at,
+      `SELECT r.id, r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.created_at, r.observations,
               e.code AS event_code, e.name AS event_name, e.venue, e.starts_at,
               e.image_path, e.image_alt
        FROM reservations r

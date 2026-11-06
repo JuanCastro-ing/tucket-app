@@ -34,3 +34,34 @@
 .back-home:hover{ color:var(--gold-dark); gap:10px; }
 .back-home-light{ color:var(--muted-lt); }
 .back-home-light:hover{ color:var(--gold); }
+
+/* ------------------------------------------------------------------
+   Tamaño mínimo para tocar con el dedo
+
+   En móvil, cualquier cosa pulsable debería medir al menos 44×44 px:
+   es la recomendación de accesibilidad (WCAG 2.5.5) y coincide con el
+   tamaño medio de la yema de un dedo. Más pequeño y se falla el clic,
+   que es especialmente molesto en botones destructivos como Eliminar.
+
+   En escritorio se dejan compactos a propósito: con un ratón se apunta
+   fino y así caben más controles en una fila de tabla.
+------------------------------------------------------------------ */
+@media (max-width: 760px){
+  .btn,
+  .btn-sm,
+  .row-actions .btn,
+  .pw-toggle,
+  .tabs a,
+  .type-card{
+    min-height:44px;
+  }
+  /* Los que son texto sobre fondo necesitan además el alto real,
+     no solo el mínimo de la caja. */
+  .btn-sm{ padding-top:11px; padding-bottom:11px; }
+  .row-actions{ gap:8px; }
+  .row-actions .btn{ padding:11px 8px; font-size:12.5px; }
+  .pw-toggle{ min-width:44px; }
+
+  /* Las pestañas de rol del inicio de sesión. */
+  .role-switch button{ min-height:44px; }
+}

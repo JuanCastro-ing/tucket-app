@@ -73,11 +73,48 @@ function pintarDestacados(eventos){
     })
     .slice(0, DESTACADOS_ABAJO);
 
+  llenarCiudadesDelBuscador(eventos);
+
   pintarEn('featured-grid', 'featured-estado', arriba,
     'Todavía no hay eventos publicados. Cuando un agente publique el primero, aparecerá aquí.');
   pintarEn('more-events-grid', 'more-events-estado', abajo,
     arriba.length ? 'Por ahora no hay más eventos además de los destacados.'
                   : 'La cartelera está vacía por ahora.');
+}
+
+/* El desplegable de ciudades del buscador de la portada.
+
+   Tenía cuatro ciudades escritas a mano —Cali, Tuluá, Bogotá y Medellín—
+   de las más de mil que hay en la base. Un evento en cualquier otra no se
+   podía filtrar, y elegir una ciudad sin eventos no devolvía nada.
+
+   Ahora se llena con las ciudades que de verdad tienen eventos vigentes,
+   sin repetir y en orden alfabético: el filtro nunca ofrece una opción
+   que lleve a una lista vacía. */
+function llenarCiudadesDelBuscador(eventos){
+  var select = document.getElementById('home-search-city');
+  if(!select) return;
+
+  var ciudades = [];
+  (Array.isArray(eventos) ? eventos : [])
+    .filter(destacableEnPortada)
+    .forEach(function(ev){
+      if(ev.city && ciudades.indexOf(ev.city) === -1) ciudades.push(ev.city);
+    });
+  ciudades.sort(function(a, b){ return a.localeCompare(b, 'es'); });
+
+  var elegida = select.value;
+  select.innerHTML = '';
+  var todas = document.createElement('option');
+  todas.value = ''; todas.textContent = 'Todas las ciudades';
+  select.append(todas);
+  ciudades.forEach(function(nombre){
+    var o = document.createElement('option');
+    o.value = nombre; o.textContent = nombre;
+    select.append(o);
+  });
+  /* Si la persona ya había elegido una ciudad, se respeta su elección. */
+  if(elegida && ciudades.indexOf(elegida) !== -1) select.value = elegida;
 }
 
 /* Sin servidor no hay nada que mostrar, y conviene decirlo en vez de dejar

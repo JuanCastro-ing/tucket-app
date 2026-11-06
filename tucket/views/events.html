@@ -48,12 +48,9 @@
         <label class="sr-only" for="event-month">Mes</label>
         <select id="event-month" onchange="filterEvents()"><option value="">Todos los meses</option></select>
         <label class="sr-only" for="event-status">Estado de boletería</label>
+        <!-- Lo llena el catálogo de estados, ver js/estados.js -->
         <select id="event-status" onchange="filterEvents()">
           <option value="">Todos los estados</option>
-          <option value="Programado">Programado</option>
-          <option value="En Boletería">En Boletería</option>
-          <option value="En Vivo">En Vivo</option>
-          <option value="Finalizado">Finalizado</option>
         </select>
         <button type="button" class="btn btn-outline btn-sm" onclick="clearEventFilters()">Limpiar filtros</button>
       </div>

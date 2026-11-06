@@ -228,12 +228,10 @@
           <label for="home-search-input" class="sr-only">Buscar por artista, evento o teatro</label>
           <input type="search" id="home-search-input" placeholder="Busca artistas, eventos o teatros…" aria-label="Buscar por artista, evento o teatro">
           <label for="home-search-city" class="sr-only">Filtrar por ciudad</label>
+          <!-- Se llena con las ciudades que tienen eventos: ver
+               llenarCiudadesDelBuscador() en js/home-featured.js -->
           <select id="home-search-city" aria-label="Filtrar por ciudad">
-            <option>Todas las ciudades</option>
-            <option>Cali</option>
-            <option>Tuluá</option>
-            <option>Bogotá</option>
-            <option>Medellín</option>
+            <option value="">Todas las ciudades</option>
           </select>
           <button type="submit" class="btn btn-gold" aria-label="Buscar eventos">Buscar eventos</button>
         </form>

@@ -159,6 +159,15 @@ Reglas que vive la base, no solo la API:
 | `GET /api/events/:code/reservations` | agente | Reservas de un evento mío |
 | `GET /api/admin/stats` | admin | Cifras, gráficas y tablas del panel |
 | `GET /api/stats/home` | — | Cifras de la portada (eventos activos, reservas, ciudades) |
+| `GET /api/statuses` | — | Catálogo de estados: etiquetas, colores y reglas |
+
+El inicio de sesión admite 8 intentos fallidos por IP cada 15 minutos; al
+pasarse responde `429` hasta que se cumpla la ventana. Todas las respuestas
+llevan cabeceras de seguridad (`Content-Security-Policy`, `X-Frame-Options`,
+`X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y, en
+producción, `Strict-Transport-Security`). Ambas cosas están en
+`src/seguridad.js`, escritas a mano en vez de con helmet y express-rate-limit
+para que se pueda explicar qué hace cada una.
 | `POST /api/clients/register` | — | Registro de cliente |
 | `GET /api/clients/me` | cliente | Mis datos |
 | `GET /api/profile` | sesión | Ver mi perfil (cliente o agente) |

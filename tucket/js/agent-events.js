@@ -114,14 +114,10 @@
   function prettyDate(value){
     return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
   }
+  /* El color de cada estado lo da el catálogo (js/estados.js), que a su
+     vez lo lee de la base. */
   function badgeClass(status){
-    return ({
-      'Programado':   'badge-programado',
-      'En Boletería': 'badge-boleteria',
-      'En Vivo':      'badge-vivo',
-      'Finalizado':   'badge-finalizado',
-      'Cancelado':    'badge-cancelado'
-    })[status] || 'badge-programado';
+    return claseDeEstado('eventos', status).replace('badge ', '');
   }
 
   /* Afiche del evento.
@@ -305,8 +301,8 @@
   /* Ciclo de vida del evento (HU del agente).
      Finalizado y Cancelado son estados finales: la fila deja de ofrecer
      cambios. Cancelar abre una fila con el campo de causa, obligatorio. */
-  var ESTADOS = ['Programado', 'En Boletería', 'En Vivo', 'Finalizado', 'Cancelado'];
-  var ESTADOS_FINALES = ['Finalizado', 'Cancelado'];
+  /* Los estados ya no se listan aquí: salen del catálogo de la base. */
+  /* Qué estados cierran el ciclo lo dice el catálogo, no esta lista. */
 
   function accionCelda(event){
     var celda = document.createElement('td');
@@ -314,7 +310,7 @@
     grupo.className = 'row-actions';
     celda.appendChild(grupo);
 
-    if(ESTADOS_FINALES.indexOf(event.status) !== -1){
+    if(esEstadoFinal('eventos', event.status)){
       var fin = document.createElement('span');
       fin.className = 'cell-muted';
       fin.textContent = 'Ciclo cerrado';
@@ -331,10 +327,11 @@
     var inicial = document.createElement('option');
     inicial.value = ''; inicial.textContent = 'Cambiar a…'; inicial.selected = true;
     select.appendChild(inicial);
-    ESTADOS.forEach(function(estado){
-      if(estado === event.status) return;
+    /* Los destinos posibles salen del catálogo, menos el estado actual. */
+    estadosYa().eventos.forEach(function(e){
+      if(e.code === event.status) return;
       var o = document.createElement('option');
-      o.value = estado; o.textContent = estado;
+      o.value = e.code; o.textContent = e.label;
       select.appendChild(o);
     });
 
@@ -747,6 +744,25 @@
   window.initAgentEvents = function(){
     var view = el(viewId);
     if(!view) return;
+
+    /* Los estados con los que puede nacer un evento salen del catálogo.
+       Se excluyen los finales y «En Vivo»: publicar algo que ya terminó,
+       o que está ocurriendo ahora mismo, no tiene sentido. */
+    cargarEstados().then(function(){
+      /* Solo los estados con los que un evento puede nacer; lo marca la
+         columna allowed_as_initial del catálogo, igual que la API. */
+      var select = el('agent-event-status');
+      if(select){
+        select.innerHTML = '';
+        estadosYa().eventos.filter(function(e){ return e.allowedAsInitial; })
+          .forEach(function(e){
+            var o = document.createElement('option');
+            o.value = e.code; o.textContent = e.label;
+            select.append(o);
+          });
+        select.value = 'Programado';
+      }
+    });
     var country = el('event-country');
     var department = el('event-department');
     var form = el('agent-event-form');

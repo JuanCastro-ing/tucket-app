@@ -198,6 +198,21 @@
 .hero-dot:hover{ background:rgba(232,180,76,.7); }
 .hero-dot:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
 
+/* El punto mide 8 px, que está bien a la vista pero es imposible de
+   acertar con el dedo. En lugar de agrandarlo —se vería tosco— se le da
+   una zona de toque invisible alrededor con ::before, que sí cumple los
+   44 px recomendados. El punto sigue viéndose igual de fino. */
+.hero-dot{ position:relative; }
+.hero-dot::before{
+  content:""; position:absolute; left:50%; top:50%;
+  transform:translate(-50%, -50%);
+  width:44px; height:44px;
+}
+/* Con el dedo los puntos quedan algo más separados para no pulsar dos. */
+@media (max-width: 760px){
+  .hero-dots{ gap:14px; }
+}
+
 /* ---------- Afiche del evento destacado ----------
    Va anclado al borde derecho de la misma caja que el texto, así que
    respeta el ancho del contenedor. No usa transform para centrarse porque

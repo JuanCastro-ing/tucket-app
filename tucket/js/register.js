@@ -1,6 +1,20 @@
-/* TUCKET — Vista Registro (necesita auth.js, login.js, validation.js y navigation.js) */
+/* TUCKET — Vista Registro (necesita auth.js, login.js, validation.js,
+   geo-selects.js y navigation.js) */
 
 var selectedRegType = 'cliente';
+
+/* Selector país → departamento → ciudad, con los datos de la base.
+   Se monta la primera vez que se abre la vista y se reutiliza después:
+   volver a cargar los 1.122 municipios en cada visita no aporta nada. */
+var ubicacionRegistro = null;
+function initRegister(){
+  if(ubicacionRegistro) return;
+  if(typeof montarUbicacion !== 'function') return;
+  ubicacionRegistro = montarUbicacion({
+    pais: 'reg-country', departamento: 'reg-department', ciudad: 'reg-city'
+  });
+  ubicacionRegistro.cargar();
+}
 function setRegType(el){
   var label = el.querySelector('.t');
   var tipo = (label && label.textContent.trim() === 'Agente') ? 'agente' : 'cliente';
@@ -83,6 +97,18 @@ async function guardarCliente(){
     acceptedTerms: true
   };
 
+  /* La ubicación es opcional, pero si se indica deben ir los tres datos:
+     el servidor y la clave foránea de la base validan el trío completo. */
+  if(ubicacionRegistro){
+    if(!ubicacionRegistro.completaOVacia()){
+      mostrarErrorRegistro('Selecciona país, departamento y ciudad, o deja la ubicación vacía.');
+      if(boton){ boton.disabled = false; boton.textContent = textoOriginal; }
+      return;
+    }
+    var ubic = ubicacionRegistro.valores();
+    if(ubic) Object.assign(payload, ubic);
+  }
+
   try{
     await tucketApi('/api/clients/register', {
       method: 'POST',
@@ -90,9 +116,12 @@ async function guardarCliente(){
     });
     entrarComoCliente();
   }catch(error){
+    /* Si el servidor no responde NO se entra igual. Antes se hacía, como
+       resto del prototipo sin backend, y el resultado era peor que un
+       error: la persona creía tener cuenta, navegaba como cliente y al
+       recargar descubría que nunca se registró. */
     if(apiNoDisponible(error)){
-      /* Sin servidor: se entra en modo prototipo y se avisa. */
-      entrarComoCliente();
+      mostrarErrorRegistro('No pudimos contactar con el servidor, así que la cuenta no se creó. Inténtalo de nuevo en un momento.');
       return;
     }
     mostrarErrorRegistro(error.message);

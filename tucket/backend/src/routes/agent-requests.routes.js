@@ -8,11 +8,12 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const pool = require('../db');
 const { requireAdmin } = require('../auth');
+const { rolQueYaUsaElCorreo } = require('../correos');
 
 const router = express.Router();
 router.use(express.json({ limit: '32kb' }));
 
-const ESTADOS = new Set(['Pendiente', 'Aprobada', 'Rechazada']);
+const { cargar: estadosDelSistema } = require('../estados');
 
 /* Alfabeto sin caracteres que se confunden al dictarlos por teléfono
    (0/O, 1/l/I): la contraseña temporal se la pasa el administrador a la
@@ -111,10 +112,10 @@ router.post('/', async (req, res, next) => {
 router.get('/', requireAdmin, async (req, res, next) => {
   const estado = String(req.query.status || '').trim();
   try {
-    const where = ESTADOS.has(estado) ? 'WHERE s.status = $1' : '';
+    const where = (await estadosDelSistema()).solicitudesValidos.has(estado) ? 'WHERE s.status = $1' : '';
     const result = await pool.query(
       `${SELECT_SOLICITUD} ${where} ORDER BY s.created_at DESC`,
-      ESTADOS.has(estado) ? [estado] : []
+      (await estadosDelSistema()).solicitudesValidos.has(estado) ? [estado] : []
     );
 
     /* Los conteos van siempre completos, no filtrados: alimentan el
@@ -155,6 +156,18 @@ router.patch('/:id/approve', requireAdmin, async (req, res, next) => {
     if (solicitud.status !== 'Pendiente') {
       await client.query('ROLLBACK');
       return res.status(409).json({ error: `Esa solicitud ya está ${solicitud.status}.` });
+    }
+
+    /* Puede que entre el envío de la solicitud y su aprobación esa
+       persona se haya registrado como cliente. Crear ahora el agente
+       dejaría dos cuentas con el mismo correo y la de cliente quedaría
+       inaccesible, así que se avisa al administrador en vez de hacerlo. */
+    const ocupado = await rolQueYaUsaElCorreo(solicitud.email, client);
+    if (ocupado) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({
+        error: `Ese correo ya tiene una cuenta de ${ocupado} en TUCKET. No se puede crear otra con el mismo correo: pide a la persona que use uno distinto, o rechaza la solicitud explicándoselo.`
+      });
     }
 
     const temporal = claveTemporal();

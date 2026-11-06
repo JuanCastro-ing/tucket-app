@@ -5,6 +5,7 @@
      src/routes/auth.routes.js          sesión (agentes y clientes)
      src/routes/geography.routes.js     país → departamento → ciudad
      src/routes/events.routes.js        eventos y afiches
+     src/routes/statuses.routes.js      catálogo de estados
      src/routes/clients.routes.js       registro de clientes
      src/routes/profile.routes.js       datos personales (ambos roles)
      src/routes/reservations.routes.js  reservas y boletas
@@ -16,11 +17,19 @@ const cookieParser = require('cookie-parser');
 const path = require('node:path');
 const pool = require('./db');
 const { DIRECTORIO: DIRECTORIO_AFICHES } = require('./images');
+const { cabecerasDeSeguridad, limitarIntentos } = require('./seguridad');
 
 const app = express();
 const projectRoot = path.resolve(__dirname, '..', '..');
 
 app.disable('x-powered-by');
+
+/* Render (y cualquier servicio con proxy delante) entrega la IP real del
+   visitante en X-Forwarded-For. Sin esto, req.ip sería siempre la del
+   proxy y el límite de intentos contaría a todo el mundo como uno solo. */
+app.set('trust proxy', 1);
+
+app.use(cabecerasDeSeguridad);
 app.use(cookieParser());
 
 /* El código del backend nunca se sirve como estático. */
@@ -45,6 +54,12 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
+/* Probar contraseñas a ciegas es el ataque más barato que existe. Ocho
+   fallos desde la misma IP y a esperar un cuarto de hora. */
+app.use('/api/auth/login', limitarIntentos({
+  intentos: 8, ventanaMinutos: 15,
+  mensaje: 'Demasiados intentos fallidos. Espera unos minutos antes de volver a intentarlo.'
+}));
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/geography', require('./routes/geography.routes'));
 app.use('/api/events', require('./routes/events.routes'));
@@ -54,6 +69,7 @@ app.use('/api/reservations', require('./routes/reservations.routes'));
 app.use('/api/agent-requests', require('./routes/agent-requests.routes'));
 app.use('/api/admin', require('./routes/admin.routes'));
 app.use('/api/stats', require('./routes/stats.routes'));
+app.use('/api/statuses', require('./routes/statuses.routes'));
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Ruta de API no encontrada.' }));
 

@@ -68,7 +68,7 @@ tucket/
 |---|---|---|---|
 | Inicio | `home.html` | `home.css` | `hero-slider.js`, `home-stats.js` |
 | Inicio de sesión | `login.html` | `login.css` | `login.js` |
-| Registro de cliente | `register.html` | `register.css` | `register.js` |
+| Registro de cliente | `register.html` | `register.css` | `register.js`, `geo-selects.js` |
 | Solicitud de agente | `agent-request.html` | `agent-request.css` | `agent-request.js` |
 | Cartelera | `events.html` | `events.css` | `events.js` |
 | Detalle de evento | `event-detail.html` | `event-detail.css` | `event-detail.js`, `events.js` |
@@ -88,6 +88,9 @@ tucket/
 | `js/auth.js` | Estado de la sesión, permisos por rol, `logout()` |
 | `js/api.js` | `tucketApi()`: todas las llamadas al servidor pasan por aquí |
 | `js/validation.js` | Validación de formularios en línea |
+| `js/estados.js` | Catálogo de estados: desplegables, colores y reglas, desde la base |
+| `js/geo-selects.js` | Selector país → departamento → ciudad, con datos de la base |
+| `js/home-featured.js` | Rellena las rejillas de eventos y el filtro de ciudades de la portada |
 | `js/charts.js` | Tooltip compartido por las gráficas del panel |
 | `css/base/` | Variables de diseño, reset y el mostrar/ocultar de vistas |
 | `css/components/` | Botones, formularios, tablas, tickets, pie de página… |
