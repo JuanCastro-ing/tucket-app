@@ -31,6 +31,15 @@ function vistaActual(){
 /* Vuelve a la vista anterior. Si no hay ninguna —se entró directo a esta—
    lleva al inicio, para que el botón nunca quede sin hacer nada. */
 function navAtras(){
+  /* Desde que la vista se escribe en la URL (js/rutas.js), el historial
+     del navegador ya guarda el recorrido: se usa ese, así el botón
+     «Volver» y la flecha de atrás hacen exactamente lo mismo.
+     profundidadDeRuta dice cuántas entradas creó la propia aplicación, de
+     modo que volver nunca saca del sitio. */
+  if(typeof profundidadDeRuta === 'number' && profundidadDeRuta > 0){
+    history.back();
+    return false;
+  }
   var anterior = historialVistas.pop();
   if(!anterior){ return nav('home'); }
   navegandoAtras = true;
@@ -99,6 +108,9 @@ function nav(viewId){
      escrita a mano en su HTML. Se repinta al mostrarlas para que diga
      la de la cuenta que está dentro. */
   if(typeof pintarPastillasDeRol === 'function') pintarPastillasDeRol();
+  /* La vista queda escrita en la URL para que recargar vuelva aquí y las
+     flechas del navegador se muevan entre vistas. Ver js/rutas.js. */
+  if(typeof escribirRuta === 'function') escribirRuta(viewId);
   if(viewId === 'agent-events' && typeof initAgentEvents === 'function') initAgentEvents();
   if(viewId === 'events' && typeof initExploreEvents === 'function') initExploreEvents();
   if(viewId === 'register' && typeof initRegister === 'function') initRegister();

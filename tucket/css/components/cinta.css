@@ -1,0 +1,86 @@
+/* TUCKET — Cinta dorada: la banda de cintas y facetas que encabeza las páginas
+   El dibujo es un SVG escrito dentro del CSS: no pesa nada, no se pixela y no
+   depende de ninguna imagen externa. */
+
+:root{
+  --banda-alto: 300px;
+  --banda: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20900%20310%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20width%3D%22900%22%20height%3D%22310%22%20fill%3D%22%2312172B%22%2F%3E%3Cpolygon%20points%3D%220%2C310%200%2C150%20120%2C210%2070%2C310%22%20fill%3D%22%231B2140%22%2F%3E%3Cpolygon%20points%3D%220%2C150%20110%2C60%20190%2C165%20120%2C210%22%20fill%3D%22%23262C4C%22%2F%3E%3Cpolygon%20points%3D%22110%2C60%20240%2C0%20300%2C95%20190%2C165%22%20fill%3D%22%231B2140%22%2F%3E%3Cpolygon%20points%3D%22120%2C210%20190%2C165%20270%2C250%20180%2C310%22%20fill%3D%22%2338538D%22%20fill-opacity%3D%22.5%22%2F%3E%3Cpolygon%20points%3D%22190%2C165%20300%2C95%20360%2C200%20270%2C250%22%20fill%3D%22%23262C4C%22%2F%3E%3Cpolygon%20points%3D%22240%2C0%20390%2C0%20360%2C120%20300%2C95%22%20fill%3D%22%2338538D%22%20fill-opacity%3D%22.35%22%2F%3E%3Cpolygon%20points%3D%2270%2C310%20120%2C210%20180%2C310%22%20fill%3D%22%23262C4C%22%2F%3E%3Cpath%20d%3D%22M0%2C300%20C190%2C282%20330%2C205%20470%2C128%20C620%2C46%20760%2C16%20900%2C8%20L900%2C120%20C770%2C128%20640%2C158%20500%2C232%20C380%2C296%20190%2C310%200%2C310%20Z%22%20fill%3D%22%230C1022%22%2F%3E%3Cpath%20d%3D%22M0%2C268%20C190%2C250%20340%2C172%20480%2C96%20C630%2C16%20770%2C-12%20900%2C-20%20L900%2C8%20C760%2C16%20620%2C46%20470%2C128%20C330%2C205%20190%2C282%200%2C300%20Z%22%20fill%3D%22%23E8B44C%22%2F%3E%3Cpath%20d%3D%22M0%2C252%20C190%2C234%20344%2C158%20486%2C82%20C634%2C4%20772%2C-26%20900%2C-34%20L900%2C-20%20C770%2C-12%20630%2C16%20480%2C96%20C340%2C172%20190%2C250%200%2C268%20Z%22%20fill%3D%22%23C6912E%22%20fill-opacity%3D%22.75%22%2F%3E%3Cpath%20d%3D%22M0%2C310%20C200%2C300%20400%2C268%20540%2C214%20C690%2C156%20800%2C140%20900%2C138%20L900%2C310%20Z%22%20fill%3D%22%23F7F3EA%22%2F%3E%3Cpath%20d%3D%22M0%2C310%20C200%2C302%20400%2C276%20540%2C226%20C690%2C172%20800%2C156%20900%2C154%20L900%2C170%20C800%2C172%20700%2C188%20560%2C240%20C420%2C292%20200%2C310%200%2C310%20Z%22%20fill%3D%22%23E8B44C%22%20fill-opacity%3D%22.5%22%2F%3E%3C%2Fsvg%3E");
+  --cinta-borde: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20900%2090%22%20preserveAspectRatio%3D%22none%22%3E%3Cpath%20d%3D%22M0%2C90%20C200%2C80%20400%2C48%20540%2C22%20C690%2C-6%20800%2C-14%20900%2C-16%20L900%2C90%20Z%22%20fill%3D%22%23F7F3EA%22%2F%3E%3Cpath%20d%3D%22M0%2C78%20C200%2C68%20400%2C34%20540%2C8%20C690%2C-20%20800%2C-28%20900%2C-30%20L900%2C-16%20C800%2C-14%20690%2C-6%20540%2C22%20C400%2C48%20200%2C80%200%2C90%20Z%22%20fill%3D%22%23E8B44C%22%2F%3E%3Cpath%20d%3D%22M0%2C66%20C200%2C56%20400%2C22%20540%2C-6%20C690%2C-34%20800%2C-42%20900%2C-44%20L900%2C-30%20C800%2C-28%20690%2C-20%20540%2C8%20C400%2C34%20200%2C68%200%2C78%20Z%22%20fill%3D%22%23C6912E%22%20fill-opacity%3D%22.7%22%2F%3E%3C%2Fsvg%3E");
+}
+
+/* ---------- Banda superior de las páginas interiores ---------- */
+.app-body{ position:relative; }
+.app-body::before{
+  content:"";
+  position:absolute; top:0; left:0; right:0; height:var(--banda-alto);
+  /* Velo oscuro a la izquierda: garantiza el contraste del título por
+     encima de la cinta dorada, que es clara. */
+  background-image:
+    linear-gradient(90deg, rgba(12,16,34,.82) 0%, rgba(12,16,34,.62) 42%, rgba(12,16,34,0) 72%),
+    var(--banda);
+  background-repeat:no-repeat, no-repeat;
+  background-position:center top, center top;
+  background-size:100% 100%, 100% 100%;
+  z-index:0; pointer-events:none;
+}
+.app-body > *{ position:relative; z-index:1; }
+
+/* El menú lateral cruza la banda, así que se apoya en su propia tarjeta */
+.app-body .sidebar{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-right:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px 16px;
+  align-self:start;
+  box-shadow:var(--shadow-sm);
+}
+
+/* El inicio y el detalle del evento traen su propia portada */
+#view-home .app-body::before,
+#view-event-detail .app-body::before{ content:none; }
+
+/* El encabezado queda sobre el azul, así que su texto se aclara */
+.app-body .page-head h1{ color:var(--white); }
+.app-body .page-head p{ color:var(--muted-lt); }
+.app-body .page-head .eyebrow-line span{ color:var(--gold); }
+.app-body .page-head .eyebrow-line .rule{ background:var(--gold); }
+
+/* ---------- Registro y solicitud de agente ----------
+   El inicio de sesión no lleva banda: ya tiene su propio panel oscuro
+   a media pantalla y la cinta taparía el formulario. */
+.reg-main{ position:relative; }
+.reg-main::before{
+  content:"";
+  position:absolute; top:0; left:0; right:0; height:var(--banda-alto);
+  background:var(--banda) no-repeat center top / 100% 100%;
+  z-index:0; pointer-events:none;
+}
+.reg-box{ position:relative; z-index:1; }
+
+/* ---------- El filo dorado que cierra la portada ---------- */
+.home-hero::before{
+  content:"";
+  /* La portada ya usaba ::before para un círculo decorativo: aquí se
+     reemplaza por completo, por eso se anulan ancho y redondeo. */
+  position:absolute; left:0; right:0; bottom:0; top:auto;
+  width:auto; height:90px; border-radius:0;
+  background:var(--cinta-borde) no-repeat center bottom / 100% 100%;
+  z-index:2; pointer-events:none;
+}
+
+/* ---------- Pantallas angostas ----------
+   El menú lateral se apila arriba y empujaría el título fuera del azul,
+   así que el contenido pasa primero. El velo también cubre toda la banda:
+   a este ancho la cinta dorada sube hasta donde va el texto. */
+@media (max-width:860px){
+  :root{ --banda-alto: 250px; }
+  .app-body .with-sidebar .sidebar{ order:2; margin-top:24px; }
+  .app-body .with-sidebar .content-col{ order:1; }
+  .app-body::before,
+  .reg-main::before{
+    background-image:
+      linear-gradient(180deg, rgba(12,16,34,.93) 0%, rgba(12,16,34,.86) 62%, rgba(12,16,34,.5) 100%),
+      var(--banda);
+  }
+}

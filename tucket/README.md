@@ -85,6 +85,7 @@ tucket/
 |---|---|
 | `js/loader.js` | Carga las vistas y los parciales dentro de `#app` |
 | `js/navigation.js` | `nav()`, el botón «Volver» y el enlace «Saltar al contenido» |
+| `js/rutas.js` | Escribe la vista en la URL: recargar vuelve a ella y las flechas del navegador funcionan |
 | `js/auth.js` | Estado de la sesión, permisos por rol, `logout()` |
 | `js/api.js` | `tucketApi()`: todas las llamadas al servidor pasan por aquí |
 | `js/validation.js` | Validación de formularios en línea |
@@ -92,6 +93,7 @@ tucket/
 | `js/geo-selects.js` | Selector país → departamento → ciudad, con datos de la base |
 | `js/home-featured.js` | Rellena las rejillas de eventos y el filtro de ciudades de la portada |
 | `js/charts.js` | Tooltip compartido por las gráficas del panel |
+| `css/components/cinta.css` | La cinta dorada y las facetas que encabezan las páginas |
 | `css/base/` | Variables de diseño, reset y el mostrar/ocultar de vistas |
 | `css/components/` | Botones, formularios, tablas, tickets, pie de página… |
 

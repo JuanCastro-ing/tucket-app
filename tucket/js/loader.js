@@ -59,9 +59,17 @@ var VIEWS = [
     app.innerHTML = html;
     syncSkipLink(document.querySelector('.view.active'));
     if(typeof montarBotonesVolver === 'function') montarBotonesVolver();
-    if(typeof restoreAgentSession === 'function') restoreAgentSession();
     if(typeof initHeroSlider === 'function') initHeroSlider();
     if(typeof cargarCifrasPortada === 'function') cargarCifrasPortada();
+
+    /* La ruta se aplica después de comprobar la sesión: si se hiciera
+       antes, recargar sobre una vista privada rebotaría al login aunque
+       la cuenta siguiera abierta. */
+    var sesionLista = typeof restoreAgentSession === 'function'
+      ? restoreAgentSession() : Promise.resolve();
+    Promise.resolve(sesionLista).then(function(){
+      if(typeof arrancarRutas === 'function') arrancarRutas();
+    });
   }).catch(function(err){
     app.innerHTML = '<div style="padding:40px;font-family:sans-serif;max-width:640px;margin:auto">' +
       '<h2>No se pudieron cargar las vistas</h2>' +
