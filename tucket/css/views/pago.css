@@ -1,0 +1,201 @@
+/* TUCKET — Pantalla de pago y comprobante */
+
+.pago-ancho{ max-width: 980px; }
+
+/* La indicación de entorno de pruebas va junto a los datos de la tarjeta,
+   que es donde alguien podría escribir una real. Discreta, pero presente:
+   el sitio está publicado y cualquiera puede entrar. */
+.pago-entorno{
+  margin: 0 0 16px;
+  font-size: 12px;
+  letter-spacing: .4px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pago-entorno::before{
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.pago-grid{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 26px;
+  align-items: start;
+}
+
+.pago-form-panel{ padding-bottom: 8px; }
+
+/* ---------- Métodos ---------- */
+.pago-metodos{ border: 0; margin: 0 0 20px; padding: 0; }
+.pago-metodos-lista{ display: flex; flex-direction: column; gap: 10px; }
+
+.pago-metodo{
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  min-height: 44px;
+}
+.pago-metodo:hover{ border-color: var(--gold); background: #FFFCF4; }
+.pago-metodo:focus-within{ outline: 2px solid var(--gold); outline-offset: 2px; }
+.pago-metodo input{ accent-color: var(--navy); width: 18px; height: 18px; }
+.pago-metodo-texto{ font-size: 15px; color: var(--ink); }
+
+/* ---------- Tarjetas de prueba ---------- */
+.pago-pruebas{
+  margin: 6px 0 18px;
+  padding: 12px 14px;
+  background: var(--paper-2, #F1ECDD);
+  border-radius: 3px;
+  font-size: 13px;
+}
+.pago-pruebas summary{ cursor: pointer; font-weight: 600; color: var(--navy); }
+.pago-pruebas-tabla{ width: 100%; margin-top: 10px; border-collapse: collapse; }
+.pago-pruebas-tabla th,
+.pago-pruebas-tabla td{
+  text-align: left;
+  padding: 5px 8px 5px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.pago-pruebas-tabla td:first-child{ font-family: var(--mono, monospace); }
+.pago-pruebas .hint{ margin-top: 8px; }
+
+/* ---------- Resumen ---------- */
+.pago-resumen{ position: sticky; top: 90px; }
+.pago-resumen-lista{ margin: 0; padding: 0; }
+.pago-resumen-lista > div{
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+.pago-resumen-lista dt{ color: var(--muted); font-size: 12.5px; }
+.pago-resumen-lista dd{ margin: 0; text-align: right; font-size: 13.5px; color: var(--ink); }
+
+.pago-total{
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 2px solid var(--navy);
+}
+.pago-total span{ font-size: 12px; letter-spacing: 2px; color: var(--muted); }
+.pago-total strong{ font-family: var(--display, inherit); font-size: 24px; color: var(--navy); }
+
+/* ---------- Comprobante ---------- */
+.comprobante{ max-width: 620px; margin: 0 auto; }
+
+.comprobante-cabecera{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--navy);
+}
+.comprobante-marca{
+  display: block;
+  font-family: var(--display, inherit);
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--navy);
+}
+.comprobante-tipo{ font-size: 12px; letter-spacing: 2px; color: var(--muted); }
+
+.comprobante-pie{
+  margin: 18px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  letter-spacing: .3px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.comprobante-lista{ margin: 0; padding: 0; }
+.comprobante-lista > div{
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.comprobante-lista dt{ color: var(--muted); font-size: 12.5px; }
+.comprobante-lista dd{ margin: 0; text-align: right; font-size: 13.5px; color: var(--ink); }
+
+.comprobante-total{
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 2px solid var(--navy);
+}
+.comprobante-total span{ font-size: 12px; letter-spacing: 2px; color: var(--muted); }
+.comprobante-total strong{ font-family: var(--display, inherit); font-size: 26px; color: var(--navy); }
+
+.comprobante-motivo{
+  margin-top: 14px;
+  padding: 11px 14px;
+  background: #FDECEA;
+  border-left: 3px solid var(--danger, #C7473F);
+  color: #7A2A24;
+  font-size: 13.5px;
+  border-radius: 0 3px 3px 0;
+}
+
+.comprobante-acciones{ margin-top: 22px; }
+
+/* Acciones y mensajes del formulario */
+.pago-acciones{ display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.form-msg{
+  margin-top: 16px;
+  padding: 11px 14px;
+  border-radius: 3px;
+  font-size: 13.5px;
+  background: var(--paper-2, #F1ECDD);
+  color: var(--ink);
+}
+.form-msg.error{
+  background: #FDECEA;
+  border-left: 3px solid var(--red, #C7473F);
+  color: #7A2A24;
+}
+
+/* ---------- Impresión ----------
+   Al imprimir solo debe salir el comprobante: ni barra, ni menú, ni
+   botones. El aviso de simulación sí, porque el papel puede circular
+   lejos de la pantalla donde se generó. */
+@media print{
+  .marquee-bar,
+  .page-head,
+  .pago-grid,
+  .comprobante-acciones,
+  .pago-acciones,
+  .site-footer,
+  #pago-cargando{ display: none !important; }
+
+  .app-body::before{ display: none !important; }
+  .app-body{ padding: 0 !important; }
+  .comprobante{ border: 0; box-shadow: none; max-width: none; }
+  body{ background: #fff; }
+}
+
+/* ---------- Pantallas angostas ---------- */
+@media (max-width: 860px){
+  .pago-grid{ grid-template-columns: 1fr; }
+  .pago-resumen{ position: static; }
+}

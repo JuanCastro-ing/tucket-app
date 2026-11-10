@@ -52,6 +52,14 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; touch-action:auto; }
+/* El atributo hidden debe ganar siempre.
+   Su valor por defecto es display:none, pero cualquier regla que fije
+   display —flex, grid, block— lo pisa y el elemento se ve igual. Ya pasó
+   tres veces en el proyecto: con los botones del formulario de eventos,
+   con los mensajes de error de los campos y con el formulario de pago.
+   Esta línea cierra la clase entera de error. */
+[hidden]{ display:none !important; }
+
 html{ scroll-behavior:smooth; overflow-x:hidden; width:100%; -webkit-text-size-adjust:100%; touch-action:auto; }
 body{
   margin:0;

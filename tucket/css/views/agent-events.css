@@ -69,11 +69,6 @@
 .cancel-note{ margin:0; font-size:12.5px; color:#8f2d24; }
 .cancel-title{ margin:0; font-size:13.5px; font-weight:800; color:var(--ink); }
 
-/* El atributo hidden no gana contra el display de .btn, así que los
-   botones que deben aparecer solo en su momento —quitar imagen,
-   cancelar edición— se veían siempre. Hay que decirlo explícitamente. */
-#agent-event-form .btn[hidden],
-#agent-event-form .field[hidden]{ display:none; }
 .cancel-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:2px; }
 
 /* La columna de acción quedaba cortada: se ajusta el control y se recorta el

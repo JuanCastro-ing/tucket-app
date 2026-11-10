@@ -135,9 +135,10 @@ router.get('/:code', requireClient, async (req, res, next) => {
     const reserva = await pool.query(
       `SELECT r.id, r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.created_at, r.observations,
               e.code AS event_code, e.name AS event_name, e.venue, e.starts_at,
-              e.image_path, e.image_alt
+              e.image_path, e.image_alt, c.name AS city
        FROM reservations r
        JOIN events e ON e.id = r.event_id
+       JOIN cities c ON c.id = e.city_id
        WHERE r.code = $1 AND r.client_id = $2`,
       [code, req.client.id]
     );

@@ -44,6 +44,8 @@ function setAuthState(state, role){
 var VIEW_ROLES = {
   'profile':           ['cliente', 'agente', 'administrador'],
   'reservations':      ['cliente'],
+  'pago':              ['cliente'],
+  'pago':              ['cliente'],
   'agent-events':      ['agente'],
   'agent-reservations':['agente'],
   'admin-dashboard':   ['administrador']

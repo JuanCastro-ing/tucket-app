@@ -1,0 +1,163 @@
+<div class="view" id="view-pago">
+
+<div class="app-shell">
+
+  <header class="marquee-bar" role="banner">
+    <div class="marquee-inner">
+      <div class="brand"><span class="brand-logo" aria-hidden="true"></span>
+        <a href="#" onclick="return nav('home')" class="brand-mark" aria-label="TUCKET — Inicio">TUCK<span>E</span>T</a></div>
+      <nav class="nav-role" aria-label="Navegación principal">
+        <a href="#" onclick="return nav('events')">Eventos</a>
+        <a href="#" onclick="return nav('reservations')">Mis reservas</a>
+      </nav>
+      <div class="nav-user"><span class="role-pill">CLIENTE</span><div class="avatar">VR</div><a href="#" onclick="return nav('profile')" class="btn-ghost btn-ghost-light">Mi perfil</a><a href="#" onclick="return logout()" class="btn-ghost btn-ghost-light">Salir</a></div>
+    </div>
+  </header>
+
+  <main class="app-body">
+    <div class="container pago-ancho">
+
+      <div class="page-head">
+        <div>
+          <div class="eyebrow-line"><span class="rule"></span><span>PAGO DE RESERVA</span></div>
+          <h1 id="pago-titulo">Pagar reserva</h1>
+          <p>Elige cómo quieres pagar. La reserva queda confirmada apenas se apruebe el pago.</p>
+        </div>
+      </div>
+
+      <div id="pago-cargando" class="empty-state">Cargando la reserva…</div>
+
+      <div id="pago-cuerpo" class="pago-grid" hidden>
+
+        <!-- ---------- Formulario ---------- -->
+        <section class="panel pago-form-panel">
+          <div class="panel-head"><h2>Método de pago</h2></div>
+
+          <form id="pago-form" novalidate onsubmit="pagoEnviar(event); return false;">
+            <fieldset class="pago-metodos">
+              <legend class="sr-only">Elige un método de pago</legend>
+              <div id="pago-metodos-lista" class="pago-metodos-lista"></div>
+            </fieldset>
+
+            <div id="pago-campos-tarjeta" hidden>
+              <p class="pago-entorno">
+                Entorno de pruebas · no se realizan cobros reales
+              </p>
+              <div class="field">
+                <label for="pago-card-holder">Nombre en la tarjeta</label>
+                <input type="text" id="pago-card-holder" name="cardHolder"
+                       autocomplete="off" maxlength="60" placeholder="Como aparece impreso">
+                <small class="field-error" id="err-pago-card-holder" hidden></small>
+              </div>
+
+              <div class="field">
+                <label for="pago-card-number">Número de la tarjeta</label>
+                <input type="text" id="pago-card-number" name="cardNumber"
+                       inputmode="numeric" autocomplete="off" maxlength="23"
+                       placeholder="0000 0000 0000 0000" oninput="pagoFormatearNumero(event)">
+                <small class="field-error" id="err-pago-card-number" hidden></small>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="pago-card-expiry">Vencimiento</label>
+                  <input type="text" id="pago-card-expiry" name="cardExpiry"
+                         inputmode="numeric" autocomplete="off" maxlength="5" placeholder="MM/AA"
+                         oninput="pagoFormatearVencimiento(event)">
+                  <small class="field-error" id="err-pago-card-expiry" hidden></small>
+                </div>
+                <div class="field">
+                  <label for="pago-card-cvv">Código de seguridad</label>
+                  <input type="text" id="pago-card-cvv" name="cardCvv"
+                         inputmode="numeric" autocomplete="off" maxlength="4" placeholder="123">
+                  <small class="field-error" id="err-pago-card-cvv" hidden></small>
+                </div>
+              </div>
+
+              <details class="pago-pruebas">
+                <summary>Tarjetas de prueba</summary>
+                <table class="pago-pruebas-tabla">
+                  <thead><tr><th>Número</th><th>Resultado</th></tr></thead>
+                  <tbody>
+                    <tr><td>4111 1111 1111 1111</td><td>Aprobado · Visa</td></tr>
+                    <tr><td>5500 0000 0000 0004</td><td>Aprobado · Mastercard</td></tr>
+                    <tr><td>4000 0000 0000 0002</td><td>Rechazado · fondos insuficientes</td></tr>
+                    <tr><td>4000 0000 0000 0127</td><td>Rechazado · código incorrecto</td></tr>
+                  </tbody>
+                </table>
+                <p class="hint">Cualquier vencimiento futuro y cualquier código de 3 dígitos sirven.</p>
+              </details>
+            </div>
+
+            <p id="pago-nota-metodo" class="hint" hidden></p>
+            <div id="pago-mensaje" class="form-msg" hidden></div>
+
+            <div class="pago-acciones">
+              <button type="submit" class="btn btn-primary" id="pago-enviar">Pagar</button>
+              <a href="#" class="btn btn-outline" onclick="return nav('reservations')">Volver a mis reservas</a>
+            </div>
+          </form>
+        </section>
+
+        <!-- ---------- Resumen ---------- -->
+        <aside class="panel pago-resumen" aria-labelledby="pago-resumen-titulo">
+          <div class="panel-head"><h2 id="pago-resumen-titulo">Resumen</h2></div>
+          <dl class="pago-resumen-lista">
+            <div><dt>Reserva</dt><dd id="pago-res-codigo">—</dd></div>
+            <div><dt>Evento</dt><dd id="pago-res-evento">—</dd></div>
+            <div><dt>Fecha</dt><dd id="pago-res-fecha">—</dd></div>
+            <div><dt>Lugar</dt><dd id="pago-res-lugar">—</dd></div>
+            <div><dt>Entradas</dt><dd id="pago-res-cantidad">—</dd></div>
+            <div><dt>Valor unitario</dt><dd id="pago-res-unitario">—</dd></div>
+          </dl>
+          <div class="pago-total">
+            <span>Total a pagar</span>
+            <strong id="pago-res-total">—</strong>
+          </div>
+        </aside>
+      </div>
+
+      <!-- ---------- Comprobante ---------- -->
+      <section id="pago-comprobante" class="panel comprobante" hidden aria-live="polite">
+        <div class="comprobante-cabecera">
+          <div>
+            <span class="comprobante-marca">TUCKET</span>
+            <span class="comprobante-tipo">Comprobante de pago</span>
+          </div>
+          <span id="comp-estado" class="badge">—</span>
+        </div>
+
+        <dl class="comprobante-lista">
+          <div><dt>Comprobante</dt><dd id="comp-codigo">—</dd></div>
+          <div><dt>Referencia</dt><dd id="comp-referencia">—</dd></div>
+          <div><dt>Fecha</dt><dd id="comp-fecha">—</dd></div>
+          <div><dt>Método</dt><dd id="comp-metodo">—</dd></div>
+          <div><dt>Cliente</dt><dd id="comp-cliente">—</dd></div>
+          <div><dt>Documento</dt><dd id="comp-documento">—</dd></div>
+          <div><dt>Reserva</dt><dd id="comp-reserva">—</dd></div>
+          <div><dt>Evento</dt><dd id="comp-evento">—</dd></div>
+          <div><dt>Entradas</dt><dd id="comp-cantidad">—</dd></div>
+        </dl>
+
+        <div class="comprobante-total">
+          <span>Total</span>
+          <strong id="comp-total">—</strong>
+        </div>
+
+        <p id="comp-motivo" class="comprobante-motivo" hidden></p>
+
+        <p class="comprobante-pie">Documento generado en entorno de pruebas · sin validez fiscal</p>
+
+        <div class="pago-acciones comprobante-acciones">
+          <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir o guardar en PDF</button>
+          <a href="#" class="btn btn-outline" onclick="return nav('reservations')">Mis reservas</a>
+          <a href="#" id="comp-reintentar" class="btn btn-outline" hidden>Intentar con otro método</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div data-parcial="footer"></div>
+</div>
+</div>

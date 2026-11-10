@@ -161,6 +161,9 @@ Reglas que vive la base, no solo la API:
 | `GET /api/admin/stats` | admin | Cifras, gráficas y tablas del panel |
 | `GET /api/stats/home` | — | Cifras de la portada (eventos activos, reservas, ciudades) |
 | `GET /api/statuses` | — | Catálogo de estados: etiquetas, colores y reglas |
+| `GET /api/payments/methods` | — | Métodos de pago disponibles |
+| `POST /api/payments` | Cliente | Paga una reserva (simulación) |
+| `GET /api/payments/:code` | Dueño o admin | Comprobante del pago |
 
 El inicio de sesión admite 8 intentos fallidos por IP cada 15 minutos; al
 pasarse responde `429` hasta que se cumpla la ventana. Todas las respuestas

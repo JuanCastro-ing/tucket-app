@@ -163,6 +163,11 @@ event_statuses(code PK, label, display_order, allows_reservation, is_final,
                requires_reason, allowed_as_initial, badge_class)
 reservation_statuses(code PK, label, display_order, occupies_seat, is_final, badge_class)
 request_statuses(code PK, label, display_order, is_final, badge_class)
+
+payment_methods(code PK, label, display_order, needs_card, instant, active)
+payment_statuses(code PK, label, display_order, is_paid, is_final, badge_class)
+payments(id PK, code, reservation_id FK, method_code FK, status FK, amount,
+         reference, card_last4, card_brand, decline_reason, paid_at, created_at)
 ```
 
 Más la vista `event_availability`, que calcula cuántas butacas quedan libres.
@@ -206,6 +211,24 @@ integridad la garantiza una clave foránea igual que antes el `CHECK`.
 Está probado: se insertó un estado «Aplazado» en la base, se reinició el
 servidor, y apareció solo en los desplegables, con su color y respetando su
 regla de no admitir reservas. Sin tocar una línea de código.
+
+**El pago es una simulación, y se nota a propósito.** Tucket no cobra
+dinero: no hay pasarela ni cuenta de comercio. La pantalla de pago lleva un
+aviso permanente, el comprobante dice «documento de simulación · sin validez
+fiscal», y solo se aprueban números de tarjeta de prueba conocidos. Una
+tarjeta real bien formada se **rechaza** a propósito, para que nadie vea un
+«Aprobado» y crea que le cobraron.
+
+De la tarjeta no se guarda nada salvo los cuatro últimos dígitos y la marca,
+que es lo que imprime cualquier recibo. El número, el vencimiento y el código
+de seguridad se validan en el servidor y se descartan; nunca llegan a la base.
+
+Quien confirma la reserva es la base, no la API: un disparador la pasa a
+Confirmada cuando el pago queda aprobado. Así no puede existir un pago
+aprobado con la reserva sin confirmar, ni aunque alguien escriba directamente
+en la tabla desde pgAdmin. Y un índice único parcial impide dos pagos
+aprobados sobre la misma reserva, mientras deja acumular los rechazados: ese
+historial de intentos explica por qué el cliente volvió a probar.
 
 **Las reglas de negocio están en la base, no solo en la API.** Un trigger impide
 sobrevender un evento, un `CHECK` obliga a registrar la causa al cancelar, y
@@ -309,6 +332,7 @@ archivos subidos por usuarios.
 | Añadir un campo con ubicación | `montarUbicacion()` de `js/geo-selects.js` |
 | Cambiar colores, sombras o tipografías | `css/base/base.css` (están como variables) |
 | Agregar un campo a un evento | `backend/db/03-eventos.sql`, luego la ruta en `events.routes.js` y el formulario en `views/agent-events.html` |
+| Agregar un método de pago | Un `INSERT` en `payment_methods`. Nada de código |
 | Agregar o cambiar un estado | Un `INSERT` o `UPDATE` en `event_statuses` (o las otras dos). Nada de código |
 | Cambiar quién entra a una pantalla | `VIEW_ROLES` en `js/auth.js` **y** el guardia de la ruta en el backend |
 | Agregar una pantalla | Ver el final del [README](README.md) |

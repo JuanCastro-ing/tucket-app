@@ -135,16 +135,9 @@ function heroSlideNode(slide, i){
    no está cargada (alguien entra directo a la portada y hace clic), se carga
    antes de abrir, y si aun así no aparece se cae a la cartelera. */
 async function heroAbrirEvento(code){
-  if(typeof openEventDetails !== 'function') return nav('events');
-  var hay = typeof publicEvents !== 'undefined'
-    && publicEvents.some(function(e){ return e.code === code; });
-  if(!hay && typeof loadPublicEvents === 'function'){
-    try{ await loadPublicEvents(); }catch(_e){}
-  }
-  if(typeof publicEvents !== 'undefined'
-     && publicEvents.some(function(e){ return e.code === code; })){
-    return openEventDetails(code);
-  }
+  /* La lógica vive en events.js para que el carrusel y las tarjetas de la
+     portada abran el evento exactamente igual. */
+  if(typeof abrirEventoPorCodigo === 'function') return abrirEventoPorCodigo(code);
   return nav('events');
 }
 
@@ -350,6 +343,9 @@ async function loadHeroFeatured(){
   if(typeof tucketApi !== 'function') return;
   try{
     var resultado = await tucketApi('/api/events');
+    /* La misma respuesta se guarda como cartelera: sin esto, «Ver evento»
+       desde la portada no encontraba el evento y no hacía nada. */
+    if(typeof guardarCartelera === 'function') guardarCartelera(resultado);
     var destacados = heroDestacados(resultado && resultado.events);
     if(destacados.length) setHeroFeatured(destacados);
 

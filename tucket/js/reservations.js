@@ -108,6 +108,21 @@ function resTarjeta(r){
   });
   acciones.append(ver);
 
+  /* Pagar solo si todavía se debe: una reserva Confirmada ya se pagó, y
+     una Cancelada o Usada no admite pagos. El servidor lo vuelve a
+     comprobar; esto evita ofrecer un botón que va a fallar. */
+  if(r.status === 'Reservada'){
+    var pagar = document.createElement('a');
+    pagar.href = '#';
+    pagar.className = 'btn btn-primary btn-sm';
+    pagar.textContent = 'Pagar';
+    pagar.addEventListener('click', function(e){
+      e.preventDefault();
+      if(typeof irAPagar === 'function') irAPagar(r.code);
+    });
+    acciones.append(pagar);
+  }
+
   /* Cancelar solo mientras la reserva lo admite. El servidor vuelve a
      comprobarlo —y además rechaza si el evento ya empezó—, así que esto
      es solo para no ofrecer un botón que va a fallar. */

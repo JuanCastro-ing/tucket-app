@@ -76,7 +76,7 @@ function tarjetaDeEvento(event){
   var link = document.createElement('a');
   link.href = '#'; link.className = 'btn btn-gold btn-sm'; link.textContent = 'Ver evento';
   link.setAttribute('aria-label', 'Ver el evento ' + event.name);
-  link.addEventListener('click', function(ev){ ev.preventDefault(); openEventDetails(event.code); });
+  link.addEventListener('click', function(ev){ ev.preventDefault(); abrirEventoPorCodigo(event.code); });
   stub.append(price, link);
 
   card.append(head, body, stub);
@@ -151,6 +151,30 @@ function updateEventClock(){
   var clock=document.getElementById('events-live-clock');
   if(clock) clock.textContent=new Intl.DateTimeFormat('es-CO',{dateStyle:'medium',timeStyle:'medium',timeZone:'America/Bogota'}).format(new Date());
 }
+/* Guarda en memoria la cartelera recién traída. Lo usan la pantalla de
+   eventos y también la portada, que pide la misma lista para el carrusel:
+   así una sola respuesta sirve a las dos y, sobre todo, «Ver evento»
+   funciona desde el inicio sin volver a pedir nada. */
+function guardarCartelera(result){
+  publicEvents = Array.isArray(result && result.events) ? result.events : [];
+  publicEventsSinConexion = false;
+  publicEventsServerTime = (result && result.serverTime) ? new Date(result.serverTime).getTime() : Date.now();
+  publicEventsReceivedAt = Date.now();
+}
+
+/* Abre el detalle de un evento aunque la cartelera no esté en memoria.
+   Pasa al entrar directo a la portada: el carrusel y las rejillas están
+   pintados, pero la lista todavía no se ha guardado. */
+async function abrirEventoPorCodigo(code){
+  if(typeof openEventDetails !== 'function') return nav('events');
+  var hay = publicEvents.some(function(e){ return e.code === code; });
+  if(!hay){
+    try{ await loadPublicEvents(); }catch(_e){}
+  }
+  if(publicEvents.some(function(e){ return e.code === code; })) return openEventDetails(code);
+  return nav('events');
+}
+
 async function loadPublicEvents(){
   if(publicEventsLoading)return;
   publicEventsLoading=true;
@@ -158,10 +182,7 @@ async function loadPublicEvents(){
   if(grid && publicEvents.length===0){grid.setAttribute('aria-busy','true');grid.innerHTML='<div class="events-loading" role="status" aria-label="Cargando eventos"><span class="loading-spinner" aria-hidden="true"></span><span>Cargando eventos…</span></div>';}
   try{
     var result=await tucketApi('/api/events');
-    publicEvents=Array.isArray(result.events) ? result.events : [];
-    publicEventsSinConexion=false;
-    publicEventsServerTime=result.serverTime ? new Date(result.serverTime).getTime() : Date.now();
-    publicEventsReceivedAt=Date.now();
+    guardarCartelera(result);
     var updated=document.getElementById('events-updated-at');
     if(updated)updated.textContent='a las '+new Intl.DateTimeFormat('es-CO',{hour:'2-digit',minute:'2-digit',timeZone:'America/Bogota'}).format(new Date());
     renderExploreEvents();

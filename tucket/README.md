@@ -73,6 +73,7 @@ tucket/
 | Cartelera | `events.html` | `events.css` | `events.js` |
 | Detalle de evento | `event-detail.html` | `event-detail.css` | `event-detail.js`, `events.js` |
 | Mis reservas (cliente) | `reservations.html` | `reservations.css` | `reservations.js` |
+| Pago y comprobante | `pago.html` | `pago.css` | `pago.js` |
 | Mi perfil | `profile.html` | `profile.css` | `profile.js`, `profile-password.js` |
 | Centro de ayuda | `ayuda.html` | `ayuda.css` | — (enlaces del pie, vía `irAAyuda()`) |
 | Eventos (agente) | `agent-events.html` | `agent-events.css` | `agent-events.js` |

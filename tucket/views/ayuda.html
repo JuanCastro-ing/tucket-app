@@ -76,9 +76,11 @@
             una por entrada, cada una con su número de serie.
           </li>
           <li>
-            <strong>Paga en taquilla.</strong>
-            Esta plataforma no cobra en línea: la reserva aparta tu cupo y el pago
-            se hace en el recinto, donde la reserva pasa a <em>Confirmada</em>.
+            <strong>Paga.</strong>
+            Desde <em>Mis reservas</em>, el botón <em>Pagar</em> te lleva al checkout.
+            Puedes pagar con tarjeta, con PSE o elegir efectivo en taquilla.
+            Al aprobarse el pago la reserva pasa a <em>Confirmada</em> y recibes
+            tu comprobante.
           </li>
         </ol>
 
@@ -123,9 +125,24 @@
 
         <details class="ayuda-faq">
           <summary>¿Se paga en esta página?</summary>
-          <p>No. TUCKET aparta el cupo y genera las boletas; el pago se hace en la
-            taquilla del recinto. Por eso la reserva nace en estado Reservada y
-            pasa a Confirmada cuando se paga.</p>
+          <p>Sí. Desde Mis reservas, el botón Pagar abre el checkout, donde puedes
+            pagar con tarjeta, con PSE o elegir efectivo en taquilla. Con los dos
+            primeros la reserva pasa a Confirmada de inmediato; con el tercero
+            queda pendiente hasta que pagues en el recinto.</p>
+        </details>
+
+        <details class="ayuda-faq">
+          <summary>¿Los pagos son reales?</summary>
+          <p>No. TUCKET es un proyecto académico de la UCEVA y el módulo de pagos
+            es una <strong>simulación</strong>: no hay pasarela conectada, no se
+            cobra ningún dinero y los comprobantes no tienen validez fiscal.</p>
+          <p>Solo funcionan los números de tarjeta de prueba que aparecen listados
+            en la propia pantalla de pago. Una tarjeta real se rechaza a propósito,
+            precisamente para que nadie crea que se le cobró.</p>
+          <p>De la tarjeta no se guarda nada salvo los cuatro últimos dígitos y la
+            marca, que es lo que imprime cualquier recibo. El número completo, la
+            fecha de vencimiento y el código de seguridad se validan en el servidor
+            y se descartan: nunca llegan a la base de datos.</p>
         </details>
 
         <details class="ayuda-faq">

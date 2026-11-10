@@ -22,6 +22,7 @@ var VIEWS = [
   "agent-request",
   "events",
   "event-detail",
+  "pago",
   "reservations",
   "profile",
   "ayuda",
