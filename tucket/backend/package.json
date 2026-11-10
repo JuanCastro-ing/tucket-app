@@ -13,6 +13,7 @@
     "db:revisar": "node scripts/revisar-datos.js",
     "agent:create": "node scripts/create-agent.js",
     "agent:check": "node scripts/check-agents.js",
+    "pass:reset": "node scripts/reset-password.js",
     "admin:create": "node scripts/create-admin.js"
   },
   "engines": { "node": ">=18" },

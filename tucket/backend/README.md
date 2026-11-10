@@ -60,6 +60,7 @@ Si prefieres ir paso a paso:
 | `npm run db:setup` | Crea las tablas y carga la geografía |
 | `npm run agent:create` | Crea una cuenta de agente |
 | `npm run db:seed` | Carga los 7 eventos de ejemplo |
+| `npm run pass:reset` | Asigna una contraseña nueva a una cuenta que la olvidó |
 | `npm run agent:check` | Lista los agentes registrados |
 | `npm run admin:create` | Crea una cuenta de administrador |
 
