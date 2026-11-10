@@ -159,3 +159,8 @@
   .sol-acciones .btn{ flex:1 1 100%; }
 }
 
+
+/* Un agente sin eventos publicados se atenúa: sigue estando, que es lo
+   importante, pero se distingue de un vistazo de quien sí produce. */
+#adm-agentes-tabla .fila-sin-actividad td{ color: var(--muted); }
+#adm-agentes-tabla .fila-sin-actividad .cell-strong{ color: var(--ink); }

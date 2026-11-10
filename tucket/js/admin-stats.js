@@ -275,6 +275,22 @@ function admPintar(datos){
   if(g('adm-agentes-chart')) admBarrasHorizontales(g('adm-agentes-chart'), datos.revenueByAgent);
   if(g('adm-ciudades')) admDona(g('adm-ciudades'), datos.eventsByCity, totalEventos);
 
+  /* Los agentes sin actividad también salen, en cero: que falte una fila
+     es indistinguible de que el agente no exista, y es justo lo que el
+     administrador necesita poder ver. */
+  admTabla('adm-agentes-tabla', datos.agents || [], 7, 'Todavía no hay agentes registrados.', function(f){
+    var tr = document.createElement('tr');
+    if(!f.eventos) tr.className = 'fila-sin-actividad';
+    tr.append(admCelda(f.agente, 'cell-strong'),
+              admCelda(f.email),
+              admCelda(admFecha(f.desde)),
+              admCelda(admNumero(f.eventos)),
+              admCelda(admNumero(f.en_venta)),
+              admCelda(admNumero(f.entradas)),
+              admCelda(admMoneda(f.ingresos)));
+    return tr;
+  });
+
   admTabla('adm-cobertura', datos.coverage, 5, 'Todavía no hay eventos publicados.', function(f){
     var tr = document.createElement('tr');
     tr.append(admCelda(f.pais), admCelda(f.departamento), admCelda(f.ciudad, 'cell-strong'),

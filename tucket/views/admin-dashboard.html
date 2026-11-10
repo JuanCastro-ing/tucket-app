@@ -24,6 +24,7 @@
           <a href="#" onclick="return nav('admin-dashboard')" class="active" aria-current="page">Resumen general</a>
           <a href="#solicitudes">Solicitudes de agente <span id="sol-sidebar-badge" class="side-badge" hidden>0</span></a>
           <a href="#reportes-comerciales">Reportes comerciales</a>
+          <a href="#agentes">Agentes registrados</a>
           <a href="#cobertura">Cobertura geográfica</a>
           <a href="#operacion">Reservas y operación</a>
           <a href="#" onclick="return logout()">Cerrar sesión</a>
@@ -110,6 +111,25 @@
                    aria-label="Eventos por ciudad" xmlns="http://www.w3.org/2000/svg"></svg>
             </div>
               </div>
+
+          <div class="panel" id="agentes">
+            <div class="panel-head">
+              <h2>Agentes registrados</h2>
+              <span class="hint">Histórico · no depende del año seleccionado</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr-only">Agentes registrados y su actividad</caption>
+                <thead><tr>
+                  <th>Agente</th><th>Correo</th><th>Desde</th>
+                  <th>Eventos</th><th>En venta</th><th>Entradas</th><th>Ingresos</th>
+                </tr></thead>
+                <tbody id="adm-agentes-tabla">
+                  <tr><td colspan="7" class="cell-muted">Cargando…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <div class="panel" id="cobertura">
             <div class="panel-head">

@@ -30,7 +30,7 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
 
   try {
     const [
-      conteos, ingresos, reservasMes, porAgente,
+      conteos, ingresos, reservasMes, porAgente, agentes,
       porCiudad, cobertura, reservasCanceladas, eventosCancelados, anios
     ] = await Promise.all([
 
@@ -94,9 +94,39 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
            AND EXTRACT(YEAR FROM r.created_at AT TIME ZONE 'America/Bogota') = $1
          WHERE a.active
          GROUP BY a.id, a.full_name
-         HAVING COALESCE(SUM(r.total_amount), 0) > 0
-         ORDER BY total DESC
-         LIMIT 5`, [anio]),
+         /* Sin HAVING: un agente sin ventas sale en cero, no desaparece.
+            Que no aparezca es indistinguible de que no exista, y el
+            administrador necesita poder ver justamente eso. */
+         ORDER BY total DESC, a.full_name
+         LIMIT 8`, [anio]),
+
+      /* ---- Agentes registrados ----
+         Histórico, no filtrado por año: es la nómina de quién publica y
+         cuánto ha movido desde que entró. Los conteos usan DISTINCT
+         porque al unir eventos con reservas cada evento se repite una vez
+         por reserva. Las banderas de los catálogos deciden qué cuenta:
+         occupies_seat para las entradas vendidas, allows_reservation
+         para los eventos que hoy están a la venta. */
+      pool.query(`
+        SELECT a.full_name AS agente,
+               a.email,
+               a.created_at AS desde,
+               COUNT(DISTINCT e.id)::int AS eventos,
+               COUNT(DISTINCT e.id) FILTER (
+                 WHERE e.status IN (SELECT code FROM event_statuses WHERE allows_reservation)
+               )::int AS en_venta,
+               COALESCE(SUM(r.quantity) FILTER (
+                 WHERE r.status IN (SELECT code FROM reservation_statuses WHERE occupies_seat)
+               ), 0)::int AS entradas,
+               COALESCE(SUM(r.total_amount) FILTER (
+                 WHERE r.status IN (SELECT code FROM reservation_statuses WHERE occupies_seat)
+               ), 0)::float AS ingresos
+          FROM agents a
+          LEFT JOIN events e       ON e.agent_id = a.id
+          LEFT JOIN reservations r ON r.event_id = e.id
+         WHERE a.active
+         GROUP BY a.id, a.full_name, a.email, a.created_at
+         ORDER BY eventos DESC, ingresos DESC, a.full_name`),
 
       /* ---- Eventos por ciudad ---- */
       pool.query(`
@@ -161,6 +191,7 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
       revenueByMonth: ingresos.rows,
       reservationsByMonth: reservasMes.rows,
       revenueByAgent: porAgente.rows,
+      agents: agentes.rows,
       eventsByCity: porCiudad.rows,
       coverage: cobertura.rows,
       cancelledReservations: reservasCanceladas.rows,

@@ -332,6 +332,7 @@ archivos subidos por usuarios.
 | Añadir un campo con ubicación | `montarUbicacion()` de `js/geo-selects.js` |
 | Cambiar colores, sombras o tipografías | `css/base/base.css` (están como variables) |
 | Agregar un campo a un evento | `backend/db/03-eventos.sql`, luego la ruta en `events.routes.js` y el formulario en `views/agent-events.html` |
+| Ver qué hace cada agente | La tabla «Agentes registrados» del panel administrativo |
 | Agregar un método de pago | Un `INSERT` en `payment_methods`. Nada de código |
 | Agregar o cambiar un estado | Un `INSERT` o `UPDATE` en `event_statuses` (o las otras dos). Nada de código |
 | Cambiar quién entra a una pantalla | `VIEW_ROLES` en `js/auth.js` **y** el guardia de la ruta en el backend |
