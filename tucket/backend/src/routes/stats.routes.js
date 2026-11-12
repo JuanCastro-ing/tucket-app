@@ -17,18 +17,18 @@ router.get('/home', async (_req, res, next) => {
     const result = await pool.query(`
       SELECT
         /* Activo = todavía se puede asistir: ni cancelado, ni terminado. */
-        (SELECT COUNT(*) FROM events
-          WHERE status NOT IN ('Cancelado', 'Finalizado')
-            AND ends_at > NOW())::int AS eventos_activos,
+        (SELECT COUNT(*) FROM eventos
+          WHERE estado NOT IN ('Cancelado', 'Finalizado')
+            AND fecha_fin > NOW())::int AS eventos_activos,
 
         /* Las canceladas no cuentan: no representan una asistencia. */
-        (SELECT COUNT(*) FROM reservations
-          WHERE status <> 'Cancelada'
-            AND EXTRACT(YEAR FROM created_at AT TIME ZONE 'America/Bogota')
+        (SELECT COUNT(*) FROM reservas
+          WHERE estado <> 'Cancelada'
+            AND EXTRACT(YEAR FROM fecha_creacion AT TIME ZONE 'America/Bogota')
                 = EXTRACT(YEAR FROM NOW() AT TIME ZONE 'America/Bogota'))::int AS reservas_anio,
 
         /* Ciudades donde hay cartelera, no las 1.122 del catálogo DANE. */
-        (SELECT COUNT(DISTINCT city_id) FROM events)::int AS ciudades
+        (SELECT COUNT(DISTINCT id_ciudad) FROM eventos)::int AS ciudades
     `);
 
     return res.json({

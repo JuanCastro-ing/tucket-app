@@ -19,10 +19,10 @@ router.use(express.json({ limit: '32kb' }));
 router.get('/methods', async (_req, res, next) => {
   try {
     const r = await pool.query(
-      `SELECT code, label, needs_card AS "needsCard", instant
-         FROM payment_methods
-        WHERE active
-        ORDER BY display_order`
+      `SELECT codigo AS "code", etiqueta AS "label", requiere_tarjeta AS "needsCard", inmediato AS "instant"
+         FROM metodos_pago
+        WHERE activo
+        ORDER BY orden`
     );
     res.set('Cache-Control', 'public, max-age=300');
     return res.json({ methods: r.rows });
@@ -44,8 +44,8 @@ router.post('/', requireClient, async (req, res, next) => {
     /* El método tiene que existir y estar activo; sus reglas salen del
        catálogo, no de una lista escrita aquí. */
     const metodo = await conexion.query(
-      `SELECT code, label, needs_card, instant
-         FROM payment_methods WHERE code = $1 AND active`, [method]
+      `SELECT codigo AS "code", etiqueta AS "label", requiere_tarjeta AS "needs_card", inmediato AS "instant"
+         FROM metodos_pago WHERE codigo = $1 AND activo`, [method]
     );
     if (!metodo.rowCount) {
       await conexion.query('ROLLBACK');
@@ -56,9 +56,9 @@ router.post('/', requireClient, async (req, res, next) => {
     /* La reserva tiene que ser del cliente de la sesión. FOR UPDATE evita
        que dos pestañas abiertas paguen la misma reserva a la vez. */
     const reserva = await conexion.query(
-      `SELECT r.id, r.code, r.status, r.total_amount
-         FROM reservations r
-        WHERE r.code = $1 AND r.client_id = $2
+      `SELECT r.id, r.codigo AS "code", r.estado AS "status", r.valor_total AS "total_amount"
+         FROM reservas r
+        WHERE r.codigo = $1 AND r.id_cliente = $2
         FOR UPDATE`,
       [reservationCode, req.client.id]
     );
@@ -71,7 +71,7 @@ router.post('/', requireClient, async (req, res, next) => {
     const { id: reservaId, status: estadoReserva, total_amount: total } = reserva.rows[0];
 
     const ocupa = await conexion.query(
-      `SELECT occupies_seat FROM reservation_statuses WHERE code = $1`, [estadoReserva]
+      `SELECT ocupa_silla AS "occupies_seat" FROM estados_reserva WHERE codigo = $1`, [estadoReserva]
     );
     if (!ocupa.rowCount || !ocupa.rows[0].occupies_seat) {
       await conexion.query('ROLLBACK');
@@ -79,7 +79,7 @@ router.post('/', requireClient, async (req, res, next) => {
     }
 
     const yaPagada = await conexion.query(
-      `SELECT code FROM payments WHERE reservation_id = $1 AND status = 'Aprobado'`, [reservaId]
+      `SELECT codigo AS "code" FROM pagos WHERE id_reserva = $1 AND estado = 'Aprobado'`, [reservaId]
     );
     if (yaPagada.rowCount) {
       await conexion.query('ROLLBACK');
@@ -121,16 +121,16 @@ router.post('/', requireClient, async (req, res, next) => {
        agente lo confirme, que es como funcionaba Tucket antes. */
 
     const pago = await conexion.query(
-      `INSERT INTO payments
-         (reservation_id, method_code, status, amount, reference,
-          card_last4, card_brand, decline_reason, paid_at)
+      `INSERT INTO pagos
+         (id_reserva, codigo_metodo, estado, monto, referencia,
+          ultimos4_tarjeta, marca_tarjeta, motivo_rechazo, fecha_pago)
        /* El molde ::varchar es necesario: $3 se usa como valor de la
           columna y dentro de una comparación, y sin él PostgreSQL deduce
           dos tipos distintos para el mismo parámetro y rechaza la
           consulta (42P08). */
        VALUES ($1, $2, $3::varchar, $4, $5, $6, $7, $8,
                CASE WHEN $3::varchar = 'Aprobado' THEN NOW() ELSE NULL END)
-       RETURNING code, status, amount, reference, created_at`,
+       RETURNING codigo AS "code", estado AS "status", monto AS "amount", referencia AS "reference", fecha_creacion AS "created_at"`,
       [reservaId, method, estado, total, referencia, ultimos4, marca, motivo]
     );
 
@@ -172,22 +172,22 @@ router.get('/:code', requireSession, async (req, res, next) => {
 
   try {
     const r = await pool.query(
-      `SELECT p.code, p.status, p.amount, p.reference, p.card_last4, p.card_brand,
-              p.decline_reason, p.paid_at, p.created_at,
-              pm.label AS method,
-              ps.label AS status_label, ps.badge_class,
-              r.code AS reservation, r.quantity, r.unit_price, r.client_id,
-              e.code AS event_code, e.name AS event_name, e.venue,
-              e.starts_at, c.name AS city,
-              cl.full_name AS client_name, cl.document_number
-         FROM payments p
-         JOIN payment_methods  pm ON pm.code = p.method_code
-         JOIN payment_statuses ps ON ps.code = p.status
-         JOIN reservations r ON r.id = p.reservation_id
-         JOIN events e       ON e.id = r.event_id
-         JOIN cities c       ON c.id = e.city_id
-         JOIN clients cl     ON cl.id = r.client_id
-        WHERE p.code = $1`, [code]
+      `SELECT p.codigo AS "code", p.estado AS "status", p.monto AS "amount", p.referencia AS "reference", p.ultimos4_tarjeta AS "card_last4", p.marca_tarjeta AS "card_brand",
+              p.motivo_rechazo AS "decline_reason", p.fecha_pago AS "paid_at", p.fecha_creacion AS "created_at",
+              pm.etiqueta AS method,
+              ps.etiqueta AS estado_etiqueta, ps.clase_insignia AS "badge_class",
+              r.codigo AS reservation, r.cantidad AS "quantity", r.precio_unitario AS "unit_price", r.id_cliente AS "client_id",
+              e.codigo AS codigo_evento, e.nombre AS event_nombre, e.teatro AS "venue",
+              e.fecha_inicio AS "starts_at", c.nombre AS city,
+              cl.nombre_completo AS client_nombre, cl.numero_documento AS "document_number"
+         FROM pagos p
+         JOIN metodos_pago  pm ON pm.codigo = p.codigo_metodo
+         JOIN estados_pago ps ON ps.codigo = p.estado
+         JOIN reservas r ON r.id = p.id_reserva
+         JOIN eventos e       ON e.id = r.id_evento
+         JOIN ciudades c       ON c.id = e.id_ciudad
+         JOIN clientes cl     ON cl.id = r.id_cliente
+        WHERE p.codigo = $1`, [code]
     );
 
     if (!r.rowCount) return res.status(404).json({ error: 'No encontramos ese comprobante.' });

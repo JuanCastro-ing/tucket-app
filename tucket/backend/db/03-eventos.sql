@@ -1,64 +1,64 @@
 -- TUCKET · Módulo 3: Eventos
--- Incluye el afiche del evento (image_path / image_alt) y el ciclo
+-- Incluye el afiche del evento (ruta_imagen / texto_imagen) y el ciclo
 -- de vida del estado.
 
-CREATE TABLE IF NOT EXISTS events (
+CREATE TABLE IF NOT EXISTS eventos (
   id BIGSERIAL PRIMARY KEY,
-  code VARCHAR(32) NOT NULL UNIQUE,
-  name VARCHAR(160) NOT NULL,
-  description TEXT NOT NULL,
-  venue VARCHAR(180) NOT NULL,
-  starts_at TIMESTAMPTZ NOT NULL,
-  ends_at TIMESTAMPTZ NOT NULL,
-  total_capacity INTEGER NOT NULL CHECK (total_capacity > 0),
-  base_price NUMERIC(12, 2) NOT NULL CHECK (base_price >= 0),
-  observations TEXT NOT NULL,
+  codigo VARCHAR(32) NOT NULL UNIQUE,
+  nombre VARCHAR(160) NOT NULL,
+  descripcion TEXT NOT NULL,
+  teatro VARCHAR(180) NOT NULL,
+  fecha_inicio TIMESTAMPTZ NOT NULL,
+  fecha_fin TIMESTAMPTZ NOT NULL,
+  capacidad_total INTEGER NOT NULL CHECK (capacidad_total > 0),
+  precio_base NUMERIC(12, 2) NOT NULL CHECK (precio_base >= 0),
+  observaciones TEXT NOT NULL,
   -- Afiche: se guarda la RUTA del archivo servido por el backend
-  -- (/uploads/events/xxx.jpg), no la imagen en binario. Mantiene la
+  -- (/uploads/eventos/xxx.jpg), no la imagen en binario. Mantiene la
   -- base liviana, que es lo que conviene en Neon.
-  image_path VARCHAR(255),
-  image_alt VARCHAR(200),
-  status VARCHAR(20) NOT NULL DEFAULT 'Programado'
-    CHECK (status IN ('Programado', 'En Boletería', 'En Vivo', 'Finalizado', 'Cancelado')),
-  cancellation_reason TEXT,
-  status_updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  country_code VARCHAR(3) NOT NULL,
-  department_code VARCHAR(8) NOT NULL,
-  city_id BIGINT NOT NULL,
-  agent_id BIGINT NOT NULL REFERENCES agents(id) ON DELETE RESTRICT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT events_end_after_start CHECK (ends_at > starts_at),
-  CONSTRAINT events_cancel_reason CHECK (
-    (status = 'Cancelado' AND cancellation_reason IS NOT NULL
-       AND char_length(btrim(cancellation_reason)) BETWEEN 10 AND 500)
-    OR (status <> 'Cancelado' AND cancellation_reason IS NULL)
+  ruta_imagen VARCHAR(255),
+  texto_imagen VARCHAR(200),
+  estado VARCHAR(20) NOT NULL DEFAULT 'Programado'
+    CHECK (estado IN ('Programado', 'En Boletería', 'En Vivo', 'Finalizado', 'Cancelado')),
+  motivo_cancelacion TEXT,
+  fecha_cambio_estado TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  codigo_pais VARCHAR(3) NOT NULL,
+  codigo_departamento VARCHAR(8) NOT NULL,
+  id_ciudad BIGINT NOT NULL,
+  id_agente BIGINT NOT NULL REFERENCES agentes(id) ON DELETE RESTRICT,
+  fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT eventos_end_after_start CHECK (fecha_fin > fecha_inicio),
+  CONSTRAINT eventos_cancel_reason CHECK (
+    (estado = 'Cancelado' AND motivo_cancelacion IS NOT NULL
+       AND char_length(btrim(motivo_cancelacion)) BETWEEN 10 AND 500)
+    OR (estado <> 'Cancelado' AND motivo_cancelacion IS NULL)
   ),
-  CONSTRAINT events_city_matches_location
-    FOREIGN KEY (city_id, department_code, country_code)
-    REFERENCES cities(id, department_code, country_code) ON UPDATE CASCADE
+  CONSTRAINT eventos_city_matches_location
+    FOREIGN KEY (id_ciudad, codigo_departamento, codigo_pais)
+    REFERENCES ciudades(id, codigo_departamento, codigo_pais) ON UPDATE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS events_agent_created_idx ON events(agent_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS events_starts_at_idx ON events(starts_at);
+CREATE INDEX IF NOT EXISTS eventos_agent_created_idx ON eventos(id_agente, fecha_creacion DESC);
+CREATE INDEX IF NOT EXISTS eventos_starts_at_idx ON eventos(fecha_inicio);
 
 -- Migraciones idempotentes para bases ya creadas.
 -- CREATE TABLE IF NOT EXISTS no modifica una tabla existente, así que
 -- los cambios posteriores se reaplican aquí.
 
 -- Ciclo de vida del evento
-ALTER TABLE events ADD COLUMN IF NOT EXISTS cancellation_reason TEXT;
-ALTER TABLE events ADD COLUMN IF NOT EXISTS status_updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS motivo_cancelacion TEXT;
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS fecha_cambio_estado TIMESTAMPTZ NOT NULL DEFAULT NOW();
 
 -- Afiche del evento
-ALTER TABLE events ADD COLUMN IF NOT EXISTS image_path VARCHAR(255);
-ALTER TABLE events ADD COLUMN IF NOT EXISTS image_alt VARCHAR(200);
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS ruta_imagen VARCHAR(255);
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS texto_imagen VARCHAR(200);
 
 -- Banner: la imagen ancha que se ve de fondo en el detalle del evento.
 -- Es opcional y distinta del afiche: el afiche es vertical y se mira de
 -- cerca, el banner es apaisado y se ve detrás del título. Cuando no hay
 -- banner, el detalle usa el afiche, así que nadie queda sin fondo.
-ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_path VARCHAR(255);
-ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_alt VARCHAR(200);
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS ruta_banner VARCHAR(255);
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS texto_banner VARCHAR(200);
 
 -- Código del evento: secuencial y asignado por el sistema.
 --
@@ -71,28 +71,28 @@ ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_alt VARCHAR(200);
 --
 -- El formato es EVT-00001, EVT-00002… Al pasar de 99999 simplemente
 -- crece a seis dígitos; no se reinicia ni se reutiliza.
-CREATE SEQUENCE IF NOT EXISTS events_code_seq AS BIGINT START WITH 1 MINVALUE 1;
+CREATE SEQUENCE IF NOT EXISTS eventos_codigo_seq AS BIGINT START WITH 1 MINVALUE 1;
 
 -- Si la base ya tiene eventos con el formato nuevo, la secuencia se
 -- adelanta para no chocar con ellos. Los códigos viejos escritos a mano
 -- (EVT-2026-0220 y parecidos) se quedan como están: siguen siendo
 -- únicos y válidos, solo que los nuevos ya no se parecen a ellos.
 SELECT setval(
-  'events_code_seq',
+  'eventos_codigo_seq',
   GREATEST(
-    (SELECT COALESCE(MAX(SUBSTRING(code FROM '^EVT-([0-9]{5,})$')::BIGINT), 0) FROM events),
+    (SELECT COALESCE(MAX(SUBSTRING(codigo FROM '^EVT-([0-9]{5,})$')::BIGINT), 0) FROM eventos),
     1
   ),
-  (SELECT EXISTS (SELECT 1 FROM events WHERE code ~ '^EVT-[0-9]{5,}$'))
+  (SELECT EXISTS (SELECT 1 FROM eventos WHERE codigo ~ '^EVT-[0-9]{5,}$'))
 );
 
-ALTER TABLE events DROP CONSTRAINT IF EXISTS events_status_check;
-ALTER TABLE events ADD CONSTRAINT events_status_check
-  CHECK (status IN ('Programado', 'En Boletería', 'En Vivo', 'Finalizado', 'Cancelado'));
+ALTER TABLE eventos DROP CONSTRAINT IF EXISTS eventos_estado_check;
+ALTER TABLE eventos ADD CONSTRAINT eventos_estado_check
+  CHECK (estado IN ('Programado', 'En Boletería', 'En Vivo', 'Finalizado', 'Cancelado'));
 
-ALTER TABLE events DROP CONSTRAINT IF EXISTS events_cancel_reason;
-ALTER TABLE events ADD CONSTRAINT events_cancel_reason CHECK (
-  (status = 'Cancelado' AND cancellation_reason IS NOT NULL
-     AND char_length(btrim(cancellation_reason)) BETWEEN 10 AND 500)
-  OR (status <> 'Cancelado' AND cancellation_reason IS NULL)
+ALTER TABLE eventos DROP CONSTRAINT IF EXISTS eventos_cancel_reason;
+ALTER TABLE eventos ADD CONSTRAINT eventos_cancel_reason CHECK (
+  (estado = 'Cancelado' AND motivo_cancelacion IS NOT NULL
+     AND char_length(btrim(motivo_cancelacion)) BETWEEN 10 AND 500)
+  OR (estado <> 'Cancelado' AND motivo_cancelacion IS NULL)
 );

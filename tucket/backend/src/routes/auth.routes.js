@@ -15,19 +15,19 @@ async function buscarCuenta(email) {
   /* El administrador va primero: es el rol con más permisos y así queda
      claro en el código que ninguna otra tabla se lo puede arrebatar. */
   const admin = await pool.query(
-    'SELECT id, full_name, email, password_hash FROM admins WHERE email = $1 AND active = TRUE',
+    'SELECT id, nombre_completo AS "full_name", correo AS "email", clave_hash AS "password_hash" FROM administradores WHERE correo = $1 AND activo = TRUE',
     [email]
   );
   if (admin.rowCount) return { ...admin.rows[0], role: 'administrador' };
 
   const agente = await pool.query(
-    'SELECT id, full_name, email, password_hash FROM agents WHERE email = $1 AND active = TRUE',
+    'SELECT id, nombre_completo AS "full_name", correo AS "email", clave_hash AS "password_hash" FROM agentes WHERE correo = $1 AND activo = TRUE',
     [email]
   );
   if (agente.rowCount) return { ...agente.rows[0], role: 'agente' };
 
   const cliente = await pool.query(
-    'SELECT id, full_name, email, password_hash FROM clients WHERE email = $1 AND active = TRUE',
+    'SELECT id, nombre_completo AS "full_name", correo AS "email", clave_hash AS "password_hash" FROM clientes WHERE correo = $1 AND activo = TRUE',
     [email]
   );
   if (cliente.rowCount) return { ...cliente.rows[0], role: 'cliente' };
@@ -77,7 +77,7 @@ router.get('/me', async (req, res, next) => {
 
     if (payload.role === 'administrador') {
       const result = await pool.query(
-        'SELECT id, full_name AS name, email FROM admins WHERE id = $1 AND active = TRUE',
+        'SELECT id, nombre_completo AS nombre, correo AS "email" FROM administradores WHERE id = $1 AND activo = TRUE',
         [payload.adminId]
       );
       if (!result.rowCount) return res.status(401).json({ error: 'La cuenta de administrador ya no está activa.' });
@@ -86,7 +86,7 @@ router.get('/me', async (req, res, next) => {
 
     if (payload.role === 'agente') {
       const result = await pool.query(
-        'SELECT id, full_name AS name, email FROM agents WHERE id = $1 AND active = TRUE',
+        'SELECT id, nombre_completo AS nombre, correo AS "email" FROM agentes WHERE id = $1 AND activo = TRUE',
         [payload.agentId]
       );
       if (!result.rowCount) return res.status(401).json({ error: 'La cuenta de agente ya no está activa.' });
@@ -94,7 +94,7 @@ router.get('/me', async (req, res, next) => {
     }
 
     const result = await pool.query(
-      'SELECT id, full_name AS name, email FROM clients WHERE id = $1 AND active = TRUE',
+      'SELECT id, nombre_completo AS nombre, correo AS "email" FROM clientes WHERE id = $1 AND activo = TRUE',
       [payload.clientId]
     );
     if (!result.rowCount) return res.status(401).json({ error: 'La cuenta de cliente ya no está activa.' });
@@ -108,7 +108,7 @@ router.get('/me', async (req, res, next) => {
 router.get('/me/agent', requireAgent, async (req, res, next) => {
   try {
     const result = await pool.query(
-      'SELECT id, full_name AS name, email FROM agents WHERE id = $1 AND active = TRUE',
+      'SELECT id, nombre_completo AS nombre, correo AS "email" FROM agentes WHERE id = $1 AND activo = TRUE',
       [req.agent.id]
     );
     if (!result.rowCount) return res.status(401).json({ error: 'La cuenta de agente ya no está activa.' });

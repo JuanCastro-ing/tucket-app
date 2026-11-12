@@ -14,9 +14,9 @@
 const pool = require('./db');
 
 const TABLAS = [
-  { tabla: 'clients', rol: 'cliente' },
-  { tabla: 'agents',  rol: 'agente' },
-  { tabla: 'admins',  rol: 'administrador' }
+  { tabla: 'clientes', rol: 'cliente' },
+  { tabla: 'agentes',  rol: 'agente' },
+  { tabla: 'administradores',  rol: 'administrador' }
 ];
 
 /* Devuelve el rol que ya usa ese correo, o null si está libre.
@@ -27,7 +27,7 @@ async function rolQueYaUsaElCorreo(email, ejecutor) {
   if (!correo) return null;
 
   for (const { tabla, rol } of TABLAS) {
-    const r = await db.query(`SELECT 1 FROM ${tabla} WHERE email = $1`, [correo]);
+    const r = await db.query(`SELECT 1 FROM ${tabla} WHERE correo = $1`, [correo]);
     if (r.rowCount) return rol;
   }
   return null;

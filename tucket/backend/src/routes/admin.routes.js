@@ -37,13 +37,13 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
       /* ---- Tarjetas de arriba ---- */
       pool.query(`
         SELECT
-          (SELECT COUNT(*) FROM clients WHERE active) ::int AS clientes,
-          (SELECT COUNT(*) FROM agents  WHERE active) ::int AS agentes,
-          (SELECT COUNT(*) FROM admins  WHERE active) ::int AS administradores,
-          (SELECT COUNT(*) FROM events)               ::int AS eventos,
-          (SELECT COUNT(*) FROM reservations)         ::int AS reservas,
-          (SELECT COUNT(*) FROM clients
-            WHERE active AND created_at >= date_trunc('month', NOW()))::int AS clientes_mes`),
+          (SELECT COUNT(*) FROM clientes WHERE activo) ::int AS clientes,
+          (SELECT COUNT(*) FROM agentes  WHERE activo) ::int AS agentes,
+          (SELECT COUNT(*) FROM administradores  WHERE activo) ::int AS administradores,
+          (SELECT COUNT(*) FROM eventos)               ::int AS eventos,
+          (SELECT COUNT(*) FROM reservas)         ::int AS reservas,
+          (SELECT COUNT(*) FROM clientes
+            WHERE activo AND fecha_creacion >= date_trunc('month', NOW()))::int AS clientes_mes`),
 
       /* ---- Ingresos por mes ----
          generate_series rellena los meses sin reservas: sin eso la gráfica
@@ -56,11 +56,11 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
             interval '1 month') AS mes
         )
         SELECT EXTRACT(MONTH FROM m.mes)::int AS mes,
-               COALESCE(SUM(r.total_amount), 0)::float AS total
+               COALESCE(SUM(r.valor_total), 0)::float AS total
           FROM meses m
-          LEFT JOIN reservations r
-            ON date_trunc('month', r.created_at AT TIME ZONE 'America/Bogota') = m.mes
-           AND r.status IN ${RESERVAS_VIGENTES}
+          LEFT JOIN reservas r
+            ON date_trunc('month', r.fecha_creacion AT TIME ZONE 'America/Bogota') = m.mes
+           AND r.estado IN ${RESERVAS_VIGENTES}
          GROUP BY m.mes
          ORDER BY m.mes`, [anio]),
 
@@ -75,8 +75,8 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
         SELECT EXTRACT(MONTH FROM m.mes)::int AS mes,
                COUNT(r.id)::int AS total
           FROM meses m
-          LEFT JOIN reservations r
-            ON date_trunc('month', r.created_at AT TIME ZONE 'America/Bogota') = m.mes
+          LEFT JOIN reservas r
+            ON date_trunc('month', r.fecha_creacion AT TIME ZONE 'America/Bogota') = m.mes
          GROUP BY m.mes
          ORDER BY m.mes`, [anio]),
 
@@ -84,20 +84,20 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
          La maqueta decía «comisión»; el sistema no tiene comisiones, así
          que se informa lo que sí existe: lo recaudado por sus eventos. */
       pool.query(`
-        SELECT a.full_name AS agente,
-               COALESCE(SUM(r.total_amount), 0)::float AS total
-          FROM agents a
-          LEFT JOIN events e ON e.agent_id = a.id
-          LEFT JOIN reservations r
-            ON r.event_id = e.id
-           AND r.status IN ${RESERVAS_VIGENTES}
-           AND EXTRACT(YEAR FROM r.created_at AT TIME ZONE 'America/Bogota') = $1
-         WHERE a.active
-         GROUP BY a.id, a.full_name
+        SELECT a.nombre_completo AS agente,
+               COALESCE(SUM(r.valor_total), 0)::float AS total
+          FROM agentes a
+          LEFT JOIN eventos e ON e.id_agente = a.id
+          LEFT JOIN reservas r
+            ON r.id_evento = e.id
+           AND r.estado IN ${RESERVAS_VIGENTES}
+           AND EXTRACT(YEAR FROM r.fecha_creacion AT TIME ZONE 'America/Bogota') = $1
+         WHERE a.activo
+         GROUP BY a.id, a.nombre_completo
          /* Sin HAVING: un agente sin ventas sale en cero, no desaparece.
             Que no aparezca es indistinguible de que no exista, y el
             administrador necesita poder ver justamente eso. */
-         ORDER BY total DESC, a.full_name
+         ORDER BY total DESC, a.nombre_completo
          LIMIT 8`, [anio]),
 
       /* ---- Agentes registrados ----
@@ -108,79 +108,79 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
          occupies_seat para las entradas vendidas, allows_reservation
          para los eventos que hoy están a la venta. */
       pool.query(`
-        SELECT a.full_name AS agente,
-               a.email,
-               a.created_at AS desde,
-               a.commission_rate::float AS comision,
-               a.experience_years::int   AS experiencia,
+        SELECT a.nombre_completo AS agente,
+               a.correo AS "email",
+               a.fecha_creacion AS desde,
+               a.comision::float AS comision,
+               a.anios_experiencia::int   AS experiencia,
                COUNT(DISTINCT e.id)::int AS eventos,
                COUNT(DISTINCT e.id) FILTER (
-                 WHERE e.status IN (SELECT code FROM event_statuses WHERE allows_reservation)
+                 WHERE e.estado IN (SELECT codigo FROM estados_evento WHERE permite_reservar)
                )::int AS en_venta,
-               COALESCE(SUM(r.quantity) FILTER (
-                 WHERE r.status IN (SELECT code FROM reservation_statuses WHERE occupies_seat)
+               COALESCE(SUM(r.cantidad) FILTER (
+                 WHERE r.estado IN (SELECT codigo AS "code" FROM estados_reserva WHERE ocupa_silla)
                ), 0)::int AS entradas,
-               COALESCE(SUM(r.total_amount) FILTER (
-                 WHERE r.status IN (SELECT code FROM reservation_statuses WHERE occupies_seat)
+               COALESCE(SUM(r.valor_total) FILTER (
+                 WHERE r.estado IN (SELECT codigo AS "code" FROM estados_reserva WHERE ocupa_silla)
                ), 0)::float AS ingresos
-          FROM agents a
-          LEFT JOIN events e       ON e.agent_id = a.id
-          LEFT JOIN reservations r ON r.event_id = e.id
-         WHERE a.active
-         GROUP BY a.id, a.full_name, a.email, a.created_at,
-                  a.commission_rate, a.experience_years
-         ORDER BY eventos DESC, ingresos DESC, a.full_name`),
+          FROM agentes a
+          LEFT JOIN eventos e       ON e.id_agente = a.id
+          LEFT JOIN reservas r ON r.id_evento = e.id
+         WHERE a.activo
+         GROUP BY a.id, a.nombre_completo, a.correo, a.fecha_creacion,
+                  a.comision, a.anios_experiencia
+         ORDER BY eventos DESC, ingresos DESC, a.nombre_completo`),
 
       /* ---- Eventos por ciudad ---- */
       pool.query(`
-        SELECT c.name AS ciudad, COUNT(*)::int AS total
-          FROM events e
-          JOIN cities c ON c.id = e.city_id
-         GROUP BY c.name
-         ORDER BY total DESC, c.name`),
+        SELECT c.nombre AS ciudad, COUNT(*)::int AS total
+          FROM eventos e
+          JOIN ciudades c ON c.id = e.id_ciudad
+         GROUP BY c.nombre
+         ORDER BY total DESC, c.nombre`),
 
       /* ---- Cobertura: eventos y reservas por ubicación ---- */
       pool.query(`
-        SELECT co.name AS pais, d.name AS departamento, c.name AS ciudad,
+        SELECT co.nombre AS pais, d.nombre AS departamento, c.nombre AS ciudad,
                COUNT(DISTINCT e.id)::int AS eventos,
                COUNT(r.id)::int AS reservas
-          FROM events e
-          JOIN cities c      ON c.id = e.city_id
-          JOIN departments d ON d.code = e.department_code AND d.country_code = e.country_code
-          JOIN countries co  ON co.code = e.country_code
-          LEFT JOIN reservations r ON r.event_id = e.id
-         GROUP BY co.name, d.name, c.name
-         ORDER BY eventos DESC, c.name
+          FROM eventos e
+          JOIN ciudades c      ON c.id = e.id_ciudad
+          JOIN departamentos d ON d.codigo = e.codigo_departamento AND d.codigo_pais = e.codigo_pais
+          JOIN paises co  ON co.codigo = e.codigo_pais
+          LEFT JOIN reservas r ON r.id_evento = e.id
+         GROUP BY co.nombre, d.nombre, c.nombre
+         ORDER BY eventos DESC, c.nombre
          LIMIT 12`),
 
       /* ---- Reservas canceladas y su causa ---- */
       pool.query(`
-        SELECT r.code, cl.full_name AS cliente, e.name AS evento,
-               r.status_updated_at AS fecha, r.cancellation_reason AS causa
-          FROM reservations r
-          JOIN clients cl ON cl.id = r.client_id
-          JOIN events e   ON e.id = r.event_id
-         WHERE r.status = 'Cancelada'
-         ORDER BY r.status_updated_at DESC
+        SELECT r.codigo AS "code", cl.nombre_completo AS cliente, e.nombre AS evento,
+               r.fecha_cambio_estado AS fecha, r.motivo_cancelacion AS causa
+          FROM reservas r
+          JOIN clientes cl ON cl.id = r.id_cliente
+          JOIN eventos e   ON e.id = r.id_evento
+         WHERE r.estado = 'Cancelada'
+         ORDER BY r.fecha_cambio_estado DESC
          LIMIT 30`),
 
       /* ---- Eventos cancelados y su causa ---- */
       pool.query(`
-        SELECT e.name AS evento, c.name AS ciudad,
-               e.status_updated_at AS fecha, e.cancellation_reason AS causa
-          FROM events e
-          JOIN cities c ON c.id = e.city_id
-         WHERE e.status = 'Cancelado'
-         ORDER BY e.status_updated_at DESC
+        SELECT e.nombre AS evento, c.nombre AS ciudad,
+               e.fecha_cambio_estado AS fecha, e.motivo_cancelacion AS causa
+          FROM eventos e
+          JOIN ciudades c ON c.id = e.id_ciudad
+         WHERE e.estado = 'Cancelado'
+         ORDER BY e.fecha_cambio_estado DESC
          LIMIT 30`),
 
       /* ---- Años con movimiento, para el selector ---- */
       pool.query(`
-        SELECT DISTINCT EXTRACT(YEAR FROM created_at AT TIME ZONE 'America/Bogota')::int AS anio
-          FROM reservations
+        SELECT DISTINCT EXTRACT(YEAR FROM fecha_creacion AT TIME ZONE 'America/Bogota')::int AS anio
+          FROM reservas
          UNION
-        SELECT DISTINCT EXTRACT(YEAR FROM starts_at AT TIME ZONE 'America/Bogota')::int
-          FROM events
+        SELECT DISTINCT EXTRACT(YEAR FROM fecha_inicio AT TIME ZONE 'America/Bogota')::int
+          FROM eventos
          ORDER BY anio DESC`)
     ]);
 

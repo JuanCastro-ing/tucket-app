@@ -52,25 +52,25 @@ async function revisar() {
   /* ---------------------------------------------------------------- */
   titulo('1. Qué hay dentro');
   const conteos = await filas(`
-    SELECT 'clientes' AS tabla, COUNT(*)::int AS n FROM clients
-    UNION ALL SELECT 'agentes', COUNT(*)::int FROM agents
-    UNION ALL SELECT 'administradores', COUNT(*)::int FROM admins
-    UNION ALL SELECT 'eventos', COUNT(*)::int FROM events
-    UNION ALL SELECT 'reservas', COUNT(*)::int FROM reservations
-    UNION ALL SELECT 'boletas', COUNT(*)::int FROM tickets
-    UNION ALL SELECT 'solicitudes de agente', COUNT(*)::int FROM agent_requests
-    UNION ALL SELECT 'ciudades', COUNT(*)::int FROM cities`);
+    SELECT 'clientes' AS tabla, COUNT(*)::int AS n FROM clientes
+    UNION ALL SELECT 'agentes', COUNT(*)::int FROM agentes
+    UNION ALL SELECT 'administradores', COUNT(*)::int FROM administradores
+    UNION ALL SELECT 'eventos', COUNT(*)::int FROM eventos
+    UNION ALL SELECT 'reservas', COUNT(*)::int FROM reservas
+    UNION ALL SELECT 'boletas', COUNT(*)::int FROM boletas
+    UNION ALL SELECT 'solicitudes de agente', COUNT(*)::int FROM solicitudes_agente
+    UNION ALL SELECT 'ciudades', COUNT(*)::int FROM ciudades`);
   conteos.forEach((c) => console.log(`    ${String(c.n).padStart(6)}  ${c.tabla}`));
 
   /* ---------------------------------------------------------------- */
   titulo('2. Cuentas');
 
   const correosCruzados = await filas(`
-    SELECT email, string_agg(origen, ' + ') AS tablas FROM (
-      SELECT email, 'cliente' AS origen FROM clients WHERE active
-      UNION ALL SELECT email, 'agente' FROM agents WHERE active
-      UNION ALL SELECT email, 'administrador' FROM admins WHERE active
-    ) t GROUP BY email HAVING COUNT(*) > 1`);
+    SELECT correo AS "email", string_agg(origen, ' + ') AS tablas FROM (
+      SELECT correo AS "email", 'cliente' AS origen FROM clientes WHERE activo
+      UNION ALL SELECT correo AS "email", 'agente' FROM agentes WHERE activo
+      UNION ALL SELECT correo AS "email", 'administrador' FROM administradores WHERE activo
+    ) t GROUP BY correo HAVING COUNT(*) > 1`);
   if (correosCruzados.length) {
     reportar('error',
       'Hay correos registrados en más de una tabla. Al iniciar sesión solo entra el rol de mayor privilegio (administrador > agente > cliente) y la otra cuenta queda inaccesible:',
@@ -78,24 +78,24 @@ async function revisar() {
   } else bien('Ningún correo está repetido entre clientes, agentes y administradores.');
 
   const docsRepetidos = await filas(`
-    SELECT document_number, COUNT(*)::int AS n FROM clients
-     GROUP BY document_number HAVING COUNT(*) > 1`);
+    SELECT numero_documento AS "document_number", COUNT(*)::int AS n FROM clientes
+     GROUP BY numero_documento HAVING COUNT(*) > 1`);
   if (docsRepetidos.length) {
     reportar('error', 'Documentos de identidad repetidos entre clientes:',
       docsRepetidos.map((d) => `${d.document_number} (${d.n} cuentas)`));
   } else bien('No hay documentos de identidad repetidos.');
 
   const inactivos = await filas(`
-    SELECT 'clientes' AS t, COUNT(*)::int AS n FROM clients WHERE NOT active
-    UNION ALL SELECT 'agentes', COUNT(*)::int FROM agents WHERE NOT active
-    UNION ALL SELECT 'administradores', COUNT(*)::int FROM admins WHERE NOT active`);
+    SELECT 'clientes' AS t, COUNT(*)::int AS n FROM clientes WHERE NOT activo
+    UNION ALL SELECT 'agentes', COUNT(*)::int FROM agentes WHERE NOT activo
+    UNION ALL SELECT 'administradores', COUNT(*)::int FROM administradores WHERE NOT activo`);
   const totalInactivos = inactivos.reduce((a, b) => a + b.n, 0);
   if (totalInactivos) {
     reportar('aviso', `Hay ${totalInactivos} cuenta(s) desactivadas (no pueden iniciar sesión):`,
       inactivos.filter((i) => i.n).map((i) => `${i.n} ${i.t}`));
   } else bien('Todas las cuentas están activas.');
 
-  const sinAdmin = await filas('SELECT COUNT(*)::int AS n FROM admins WHERE active');
+  const sinAdmin = await filas('SELECT COUNT(*)::int AS n FROM administradores WHERE activo');
   if (!sinAdmin[0].n) {
     reportar('error', 'No hay ningún administrador activo: nadie puede aprobar solicitudes de agente ni ver los reportes. Se crea con `npm run admin:create`.');
   } else bien(`Hay ${sinAdmin[0].n} administrador(es) activo(s).`);
@@ -104,10 +104,10 @@ async function revisar() {
   titulo('3. Códigos de evento');
 
   const secuencia = await filas(`
-    SELECT last_value, is_called FROM events_code_seq`);
+    SELECT last_value, is_called FROM eventos_codigo_seq`);
   const maxNuevo = await filas(`
-    SELECT COALESCE(MAX(SUBSTRING(code FROM '^EVT-([0-9]{5,})$')::BIGINT), 0) AS m
-      FROM events WHERE code ~ '^EVT-[0-9]{5,}$'`);
+    SELECT COALESCE(MAX(SUBSTRING(codigo FROM '^EVT-([0-9]{5,})$')::BIGINT), 0) AS m
+      FROM eventos WHERE codigo ~ '^EVT-[0-9]{5,}$'`);
   const sig = secuencia[0].is_called ? Number(secuencia[0].last_value) + 1 : Number(secuencia[0].last_value);
   console.log(`    Próximo código a entregar: EVT-${String(sig).padStart(5, '0')}`);
   if (Number(maxNuevo[0].m) >= sig) {
@@ -116,7 +116,7 @@ async function revisar() {
   } else bien('La secuencia de códigos va por delante de lo que ya existe.');
 
   const codigosViejos = await filas(`
-    SELECT code, name FROM events WHERE code !~ '^EVT-[0-9]{5,}$' ORDER BY code`);
+    SELECT codigo AS "code", nombre AS "name" FROM eventos WHERE codigo !~ '^EVT-[0-9]{5,}$' ORDER BY codigo`);
   if (codigosViejos.length) {
     reportar('aviso',
       `${codigosViejos.length} evento(s) con códigos del formato antiguo, escritos a mano. No es un error —siguen siendo únicos— pero conviven dos formatos:`,
@@ -124,7 +124,7 @@ async function revisar() {
   } else bien('Todos los eventos usan el formato de código nuevo.');
 
   const codigosDuplicados = await filas(`
-    SELECT code, COUNT(*)::int AS n FROM events GROUP BY code HAVING COUNT(*) > 1`);
+    SELECT codigo AS "code", COUNT(*)::int AS n FROM eventos GROUP BY codigo HAVING COUNT(*) > 1`);
   if (codigosDuplicados.length) {
     reportar('error', 'CÓDIGOS DE EVENTO REPETIDOS:',
       codigosDuplicados.map((c) => `${c.code} (${c.n} veces)`));
@@ -134,12 +134,12 @@ async function revisar() {
   titulo('4. Imágenes');
 
   const enDisco = await filas(`
-    SELECT code, name,
-           (image_path LIKE '/uploads/%') AS afiche,
-           (banner_path LIKE '/uploads/%') AS banner
-      FROM events
-     WHERE image_path LIKE '/uploads/%' OR banner_path LIKE '/uploads/%'
-     ORDER BY code`);
+    SELECT codigo AS "code", nombre AS "name",
+           (ruta_imagen LIKE '/uploads/%') AS afiche,
+           (ruta_banner LIKE '/uploads/%') AS banner
+      FROM eventos
+     WHERE ruta_imagen LIKE '/uploads/%' OR ruta_banner LIKE '/uploads/%'
+     ORDER BY codigo`);
   if (enDisco.length) {
     reportar('error',
       `${enDisco.length} evento(s) con imágenes guardadas en el disco del servidor. En el servidor publicado ese disco se borra en cada despliegue, así que esas imágenes probablemente ya no existen y se ven rotas. Hay que volver a subirlas para que vayan a Cloudinary:`,
@@ -147,18 +147,18 @@ async function revisar() {
   } else bien('Ninguna imagen depende del disco del servidor.');
 
   const enNube = await filas(`
-    SELECT COUNT(*)::int AS n FROM events WHERE image_path LIKE 'https://res.cloudinary.com/%'`);
+    SELECT COUNT(*)::int AS n FROM eventos WHERE ruta_imagen LIKE 'https://res.cloudinary.com/%'`);
   console.log(`    ${enNube[0].n} evento(s) con el afiche en Cloudinary.`);
 
   const sinAfiche = await filas(`
-    SELECT code, name FROM events WHERE image_path IS NULL ORDER BY code`);
+    SELECT codigo AS "code", nombre AS "name" FROM eventos WHERE ruta_imagen IS NULL ORDER BY codigo`);
   if (sinAfiche.length) {
     reportar('aviso', `${sinAfiche.length} evento(s) sin afiche (se ven con la marquesina azul):`,
       sinAfiche.map((e) => `${e.code} · ${e.name}`));
   } else bien('Todos los eventos tienen afiche.');
 
   const altVacio = await filas(`
-    SELECT code FROM events WHERE image_path IS NOT NULL AND (image_alt IS NULL OR btrim(image_alt) = '')`);
+    SELECT codigo AS "code" FROM eventos WHERE ruta_imagen IS NOT NULL AND (texto_imagen IS NULL OR btrim(texto_imagen) = '')`);
   if (altVacio.length) {
     reportar('aviso', `${altVacio.length} afiche(s) sin texto alternativo (accesibilidad):`,
       altVacio.map((e) => e.code));
@@ -168,15 +168,15 @@ async function revisar() {
   titulo('5. Eventos');
 
   const fechasAlReves = await filas(`
-    SELECT code, name, starts_at, ends_at FROM events WHERE ends_at <= starts_at`);
+    SELECT codigo AS "code", nombre AS "name", fecha_inicio AS "starts_at", fecha_fin AS "ends_at" FROM eventos WHERE fecha_fin <= fecha_inicio`);
   if (fechasAlReves.length) {
     reportar('error', 'Eventos que terminan antes de empezar:',
       fechasAlReves.map((e) => `${e.code} · inicia ${e.starts_at.toISOString()} termina ${e.ends_at.toISOString()}`));
   } else bien('Todas las fechas de fin son posteriores al inicio.');
 
   const vendiendoPasado = await filas(`
-    SELECT code, name, starts_at, status FROM events
-     WHERE status IN ('En Boletería','Programado') AND ends_at < NOW() ORDER BY starts_at`);
+    SELECT codigo AS "code", nombre AS "name", fecha_inicio AS "starts_at", estado AS "status" FROM eventos
+     WHERE estado IN ('En Boletería','Programado') AND fecha_fin < NOW() ORDER BY fecha_inicio`);
   if (vendiendoPasado.length) {
     reportar('aviso',
       `${vendiendoPasado.length} evento(s) con estado "${'En Boletería/Programado'}" pero cuya fecha ya pasó. La página los muestra como Finalizados, pero en la base siguen con el estado viejo:`,
@@ -184,35 +184,35 @@ async function revisar() {
   } else bien('Ningún evento pasado sigue marcado como vigente.');
 
   const canceladoSinCausa = await filas(`
-    SELECT code, name FROM events
-     WHERE status = 'Cancelado' AND (cancellation_reason IS NULL OR btrim(cancellation_reason) = '')`);
+    SELECT codigo AS "code", nombre AS "name" FROM eventos
+     WHERE estado = 'Cancelado' AND (motivo_cancelacion IS NULL OR btrim(motivo_cancelacion) = '')`);
   if (canceladoSinCausa.length) {
     reportar('error', 'Eventos cancelados sin causa registrada:',
       canceladoSinCausa.map((e) => `${e.code} · ${e.name}`));
   } else bien('Todo evento cancelado tiene su causa.');
 
-  const precioCero = await filas(`SELECT code, name FROM events WHERE base_price = 0`);
+  const precioCero = await filas(`SELECT codigo AS "code", nombre AS "name" FROM eventos WHERE precio_base = 0`);
   if (precioCero.length) {
     reportar('aviso', `${precioCero.length} evento(s) con precio 0 (¿son gratuitos a propósito?):`,
       precioCero.map((e) => `${e.code} · ${e.name}`));
   } else bien('Ningún evento tiene precio cero.');
 
   const sobrevendidos = await filas(`
-    SELECT e.code, e.name, e.total_capacity,
-           COALESCE(SUM(r.quantity), 0)::int AS reservadas
-      FROM events e
-      LEFT JOIN reservations r ON r.event_id = e.id AND r.status IN ('Reservada','Confirmada','Usada')
-     GROUP BY e.id, e.code, e.name, e.total_capacity
-    HAVING COALESCE(SUM(r.quantity), 0) > e.total_capacity`);
+    SELECT e.codigo AS "code", e.nombre AS "name", e.capacidad_total AS "total_capacity",
+           COALESCE(SUM(r.cantidad), 0)::int AS reservadas
+      FROM eventos e
+      LEFT JOIN reservas r ON r.id_evento = e.id AND r.estado IN ('Reservada','Confirmada','Usada')
+     GROUP BY e.id, e.codigo, e.nombre, e.capacidad_total
+    HAVING COALESCE(SUM(r.cantidad), 0) > e.capacidad_total`);
   if (sobrevendidos.length) {
     reportar('error', 'EVENTOS SOBREVENDIDOS (más butacas reservadas que capacidad):',
       sobrevendidos.map((e) => `${e.code} · capacidad ${e.total_capacity} · reservadas ${e.reservadas}`));
   } else bien('Ningún evento está sobrevendido.');
 
   const huerfanos = await filas(`
-    SELECT e.code, e.name FROM events e
-     LEFT JOIN agents a ON a.id = e.agent_id
-     WHERE a.id IS NULL OR NOT a.active`);
+    SELECT e.codigo AS "code", e.nombre AS "name" FROM eventos e
+     LEFT JOIN agentes a ON a.id = e.id_agente
+     WHERE a.id IS NULL OR NOT a.activo`);
   if (huerfanos.length) {
     reportar('aviso', 'Eventos cuyo agente ya no existe o está desactivado:',
       huerfanos.map((e) => `${e.code} · ${e.name}`));
@@ -222,28 +222,28 @@ async function revisar() {
   titulo('6. Reservas');
 
   const cuentasMal = await filas(`
-    SELECT code, quantity, unit_price, total_amount FROM reservations
-     WHERE total_amount <> unit_price * quantity`);
+    SELECT codigo AS "code", cantidad AS "quantity", precio_unitario AS "unit_price", valor_total AS "total_amount" FROM reservas
+     WHERE valor_total <> precio_unitario * cantidad`);
   if (cuentasMal.length) {
     reportar('error', 'Reservas cuyo total no coincide con precio × cantidad:',
       cuentasMal.map((r) => `${r.code} · ${r.quantity} × ${r.unit_price} ≠ ${r.total_amount}`));
   } else bien('Todos los totales cuadran con precio × cantidad.');
 
   const boletasMal = await filas(`
-    SELECT r.code, r.quantity, COUNT(t.id)::int AS boletas
-      FROM reservations r LEFT JOIN tickets t ON t.reservation_id = r.id
-     WHERE r.status <> 'Cancelada'
-     GROUP BY r.id, r.code, r.quantity
-    HAVING COUNT(t.id) <> r.quantity`);
+    SELECT r.codigo AS "code", r.cantidad AS "quantity", COUNT(t.id)::int AS boletas
+      FROM reservas r LEFT JOIN boletas t ON t.id_reserva = r.id
+     WHERE r.estado <> 'Cancelada'
+     GROUP BY r.id, r.codigo, r.cantidad
+    HAVING COUNT(t.id) <> r.cantidad`);
   if (boletasMal.length) {
     reportar('error', 'Reservas con un número de boletas distinto a la cantidad reservada:',
       boletasMal.map((r) => `${r.code} · ${r.quantity} entradas pero ${r.boletas} boletas`));
   } else bien('Cada reserva vigente tiene una boleta por entrada.');
 
   const vivasEnCancelado = await filas(`
-    SELECT r.code, e.code AS evento FROM reservations r
-      JOIN events e ON e.id = r.event_id
-     WHERE e.status = 'Cancelado' AND r.status IN ('Reservada','Confirmada')`);
+    SELECT r.codigo AS "code", e.codigo AS evento FROM reservas r
+      JOIN eventos e ON e.id = r.id_evento
+     WHERE e.estado = 'Cancelado' AND r.estado IN ('Reservada','Confirmada')`);
   if (vivasEnCancelado.length) {
     reportar('error',
       'Reservas todavía vigentes en eventos cancelados. El cliente cree que tiene entrada para algo que no se hará:',
@@ -251,8 +251,8 @@ async function revisar() {
   } else bien('Ningún evento cancelado deja reservas vigentes.');
 
   const resSinCausa = await filas(`
-    SELECT code FROM reservations
-     WHERE status = 'Cancelada' AND (cancellation_reason IS NULL OR btrim(cancellation_reason) = '')`);
+    SELECT codigo AS "code" FROM reservas
+     WHERE estado = 'Cancelada' AND (motivo_cancelacion IS NULL OR btrim(motivo_cancelacion) = '')`);
   if (resSinCausa.length) {
     /* No es un fallo: cuando el cliente cancela su propia reserva el motivo
        es opcional. Sí lo es cuando la cancelación vino de arriba, al
@@ -261,9 +261,9 @@ async function revisar() {
   } else bien('Toda reserva cancelada tiene su causa.');
 
   const precioDesfasado = await filas(`
-    SELECT r.code, r.unit_price, e.base_price, e.code AS evento
-      FROM reservations r JOIN events e ON e.id = r.event_id
-     WHERE r.status IN ('Reservada','Confirmada') AND r.unit_price <> e.base_price`);
+    SELECT r.codigo AS "code", r.precio_unitario AS "unit_price", e.precio_base AS "base_price", e.codigo AS evento
+      FROM reservas r JOIN eventos e ON e.id = r.id_evento
+     WHERE r.estado IN ('Reservada','Confirmada') AND r.precio_unitario <> e.precio_base`);
   if (precioDesfasado.length) {
     reportar('aviso',
       'Reservas cuyo precio por entrada ya no coincide con el del evento (normal si el agente cambió el precio después; se respeta el precio del momento de reservar):',
@@ -274,13 +274,13 @@ async function revisar() {
   titulo('7. Solicitudes de agente');
 
   const aprobadaSinCuenta = await filas(`
-    SELECT id, email FROM agent_requests WHERE status = 'Aprobada' AND agent_id IS NULL`);
+    SELECT id, correo AS "email" FROM solicitudes_agente WHERE estado = 'Aprobada' AND id_agente IS NULL`);
   if (aprobadaSinCuenta.length) {
     reportar('error', 'Solicitudes aprobadas que no crearon la cuenta de agente:',
       aprobadaSinCuenta.map((s) => `#${s.id} · ${s.email}`));
   } else bien('Toda solicitud aprobada tiene su cuenta de agente.');
 
-  const pendientes = await filas(`SELECT COUNT(*)::int AS n FROM agent_requests WHERE status = 'Pendiente'`);
+  const pendientes = await filas(`SELECT COUNT(*)::int AS n FROM solicitudes_agente WHERE estado = 'Pendiente'`);
   if (pendientes[0].n) {
     reportar('aviso', `${pendientes[0].n} solicitud(es) pendientes de revisar en el panel de administrador.`);
   } else bien('No hay solicitudes pendientes.');
@@ -289,10 +289,10 @@ async function revisar() {
   titulo('8. Datos de prueba');
 
   const prueba = await filas(`
-    SELECT code, name FROM events
-     WHERE code LIKE 'DEMO-%' OR code LIKE 'TEST%' OR code LIKE 'VERIF%' OR code LIKE 'HERO-%'
-        OR lower(name) LIKE '%prueba%' OR lower(name) LIKE '%test%'
-     ORDER BY code`);
+    SELECT codigo AS "code", nombre AS "name" FROM eventos
+     WHERE codigo LIKE 'DEMO-%' OR codigo LIKE 'TEST%' OR codigo LIKE 'VERIF%' OR codigo LIKE 'HERO-%'
+        OR lower(nombre) LIKE '%prueba%' OR lower(nombre) LIKE '%test%'
+     ORDER BY codigo`);
   if (prueba.length) {
     reportar('aviso',
       `${prueba.length} evento(s) que parecen de prueba. Si van a presentar el proyecto, conviene decidir cuáles se quedan:`,
@@ -300,9 +300,9 @@ async function revisar() {
   } else bien('No se ven eventos de prueba.');
 
   const cuentasPrueba = await filas(`
-    SELECT email, 'cliente' AS rol FROM clients WHERE lower(email) LIKE '%prueba%' OR lower(email) LIKE '%test%'
+    SELECT correo AS "email", 'cliente' AS rol FROM clientes WHERE lower(correo) LIKE '%prueba%' OR lower(correo) LIKE '%test%'
     UNION ALL
-    SELECT email, 'agente' FROM agents WHERE lower(email) LIKE '%prueba%' OR lower(email) LIKE '%test%'`);
+    SELECT correo AS "email", 'agente' FROM agentes WHERE lower(correo) LIKE '%prueba%' OR lower(correo) LIKE '%test%'`);
   if (cuentasPrueba.length) {
     reportar('aviso', 'Cuentas que parecen de prueba:',
       cuentasPrueba.map((c) => `${c.email} (${c.rol})`));
@@ -312,9 +312,9 @@ async function revisar() {
   titulo('9. Geografía');
 
   const geo = await filas(`
-    SELECT (SELECT COUNT(*)::int FROM countries) AS paises,
-           (SELECT COUNT(*)::int FROM departments) AS deptos,
-           (SELECT COUNT(*)::int FROM cities) AS ciudades`);
+    SELECT (SELECT COUNT(*)::int FROM paises) AS paises,
+           (SELECT COUNT(*)::int FROM departamentos) AS deptos,
+           (SELECT COUNT(*)::int FROM ciudades) AS ciudades`);
   console.log(`    ${geo[0].paises} país(es) · ${geo[0].deptos} departamentos · ${geo[0].ciudades} ciudades`);
   if (geo[0].ciudades < 1000) {
     reportar('error',

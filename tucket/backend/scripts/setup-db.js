@@ -45,12 +45,12 @@ async function setup() {
   }
 
   const departments = Array.from(new Map(geography.map((row) => [row.cod_dpto, {
-    code: `CO-${row.cod_dpto}`, name: titleCase(row.dpto)
+    codigo: `CO-${row.cod_dpto}`, nombre: titleCase(row.dpto)
   }])).values());
   const cities = geography.map((row) => ({
-    dane_code: row.cod_mpio,
-    department_code: `CO-${row.cod_dpto}`,
-    name: titleCase(row.nom_mpio)
+    codigo_dane: row.cod_mpio,
+    codigo_departamento: `CO-${row.cod_dpto}`,
+    nombre: titleCase(row.nom_mpio)
   }));
 
   const client = await pool.connect();
@@ -63,21 +63,21 @@ async function setup() {
     }
 
     await client.query(
-      "INSERT INTO countries (code, name) VALUES ('CO', 'Colombia') ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name"
+      "INSERT INTO paises (codigo, nombre) VALUES ('CO', 'Colombia') ON CONFLICT (codigo) DO UPDATE SET nombre = EXCLUDED.nombre"
     );
     await client.query(
-      `INSERT INTO departments (code, country_code, name)
-       SELECT d.code, 'CO', d.name
-       FROM jsonb_to_recordset($1::jsonb) AS d(code text, name text)
-       ON CONFLICT (code) DO UPDATE SET country_code = EXCLUDED.country_code, name = EXCLUDED.name`,
+      `INSERT INTO departamentos (codigo, codigo_pais, nombre)
+       SELECT d.codigo AS "code", 'CO', d.nombre AS "name"
+       FROM jsonb_to_recordset($1::jsonb) AS d(codigo text, nombre text)
+       ON CONFLICT (codigo) DO UPDATE SET codigo_pais = EXCLUDED.codigo_pais, nombre = EXCLUDED.nombre`,
       [JSON.stringify(departments)]
     );
     await client.query(
-      `INSERT INTO cities (country_code, department_code, dane_code, name)
-       SELECT 'CO', c.department_code, c.dane_code, c.name
-       FROM jsonb_to_recordset($1::jsonb) AS c(dane_code text, department_code text, name text)
-       ON CONFLICT (dane_code) DO UPDATE
-       SET department_code = EXCLUDED.department_code, country_code = EXCLUDED.country_code, name = EXCLUDED.name`,
+      `INSERT INTO ciudades (codigo_pais, codigo_departamento, codigo_dane, nombre)
+       SELECT 'CO', c.codigo_departamento AS "department_code", c.codigo_dane AS "dane_code", c.nombre AS "name"
+       FROM jsonb_to_recordset($1::jsonb) AS c(codigo_dane text, codigo_departamento text, nombre text)
+       ON CONFLICT (codigo_dane) DO UPDATE
+       SET codigo_departamento = EXCLUDED.codigo_departamento, codigo_pais = EXCLUDED.codigo_pais, nombre = EXCLUDED.nombre`,
       [JSON.stringify(cities)]
     );
 

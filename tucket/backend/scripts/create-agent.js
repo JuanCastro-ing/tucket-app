@@ -45,9 +45,9 @@ async function createAgent() {
     }
 
     await pool.query(
-      `INSERT INTO agents (full_name, email, password_hash,
-                           document_type, document_number,
-                           commission_rate, experience_years)
+      `INSERT INTO agentes (nombre_completo, correo, clave_hash,
+                           tipo_documento, numero_documento,
+                           comision, anios_experiencia)
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [fullName, email, passwordHash,
         documentType, documentNumber || null, comision, experiencia]

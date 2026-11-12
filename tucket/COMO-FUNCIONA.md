@@ -117,7 +117,7 @@ al panel de administrador?», la respuesta es: puede ver el cascarón vacío, pe
 No se filtra en el navegador. El filtro está dentro de la consulta:
 
 ```sql
-JOIN events e ON e.id = r.event_id AND e.agent_id = $1
+JOIN eventos e ON e.id = r.id_evento AND e.id_agente = $1
 ```
 
 Con el `agent_id` saliendo de la cookie firmada, no de algo que mande el
@@ -129,52 +129,52 @@ número a la URL.
 ## 4. Modelo relacional
 
 ```
-countries(code PK, name)
-departments(code PK, country_code FK, name)
-cities(id PK, dane_code, country_code FK, department_code FK, name)
+paises(codigo PK, nombre)
+departamentos(codigo PK, codigo_pais FK, nombre)
+ciudades(id PK, codigo_dane, codigo_pais FK, codigo_departamento FK, nombre)
 
-agents(id PK, full_name, email, password_hash, active, created_at,
-       phone, phone_alt, address, country_code FK, department_code FK, city_id FK, updated_at)
+agentes(id PK, nombre_completo, correo, clave_hash, activo, fecha_creacion,
+       telefono, telefono_alterno, direccion, codigo_pais FK, codigo_departamento FK, id_ciudad FK, fecha_actualizacion)
 
-clients(id PK, document_type, document_number, full_name, email, password_hash,
-        phone, address, country_code FK, department_code FK, city_id FK,
-        accepted_terms, active, created_at, phone_alt, updated_at)
+clientes(id PK, tipo_documento, numero_documento, nombre_completo, correo, clave_hash,
+        telefono, direccion, codigo_pais FK, codigo_departamento FK, id_ciudad FK,
+        acepto_terminos, activo, fecha_creacion, telefono_alterno, fecha_actualizacion)
 
-admins(id PK, full_name, email, password_hash, active, created_at, updated_at)
+administradores(id PK, nombre_completo, correo, clave_hash, activo, fecha_creacion, fecha_actualizacion)
 
-events(id PK, code, name, description, venue, starts_at, ends_at, total_capacity,
-       base_price, observations, image_path, image_alt, banner_path, banner_alt,
-       status, cancellation_reason, status_updated_at,
-       country_code FK, department_code FK, city_id FK, agent_id FK, created_at)
+eventos(id PK, codigo, nombre, descripcion, teatro, fecha_inicio, fecha_fin, capacidad_total,
+       precio_base, observaciones, ruta_imagen, texto_imagen, ruta_banner, texto_banner,
+       estado, motivo_cancelacion, fecha_cambio_estado,
+       codigo_pais FK, codigo_departamento FK, id_ciudad FK, id_agente FK, fecha_creacion)
 
-reservations(id PK, code, client_id FK, event_id FK, quantity, unit_price,
-             total_amount, status, cancellation_reason, observations,
-             created_at, status_updated_at)
+reservas(id PK, codigo, id_cliente FK, id_evento FK, cantidad, precio_unitario,
+             valor_total, estado, motivo_cancelacion, observaciones,
+             fecha_creacion, fecha_cambio_estado)
 
-tickets(id PK, reservation_id FK, serial, holder_name, seat_label, used_at, created_at)
+boletas(id PK, id_reserva FK, serial, nombre_titular, silla, fecha_uso, fecha_creacion)
 
-agent_requests(id PK, full_name, document_number, email, phone, organization, nit,
-               justification, status, review_notes, reviewed_by FK, reviewed_at,
-               agent_id FK, created_at)
+solicitudes_agente(id PK, nombre_completo, numero_documento, correo, telefono, organizacion, nit,
+               justificacion, estado, notas_revision, revisado_por FK, fecha_revision,
+               id_agente FK, fecha_creacion)
 ```
 
 ```
-event_statuses(code PK, label, display_order, allows_reservation, is_final,
-               requires_reason, allowed_as_initial, badge_class)
-reservation_statuses(code PK, label, display_order, occupies_seat, is_final, badge_class)
-request_statuses(code PK, label, display_order, is_final, badge_class)
+estados_evento(codigo PK, etiqueta, orden, permite_reservar, es_final,
+               exige_motivo, permitido_al_crear, clase_insignia)
+estados_reserva(codigo PK, etiqueta, orden, ocupa_silla, es_final, clase_insignia)
+estados_solicitud(codigo PK, etiqueta, orden, es_final, clase_insignia)
 
-payment_methods(code PK, label, display_order, needs_card, instant, active)
-payment_statuses(code PK, label, display_order, is_paid, is_final, badge_class)
-payments(id PK, code, reservation_id FK, method_code FK, status FK, amount,
-         reference, card_last4, card_brand, decline_reason, paid_at, created_at)
+metodos_pago(codigo PK, etiqueta, orden, requiere_tarjeta, inmediato, activo)
+estados_pago(codigo PK, etiqueta, orden, es_pagado, es_final, clase_insignia)
+pagos(id PK, codigo, id_reserva FK, codigo_metodo FK, estado FK, monto,
+         referencia, ultimos4_tarjeta, marca_tarjeta, motivo_rechazo, fecha_pago, fecha_creacion)
 ```
 
 Más la vista `event_availability`, que calcula cuántas butacas quedan libres.
 
 ### Tres decisiones del modelo que vale la pena poder defender
 
-**Los tres roles viven en tablas separadas** (`clients`, `agents`, `admins`) y no
+**Los tres roles viven en tablas separadas** (`clientes`, `agentes`, `administradores`) y no
 en una sola tabla con una columna `rol`. Porque guardan cosas distintas: un
 cliente tiene documento de identidad y acepta términos, un agente no; un
 administrador no necesita ni teléfono ni dirección. Con una sola tabla, la mitad
@@ -185,8 +185,8 @@ hay que asegurar que la ciudad pertenezca al departamento, y el departamento al
 país. Por eso:
 
 ```sql
-FOREIGN KEY (city_id, department_code, country_code)
-  REFERENCES cities(id, department_code, country_code)
+FOREIGN KEY (id_ciudad, codigo_departamento, codigo_pais)
+  REFERENCES ciudades(id, codigo_departamento, codigo_pais)
 ```
 
 Así la base rechaza «Cali, Antioquia» aunque la API tuviera un error.

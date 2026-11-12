@@ -23,9 +23,9 @@ const bcrypt = require('bcryptjs');
 const pool = require('../src/db');
 
 const TABLAS = [
-  { tabla: 'clients', rol: 'cliente' },
-  { tabla: 'agents',  rol: 'agente' },
-  { tabla: 'admins',  rol: 'administrador' }
+  { tabla: 'clientes', rol: 'cliente' },
+  { tabla: 'agentes',  rol: 'agente' },
+  { tabla: 'administradores',  rol: 'administrador' }
 ];
 
 const MINIMO = 10;   /* el mismo mínimo que exige el registro */
@@ -33,7 +33,7 @@ const MINIMO = 10;   /* el mismo mínimo que exige el registro */
 async function buscarCuenta(correo) {
   for (const { tabla, rol } of TABLAS) {
     const r = await pool.query(
-      `SELECT id, full_name FROM ${tabla} WHERE email = $1`, [correo]
+      `SELECT id, nombre_completo AS "full_name" FROM ${tabla} WHERE correo = $1`, [correo]
     );
     if (r.rowCount) return { tabla, rol, ...r.rows[0] };
   }
@@ -62,7 +62,7 @@ async function resetPassword() {
 
     const hash = await bcrypt.hash(nueva, 12);
     await pool.query(
-      `UPDATE ${cuenta.tabla} SET password_hash = $1 WHERE id = $2`,
+      `UPDATE ${cuenta.tabla} SET clave_hash = $1 WHERE id = $2`,
       [hash, cuenta.id]
     );
 

@@ -23,9 +23,18 @@ async function cargar() {
   if (cache) return cache;
 
   const [eventos, reservas, solicitudes] = await Promise.all([
-    pool.query('SELECT * FROM event_statuses ORDER BY display_order'),
-    pool.query('SELECT * FROM reservation_statuses ORDER BY display_order'),
-    pool.query('SELECT * FROM request_statuses ORDER BY display_order')
+    pool.query(`SELECT codigo AS "code", etiqueta AS "label", orden AS "display_order",
+       permite_reservar AS "allows_reservation", es_final AS "is_final",
+       exige_motivo AS "requires_reason", clase_insignia AS "badge_class",
+       permitido_al_crear AS "allowed_as_initial"
+  FROM estados_evento ORDER BY orden`),
+    pool.query(`SELECT codigo AS "code", etiqueta AS "label", orden AS "display_order",
+       ocupa_silla AS "occupies_seat", es_final AS "is_final",
+       clase_insignia AS "badge_class"
+  FROM estados_reserva ORDER BY orden`),
+    pool.query(`SELECT codigo AS "code", etiqueta AS "label", orden AS "display_order",
+       es_final AS "is_final", clase_insignia AS "badge_class"
+  FROM estados_solicitud ORDER BY orden`)
   ]);
 
   cache = {

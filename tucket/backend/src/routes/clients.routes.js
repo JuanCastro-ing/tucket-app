@@ -65,11 +65,11 @@ router.post('/register', async (req, res, next) => {
     /* Coste 12: el estándar razonable hoy para bcrypt. */
     const passwordHash = await bcrypt.hash(password, 12);
     const result = await pool.query(
-      `INSERT INTO clients
-        (document_type, document_number, full_name, email, password_hash, phone, address,
-         country_code, department_code, city_id, accepted_terms)
+      `INSERT INTO clientes
+        (tipo_documento, numero_documento, nombre_completo, correo, clave_hash, telefono, direccion,
+         codigo_pais, codigo_departamento, id_ciudad, acepto_terminos)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, TRUE)
-       RETURNING id, full_name AS name, email, created_at`,
+       RETURNING id, nombre_completo AS nombre, correo AS "email", fecha_creacion AS "created_at"`,
       [documentType, documentNumber, fullName, email, passwordHash, phone, address,
         ubicacionCompleta ? countryCode : null,
         ubicacionCompleta ? departmentCode : null,
@@ -102,12 +102,12 @@ router.post('/register', async (req, res, next) => {
 router.get('/me', requireClient, async (req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT c.id, c.document_type, c.document_number, c.full_name AS name, c.email,
-              c.phone, c.address, ci.name AS city, d.name AS department, c.created_at
-       FROM clients c
-       LEFT JOIN cities ci ON ci.id = c.city_id
-       LEFT JOIN departments d ON d.code = c.department_code
-       WHERE c.id = $1 AND c.active = TRUE`,
+      `SELECT c.id, c.tipo_documento AS "document_type", c.numero_documento AS "document_number", c.nombre_completo AS nombre, c.correo AS "email",
+              c.telefono AS "phone", c.direccion AS "address", ci.nombre AS city, d.nombre AS department, c.fecha_creacion AS "created_at"
+       FROM clientes c
+       LEFT JOIN ciudades ci ON ci.id = c.id_ciudad
+       LEFT JOIN departamentos d ON d.codigo = c.codigo_departamento
+       WHERE c.id = $1 AND c.activo = TRUE`,
       [req.client.id]
     );
     if (!result.rowCount) return res.status(401).json({ error: 'La cuenta ya no está activa.' });

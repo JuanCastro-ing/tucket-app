@@ -28,12 +28,12 @@ function claveTemporal(longitud = 14) {
 }
 
 const SELECT_SOLICITUD = `
-  SELECT s.id, s.full_name, s.document_number, s.email, s.phone,
-         s.organization, s.nit, s.justification,
-         s.status, s.review_notes, s.reviewed_at, s.created_at,
-         s.agent_id, a.full_name AS reviewed_by_name
-    FROM agent_requests s
-    LEFT JOIN admins a ON a.id = s.reviewed_by`;
+  SELECT s.id, s.nombre_completo AS "full_name", s.numero_documento AS "document_number", s.correo AS "email", s.telefono AS "phone",
+         s.organizacion AS "organization", s.nit, s.justificacion AS "justification",
+         s.estado AS "status", s.notas_revision AS "review_notes", s.fecha_revision AS "reviewed_at", s.fecha_creacion AS "created_at",
+         s.id_agente AS "agent_id", a.nombre_completo AS revisado_por_nombre
+    FROM solicitudes_agente s
+    LEFT JOIN administradores a ON a.id = s.revisado_por`;
 
 /* Crear una solicitud — público */
 router.post('/', async (req, res, next) => {
@@ -74,9 +74,9 @@ router.post('/', async (req, res, next) => {
        primero. Mejor rechazarlo aquí con un mensaje claro que crear una
        cuenta que deje a la persona sin poder entrar a la que ya tenía. */
     const existente = await pool.query(
-      `SELECT 'agente' AS rol FROM agents WHERE email = $1
-       UNION ALL SELECT 'cliente' FROM clients WHERE email = $1
-       UNION ALL SELECT 'administrador' FROM admins WHERE email = $1`,
+      `SELECT 'agente' AS rol FROM agentes WHERE correo = $1
+       UNION ALL SELECT 'cliente' FROM clientes WHERE correo = $1
+       UNION ALL SELECT 'administrador' FROM administradores WHERE correo = $1`,
       [email]
     );
     if (existente.rowCount) {
@@ -86,10 +86,10 @@ router.post('/', async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO agent_requests
-        (full_name, document_number, email, phone, organization, nit, justification)
+      `INSERT INTO solicitudes_agente
+        (nombre_completo, numero_documento, correo, telefono, organizacion, nit, justificacion)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id, full_name, email, status, created_at`,
+       RETURNING id, nombre_completo AS "full_name", correo AS "email", estado AS "status", fecha_creacion AS "created_at"`,
       [fullName, documentNumber, email, phone, organization, nit || null, justification]
     );
 
@@ -112,16 +112,16 @@ router.post('/', async (req, res, next) => {
 router.get('/', requireAdmin, async (req, res, next) => {
   const estado = String(req.query.status || '').trim();
   try {
-    const where = (await estadosDelSistema()).solicitudesValidos.has(estado) ? 'WHERE s.status = $1' : '';
+    const where = (await estadosDelSistema()).solicitudesValidos.has(estado) ? 'WHERE s.estado = $1' : '';
     const result = await pool.query(
-      `${SELECT_SOLICITUD} ${where} ORDER BY s.created_at DESC`,
+      `${SELECT_SOLICITUD} ${where} ORDER BY s.fecha_creacion DESC`,
       (await estadosDelSistema()).solicitudesValidos.has(estado) ? [estado] : []
     );
 
     /* Los conteos van siempre completos, no filtrados: alimentan el
        contador de pendientes del panel y las pestañas de la bandeja. */
     const conteos = await pool.query(
-      `SELECT status, COUNT(*)::int AS total FROM agent_requests GROUP BY status`
+      `SELECT estado AS "status", COUNT(*)::int AS total FROM solicitudes_agente GROUP BY estado`
     );
     const totales = { Pendiente: 0, Aprobada: 0, Rechazada: 0 };
     conteos.rows.forEach((fila) => { totales[fila.status] = fila.total; });
@@ -145,7 +145,7 @@ router.patch('/:id/approve', requireAdmin, async (req, res, next) => {
        vez, el segundo espera y encuentra que ya está resuelta. Sin esto se
        crearían dos cuentas para la misma persona. */
     const actual = await client.query(
-      'SELECT id, full_name, email, status FROM agent_requests WHERE id = $1 FOR UPDATE',
+      'SELECT id, nombre_completo AS "full_name", correo AS "email", estado AS "status" FROM solicitudes_agente WHERE id = $1 FOR UPDATE',
       [id]
     );
     if (!actual.rowCount) {
@@ -174,15 +174,15 @@ router.patch('/:id/approve', requireAdmin, async (req, res, next) => {
     const hash = await bcrypt.hash(temporal, 12);
 
     const agente = await client.query(
-      'INSERT INTO agents (full_name, email, password_hash) VALUES ($1, $2, $3) RETURNING id',
+      'INSERT INTO agentes (nombre_completo, correo, clave_hash) VALUES ($1, $2, $3) RETURNING id',
       [solicitud.full_name, solicitud.email, hash]
     );
 
     const result = await client.query(
-      `UPDATE agent_requests
-          SET status = 'Aprobada', agent_id = $1, reviewed_by = $2, reviewed_at = NOW()
+      `UPDATE solicitudes_agente
+          SET estado = 'Aprobada', id_agente = $1, revisado_por = $2, fecha_revision = NOW()
         WHERE id = $3
-      RETURNING id, full_name, email, status, reviewed_at`,
+      RETURNING id, nombre_completo AS "full_name", correo AS "email", estado AS "status", fecha_revision AS "reviewed_at"`,
       [agente.rows[0].id, req.admin.id, id]
     );
 
@@ -220,17 +220,17 @@ router.patch('/:id/reject', requireAdmin, async (req, res, next) => {
 
   try {
     const result = await pool.query(
-      `UPDATE agent_requests
-          SET status = 'Rechazada', review_notes = $1, reviewed_by = $2, reviewed_at = NOW()
-        WHERE id = $3 AND status = 'Pendiente'
-      RETURNING id, full_name, email, status, review_notes, reviewed_at`,
+      `UPDATE solicitudes_agente
+          SET estado = 'Rechazada', notas_revision = $1, revisado_por = $2, fecha_revision = NOW()
+        WHERE id = $3 AND estado = 'Pendiente'
+      RETURNING id, nombre_completo AS "full_name", correo AS "email", estado AS "status", notas_revision AS "review_notes", fecha_revision AS "reviewed_at"`,
       [motivo, req.admin.id, id]
     );
 
     if (!result.rowCount) {
       /* O no existe, o alguien ya la resolvió: se distingue para que el
          administrador sepa cuál de las dos cosas pasó. */
-      const existe = await pool.query('SELECT status FROM agent_requests WHERE id = $1', [id]);
+      const existe = await pool.query('SELECT estado AS "status" FROM solicitudes_agente WHERE id = $1', [id]);
       if (!existe.rowCount) return res.status(404).json({ error: 'No encontramos esa solicitud.' });
       return res.status(409).json({ error: `Esa solicitud ya está ${existe.rows[0].status}.` });
     }

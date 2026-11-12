@@ -18,7 +18,7 @@ router.use(express.json({ limit: '32kb' }));
    El administrador entra aquí con un perfil reducido: su tabla solo tiene
    nombre y correo, porque no necesita teléfonos ni dirección para hacer su
    trabajo. Puede cambiar su nombre y su contraseña, y nada más. */
-const TABLAS = { cliente: 'clients', agente: 'agents', administrador: 'admins' };
+const TABLAS = { cliente: 'clientes', agente: 'agentes', administrador: 'administradores' };
 
 /* Los campos de contacto y ubicación solo existen en clients y agents. */
 function tienePerfilCompleto(rol){ return rol === 'cliente' || rol === 'agente'; }
@@ -34,39 +34,39 @@ function tablaDe(req) {
    agente, salario y horario el administrador. Se listan aquí para que la
    consulta de cada tabla los traiga y el perfil pueda mostrarlos. */
 const CAMPOS_DEL_ROL = {
-  clients: `u.document_type AS "documentType", u.document_number AS "documentNumber",
-            u.points, u.shows_ads AS "showsAds"`,
-  agents: `u.document_type AS "documentType", u.document_number AS "documentNumber",
-           u.commission_rate AS "commissionRate", u.experience_years AS "experienceYears"`,
-  admins: `u.document_type AS "documentType", u.document_number AS "documentNumber",
-           u.salary, u.work_schedule AS "workSchedule"`
+  clientes: `u.tipo_documento AS "documentType", u.numero_documento AS "documentNumber",
+            u.puntos AS "points", u.ve_publicidad AS "showsAds"`,
+  agentes: `u.tipo_documento AS "documentType", u.numero_documento AS "documentNumber",
+           u.comision AS "commissionRate", u.anios_experiencia AS "experienceYears"`,
+  administradores: `u.tipo_documento AS "documentType", u.numero_documento AS "documentNumber",
+           u.salario AS "salary", u.horario AS "workSchedule"`
 };
 
 function consultaPerfil(tabla) {
   /* La tabla admins no tiene las columnas de contacto ni de ubicación, así
      que su consulta se escribe aparte en vez de inventarlas con NULL en el
      SELECT: si algún día se agregan, el cambio queda en un solo sitio. */
-  if (tabla === 'admins') {
+  if (tabla === 'administradores') {
     return `
-      SELECT u.id, u.full_name AS "fullName", u.email,
-             u.created_at AS "createdAt", u.updated_at AS "updatedAt",
-             ${CAMPOS_DEL_ROL.admins}
-        FROM admins u
-       WHERE u.id = $1 AND u.active = TRUE`;
+      SELECT u.id, u.nombre_completo AS "fullName", u.correo AS "email",
+             u.fecha_creacion AS "createdAt", u.fecha_actualizacion AS "updatedAt",
+             ${CAMPOS_DEL_ROL.administradores}
+        FROM administradores u
+       WHERE u.id = $1 AND u.activo = TRUE`;
   }
   return `
-    SELECT u.id, u.full_name AS "fullName", u.email,
-           u.phone, u.phone_alt AS "phoneAlt", u.address,
-           u.country_code AS "countryCode", u.department_code AS "departmentCode",
-           u.city_id AS "cityId",
-           co.name AS country, d.name AS department, ci.name AS city,
-           u.created_at AS "createdAt", u.updated_at AS "updatedAt",
+    SELECT u.id, u.nombre_completo AS "fullName", u.correo AS "email",
+           u.telefono AS "phone", u.telefono_alterno AS "phoneAlt", u.direccion AS "address",
+           u.codigo_pais AS "countryCode", u.codigo_departamento AS "departmentCode",
+           u.id_ciudad AS "cityId",
+           co.nombre AS country, d.nombre AS department, ci.nombre AS city,
+           u.fecha_creacion AS "createdAt", u.fecha_actualizacion AS "updatedAt",
            ${CAMPOS_DEL_ROL[tabla]}
       FROM ${tabla} u
-      LEFT JOIN cities ci      ON ci.id = u.city_id
-      LEFT JOIN departments d  ON d.code = u.department_code
-      LEFT JOIN countries co   ON co.code = u.country_code
-     WHERE u.id = $1 AND u.active = TRUE`;
+      LEFT JOIN ciudades ci      ON ci.id = u.id_ciudad
+      LEFT JOIN departamentos d  ON d.codigo = u.codigo_departamento
+      LEFT JOIN paises co   ON co.codigo = u.codigo_pais
+     WHERE u.id = $1 AND u.activo = TRUE`;
 }
 
 /* Ver mi perfil */
@@ -99,7 +99,7 @@ router.put('/', requireSession, async (req, res, next) => {
       return res.status(400).json({ error: 'Escribe tu nombre completo (máximo 160 caracteres).' });
     }
     const guardado = await pool.query(
-      `UPDATE ${tabla} SET full_name = $1 WHERE id = $2 AND active = TRUE RETURNING id`,
+      `UPDATE ${tabla} SET nombre_completo = $1 WHERE id = $2 AND activo = TRUE RETURNING id`,
       [nombre, req.user.id]
     );
     if (!guardado.rowCount) return res.status(401).json({ error: 'La cuenta ya no está activa.' });
@@ -155,9 +155,9 @@ router.put('/', requireSession, async (req, res, next) => {
     if (hayUbicacion) {
       const ubicacion = await pool.query(
         `SELECT 1
-           FROM cities c
-           JOIN departments d ON d.code = c.department_code AND d.country_code = c.country_code
-          WHERE c.id = $1 AND d.code = $2 AND d.country_code = $3`,
+           FROM ciudades c
+           JOIN departamentos d ON d.codigo = c.codigo_departamento AND d.codigo_pais = c.codigo_pais
+          WHERE c.id = $1 AND d.codigo = $2 AND d.codigo_pais = $3`,
         [cityId, departmentCode, countryCode]
       );
       if (!ubicacion.rowCount) {
@@ -167,15 +167,15 @@ router.put('/', requireSession, async (req, res, next) => {
 
     const actualizado = await pool.query(
       `UPDATE ${tabla}
-          SET full_name = $1,
-              phone = $2,
-              phone_alt = $3,
-              address = $4,
-              country_code = $5,
-              department_code = $6,
-              city_id = $7
-              ${cambiaPublicidad ? ', shows_ads = $9' : ''}
-        WHERE id = $8 AND active = TRUE
+          SET nombre_completo = $1,
+              telefono = $2,
+              telefono_alterno = $3,
+              direccion = $4,
+              codigo_pais = $5,
+              codigo_departamento = $6,
+              id_ciudad = $7
+              ${cambiaPublicidad ? ', ve_publicidad = $9' : ''}
+        WHERE id = $8 AND activo = TRUE
       RETURNING id`,
       [fullName, phone, phoneAlt || null, address || null,
         hayUbicacion ? countryCode : null,
@@ -227,7 +227,7 @@ router.put('/password', requireSession, async (req, res, next) => {
 
   try {
     const cuenta = await pool.query(
-      `SELECT password_hash FROM ${tabla} WHERE id = $1 AND active = TRUE`,
+      `SELECT clave_hash AS "password_hash" FROM ${tabla} WHERE id = $1 AND activo = TRUE`,
       [req.user.id]
     );
     if (!cuenta.rowCount) return res.status(401).json({ error: 'La cuenta ya no está activa.' });
@@ -238,7 +238,7 @@ router.put('/password', requireSession, async (req, res, next) => {
 
     const hash = await bcrypt.hash(nueva, 12);
     await pool.query(
-      `UPDATE ${tabla} SET password_hash = $1 WHERE id = $2`,
+      `UPDATE ${tabla} SET clave_hash = $1 WHERE id = $2`,
       [hash, req.user.id]
     );
 

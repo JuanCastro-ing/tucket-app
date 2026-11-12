@@ -38,8 +38,8 @@ router.post('/', requireClient, async (req, res, next) => {
     /* FOR UPDATE bloquea la fila del evento: dos clientes que reservan a la
        vez se atienden uno después del otro y no pueden pasarse del cupo. */
     const evento = await client.query(
-      `SELECT id, name, base_price, total_capacity, status, starts_at, ends_at
-       FROM events WHERE code = $1 FOR UPDATE`,
+      `SELECT id, nombre AS "name", precio_base AS "base_price", capacidad_total AS "total_capacity", estado AS "status", fecha_inicio AS "starts_at", fecha_fin AS "ends_at"
+       FROM eventos WHERE codigo = $1 FOR UPDATE`,
       [eventCode]
     );
     if (!evento.rowCount) {
@@ -58,9 +58,9 @@ router.post('/', requireClient, async (req, res, next) => {
     }
 
     const ocupados = await client.query(
-      `SELECT COALESCE(SUM(quantity), 0)::int AS total
-       FROM reservations
-       WHERE event_id = $1 AND status IN ('Reservada', 'Confirmada', 'Usada')`,
+      `SELECT COALESCE(SUM(cantidad), 0)::int AS total
+       FROM reservas
+       WHERE id_evento = $1 AND estado IN ('Reservada', 'Confirmada', 'Usada')`,
       [e.id]
     );
     const disponibles = e.total_capacity - ocupados.rows[0].total;
@@ -75,9 +75,9 @@ router.post('/', requireClient, async (req, res, next) => {
 
     const unitPrice = Number(e.base_price);
     const reserva = await client.query(
-      `INSERT INTO reservations (client_id, event_id, quantity, unit_price, total_amount, observations)
+      `INSERT INTO reservas (id_cliente, id_evento, cantidad, precio_unitario, valor_total, observaciones)
        VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, code, quantity, unit_price, total_amount, status, observations, created_at`,
+       RETURNING id, codigo AS "code", cantidad AS "quantity", precio_unitario AS "unit_price", valor_total AS "total_amount", estado AS "status", observaciones AS "observations", fecha_creacion AS "created_at"`,
       [req.client.id, e.id, quantity, unitPrice, (unitPrice * quantity).toFixed(2), observations || null]
     );
     const nueva = reserva.rows[0];
@@ -85,7 +85,7 @@ router.post('/', requireClient, async (req, res, next) => {
     /* Una boleta por entrada, numeradas RES-00842-01, -02, … */
     const seriales = Array.from({ length: quantity }, (_, i) => `${nueva.code}-${String(i + 1).padStart(2, '0')}`);
     await client.query(
-      `INSERT INTO tickets (reservation_id, serial)
+      `INSERT INTO boletas (id_reserva, serial)
        SELECT $1, s FROM unnest($2::text[]) AS s`,
       [nueva.id, seriales]
     );
@@ -111,17 +111,17 @@ router.post('/', requireClient, async (req, res, next) => {
 router.get('/mine', requireClient, async (req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status,
-              r.created_at, r.cancellation_reason, r.observations,
-              e.code AS event_code, e.name AS event_name, e.venue, e.starts_at,
-              e.image_path, e.image_alt,
-              ci.name AS city,
-              (SELECT COUNT(*) FROM tickets t WHERE t.reservation_id = r.id)::int AS ticket_count
-       FROM reservations r
-       JOIN events e ON e.id = r.event_id
-       JOIN cities ci ON ci.id = e.city_id
-       WHERE r.client_id = $1
-       ORDER BY r.created_at DESC`,
+      `SELECT r.codigo AS "code", r.cantidad AS "quantity", r.precio_unitario AS "unit_price", r.valor_total AS "total_amount", r.estado AS "status",
+              r.fecha_creacion AS "created_at", r.motivo_cancelacion AS "cancellation_reason", r.observaciones AS "observations",
+              e.codigo AS codigo_evento, e.nombre AS event_nombre, e.teatro AS "venue", e.fecha_inicio AS "starts_at",
+              e.ruta_imagen AS "image_path", e.texto_imagen AS "image_alt",
+              ci.nombre AS city,
+              (SELECT COUNT(*) FROM boletas t WHERE t.id_reserva = r.id)::int AS ticket_count
+       FROM reservas r
+       JOIN eventos e ON e.id = r.id_evento
+       JOIN ciudades ci ON ci.id = e.id_ciudad
+       WHERE r.id_cliente = $1
+       ORDER BY r.fecha_creacion DESC`,
       [req.client.id]
     );
     res.json(result.rows);
@@ -133,19 +133,19 @@ router.get('/:code', requireClient, async (req, res, next) => {
   try {
     const code = String(req.params.code || '').trim().toUpperCase();
     const reserva = await pool.query(
-      `SELECT r.id, r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.created_at, r.observations,
-              e.code AS event_code, e.name AS event_name, e.venue, e.starts_at,
-              e.image_path, e.image_alt, c.name AS city
-       FROM reservations r
-       JOIN events e ON e.id = r.event_id
-       JOIN cities c ON c.id = e.city_id
-       WHERE r.code = $1 AND r.client_id = $2`,
+      `SELECT r.id, r.codigo AS "code", r.cantidad AS "quantity", r.precio_unitario AS "unit_price", r.valor_total AS "total_amount", r.estado AS "status", r.fecha_creacion AS "created_at", r.observaciones AS "observations",
+              e.codigo AS codigo_evento, e.nombre AS event_nombre, e.teatro AS "venue", e.fecha_inicio AS "starts_at",
+              e.ruta_imagen AS "image_path", e.texto_imagen AS "image_alt", c.nombre AS city
+       FROM reservas r
+       JOIN eventos e ON e.id = r.id_evento
+       JOIN ciudades c ON c.id = e.id_ciudad
+       WHERE r.codigo = $1 AND r.id_cliente = $2`,
       [code, req.client.id]
     );
     if (!reserva.rowCount) return res.status(404).json({ error: 'No encontramos esa reserva.' });
 
     const boletas = await pool.query(
-      'SELECT serial, holder_name, seat_label, used_at FROM tickets WHERE reservation_id = $1 ORDER BY serial',
+      'SELECT serial, nombre_titular AS "holder_name", silla AS "seat_label", fecha_uso AS "used_at" FROM boletas WHERE id_reserva = $1 ORDER BY serial',
       [reserva.rows[0].id]
     );
     return res.json({ ...reserva.rows[0], tickets: boletas.rows });
@@ -160,9 +160,9 @@ router.patch('/:code/cancel', requireClient, async (req, res, next) => {
 
   try {
     const actual = await pool.query(
-      `SELECT r.id, r.status, e.starts_at
-       FROM reservations r JOIN events e ON e.id = r.event_id
-       WHERE r.code = $1 AND r.client_id = $2`,
+      `SELECT r.id, r.estado AS "status", e.fecha_inicio AS "starts_at"
+       FROM reservas r JOIN eventos e ON e.id = r.id_evento
+       WHERE r.codigo = $1 AND r.id_cliente = $2`,
       [code, req.client.id]
     );
     if (!actual.rowCount) return res.status(404).json({ error: 'No encontramos esa reserva.' });
@@ -175,8 +175,8 @@ router.patch('/:code/cancel', requireClient, async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `UPDATE reservations SET status = 'Cancelada', cancellation_reason = $1
-        WHERE id = $2 RETURNING code, status, status_updated_at`,
+      `UPDATE reservas SET estado = 'Cancelada', motivo_cancelacion = $1
+        WHERE id = $2 RETURNING codigo AS "code", estado AS "status", fecha_cambio_estado AS "status_updated_at"`,
       [motivo, id]
     );
     return res.json({ message: 'Reserva cancelada. El cupo volvió a quedar disponible.', reservation: result.rows[0] });

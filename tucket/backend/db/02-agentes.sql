@@ -2,11 +2,11 @@
 -- Las cuentas se crean con `npm run agent:create`, nunca desde el
 -- formulario público de registro.
 
-CREATE TABLE IF NOT EXISTS agents (
+CREATE TABLE IF NOT EXISTS agentes (
   id BIGSERIAL PRIMARY KEY,
-  full_name VARCHAR(160) NOT NULL,
-  email VARCHAR(254) NOT NULL UNIQUE,
-  password_hash VARCHAR(100) NOT NULL,
-  active BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  nombre_completo VARCHAR(160) NOT NULL,
+  correo VARCHAR(254) NOT NULL UNIQUE,
+  clave_hash VARCHAR(100) NOT NULL,
+  activo BOOLEAN NOT NULL DEFAULT TRUE,
+  fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

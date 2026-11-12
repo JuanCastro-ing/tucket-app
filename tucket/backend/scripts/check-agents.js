@@ -3,7 +3,7 @@ const pool = require('../src/db');
 
 async function checkAgents() {
   try {
-    const result = await pool.query('SELECT EXISTS (SELECT 1 FROM agents WHERE active = TRUE) AS exists');
+    const result = await pool.query('SELECT EXISTS (SELECT 1 FROM agentes WHERE activo = TRUE) AS exists');
     if (!result.rows[0].exists) {
       console.log('No hay agentes activos; se necesita crear la primera cuenta.');
       process.exitCode = 1;

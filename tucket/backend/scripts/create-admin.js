@@ -74,8 +74,8 @@ async function createAdmin() {
   const passwordHash = await bcrypt.hash(password, 12);
 
   await pool.query(
-    `INSERT INTO admins (full_name, email, password_hash,
-                         document_type, document_number, salary, work_schedule)
+    `INSERT INTO administradores (nombre_completo, correo, clave_hash,
+                         tipo_documento, numero_documento, salario, horario)
      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
     [fullName, email, passwordHash, documentType, documentNumber, salary, workSchedule]
   );

@@ -48,9 +48,9 @@ function formatearCodigo(numero) {
 
 async function reservarCodigo(ejecutor) {
   for (let intento = 0; intento < 10; intento += 1) {
-    const siguiente = await ejecutor.query("SELECT nextval('events_code_seq') AS n");
+    const siguiente = await ejecutor.query("SELECT nextval('eventos_codigo_seq') AS n");
     const code = formatearCodigo(siguiente.rows[0].n);
-    const ocupado = await ejecutor.query('SELECT 1 FROM events WHERE code = $1', [code]);
+    const ocupado = await ejecutor.query('SELECT 1 FROM eventos WHERE codigo = $1', [code]);
     if (!ocupado.rowCount) return code;
   }
   throw new Error('No se pudo asignar un código de evento libre.');
@@ -60,28 +60,28 @@ async function reservarCodigo(ejecutor) {
    cuya fecha ya pasó aparece Finalizado aunque nadie lo haya tocado. */
 const ESTADO_CALCULADO = `
   CASE
-    WHEN e.status IN ('Cancelado', 'Finalizado') THEN e.status
-    WHEN e.ends_at   <= NOW() THEN 'Finalizado'
-    WHEN e.starts_at <= NOW() THEN 'En Vivo'
-    ELSE e.status
+    WHEN e.estado IN ('Cancelado', 'Finalizado') THEN e.estado
+    WHEN e.fecha_fin   <= NOW() THEN 'Finalizado'
+    WHEN e.fecha_inicio <= NOW() THEN 'En Vivo'
+    ELSE e.estado
   END`;
 
 /* Catálogo público */
 router.get('/', async (_req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT e.code, e.name, e.description, e.venue, e.starts_at, e.ends_at,
-              e.total_capacity, e.base_price, e.observations,
-              e.image_path, e.image_alt, e.banner_path, e.banner_alt,
-              ${ESTADO_CALCULADO} AS status,
-              a.available_seats,
-              ci.name AS city, d.name AS department, co.name AS country
-       FROM events e
-       JOIN cities ci ON ci.id = e.city_id
-       JOIN departments d ON d.code = e.department_code AND d.country_code = e.country_code
-       JOIN countries co ON co.code = e.country_code
-       LEFT JOIN event_availability a ON a.event_id = e.id
-       ORDER BY CASE WHEN e.ends_at <= NOW() THEN 1 ELSE 0 END, e.starts_at ASC`
+      `SELECT e.codigo AS "code", e.nombre AS "name", e.descripcion AS "description", e.teatro AS "venue", e.fecha_inicio AS "starts_at", e.fecha_fin AS "ends_at",
+              e.capacidad_total AS "total_capacity", e.precio_base AS "base_price", e.observaciones AS "observations",
+              e.ruta_imagen AS "image_path", e.texto_imagen AS "image_alt", e.ruta_banner AS "banner_path", e.texto_banner AS "banner_alt",
+              ${ESTADO_CALCULADO} AS estado,
+              a.sillas_disponibles AS "available_seats",
+              ci.nombre AS city, d.nombre AS department, co.nombre AS country
+       FROM eventos e
+       JOIN ciudades ci ON ci.id = e.id_ciudad
+       JOIN departamentos d ON d.codigo = e.codigo_departamento AND d.codigo_pais = e.codigo_pais
+       JOIN paises co ON co.codigo = e.codigo_pais
+       LEFT JOIN disponibilidad_eventos a ON a.id_evento = e.id
+       ORDER BY CASE WHEN e.fecha_fin <= NOW() THEN 1 ELSE 0 END, e.fecha_inicio ASC`
     );
     return res.json({ serverTime: new Date().toISOString(), events: result.rows });
   } catch (error) { return next(error); }
@@ -91,23 +91,23 @@ router.get('/', async (_req, res, next) => {
 router.get('/mine', requireAgent, async (req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT e.code, e.name, e.description, e.venue, e.starts_at, e.ends_at,
-              e.total_capacity, e.base_price, e.observations, e.status,
-              e.image_path, e.image_alt, e.banner_path, e.banner_alt,
-              e.cancellation_reason, e.status_updated_at,
+      `SELECT e.codigo AS "code", e.nombre AS "name", e.descripcion AS "description", e.teatro AS "venue", e.fecha_inicio AS "starts_at", e.fecha_fin AS "ends_at",
+              e.capacidad_total AS "total_capacity", e.precio_base AS "base_price", e.observaciones AS "observations", e.estado AS "status",
+              e.ruta_imagen AS "image_path", e.texto_imagen AS "image_alt", e.ruta_banner AS "banner_path", e.texto_banner AS "banner_alt",
+              e.motivo_cancelacion AS "cancellation_reason", e.fecha_cambio_estado AS "status_updated_at",
               /* Los códigos de la ubicación, además de los nombres: el
                  formulario de edición los necesita para volver a dejar
                  seleccionados país, departamento y ciudad. */
-              e.country_code, e.department_code, e.city_id,
-              a.reserved_seats, a.available_seats,
-              ci.name AS city, d.name AS department, co.name AS country
-       FROM events e
-       JOIN cities ci ON ci.id = e.city_id
-       JOIN departments d ON d.code = e.department_code AND d.country_code = e.country_code
-       JOIN countries co ON co.code = e.country_code
-       LEFT JOIN event_availability a ON a.event_id = e.id
-       WHERE e.agent_id = $1
-       ORDER BY e.created_at DESC`,
+              e.codigo_pais, e.codigo_departamento AS "department_code", e.id_ciudad AS "city_id",
+              a.sillas_reservadas AS "reserved_seats", a.sillas_disponibles AS "available_seats",
+              ci.nombre AS city, d.nombre AS department, co.nombre AS country
+       FROM eventos e
+       JOIN ciudades ci ON ci.id = e.id_ciudad
+       JOIN departamentos d ON d.codigo = e.codigo_departamento AND d.codigo_pais = e.codigo_pais
+       JOIN paises co ON co.codigo = e.codigo_pais
+       LEFT JOIN disponibilidad_eventos a ON a.id_evento = e.id
+       WHERE e.id_agente = $1
+       ORDER BY e.fecha_creacion DESC`,
       [req.agent.id]
     );
     res.json(result.rows);
@@ -125,7 +125,7 @@ router.get('/next-code', requireAgent, async (_req, res, next) => {
     /* last_value con is_called = false significa que ese número todavía
        no se ha entregado, así que el próximo es ese mismo. */
     const { rows } = await pool.query(
-      "SELECT last_value, is_called FROM events_code_seq"
+      "SELECT last_value, is_called FROM eventos_codigo_seq"
     );
     const siguiente = rows[0].is_called ? Number(rows[0].last_value) + 1 : Number(rows[0].last_value);
     return res.json({ code: formatearCodigo(siguiente), preview: true });
@@ -136,18 +136,18 @@ router.get('/next-code', requireAgent, async (_req, res, next) => {
 router.get('/:code', async (req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT e.code, e.name, e.description, e.venue, e.starts_at, e.ends_at,
-              e.total_capacity, e.base_price, e.observations,
-              e.image_path, e.image_alt, e.banner_path, e.banner_alt,
-              ${ESTADO_CALCULADO} AS status,
-              a.available_seats,
-              ci.name AS city, d.name AS department, co.name AS country
-       FROM events e
-       JOIN cities ci ON ci.id = e.city_id
-       JOIN departments d ON d.code = e.department_code AND d.country_code = e.country_code
-       JOIN countries co ON co.code = e.country_code
-       LEFT JOIN event_availability a ON a.event_id = e.id
-       WHERE e.code = $1`,
+      `SELECT e.codigo AS "code", e.nombre AS "name", e.descripcion AS "description", e.teatro AS "venue", e.fecha_inicio AS "starts_at", e.fecha_fin AS "ends_at",
+              e.capacidad_total AS "total_capacity", e.precio_base AS "base_price", e.observaciones AS "observations",
+              e.ruta_imagen AS "image_path", e.texto_imagen AS "image_alt", e.ruta_banner AS "banner_path", e.texto_banner AS "banner_alt",
+              ${ESTADO_CALCULADO} AS estado,
+              a.sillas_disponibles AS "available_seats",
+              ci.nombre AS city, d.nombre AS department, co.nombre AS country
+       FROM eventos e
+       JOIN ciudades ci ON ci.id = e.id_ciudad
+       JOIN departamentos d ON d.codigo = e.codigo_departamento AND d.codigo_pais = e.codigo_pais
+       JOIN paises co ON co.codigo = e.codigo_pais
+       LEFT JOIN disponibilidad_eventos a ON a.id_evento = e.id
+       WHERE e.codigo = $1`,
       [String(req.params.code).trim().toUpperCase()]
     );
     if (!result.rowCount) return res.status(404).json({ error: 'No encontramos ese evento.' });
@@ -248,9 +248,9 @@ router.post('/', requireAgent, async (req, res, next) => {
        rechazaba la consulta entera. */
     const ubicacion = await pool.query(
       `SELECT 1
-         FROM cities c
-         JOIN departments d ON d.code = c.department_code AND d.country_code = c.country_code
-        WHERE c.id = $1 AND d.code = $2 AND d.country_code = $3`,
+         FROM ciudades c
+         JOIN departamentos d ON d.codigo = c.codigo_departamento AND d.codigo_pais = c.codigo_pais
+        WHERE c.id = $1 AND d.codigo = $2 AND d.codigo_pais = $3`,
       [cityId, departmentCode, countryCode]
     );
     if (!ubicacion.rowCount) {
@@ -260,12 +260,12 @@ router.post('/', requireAgent, async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO events
-        (code, name, description, venue, starts_at, ends_at, total_capacity,
-         base_price, observations, status, country_code, department_code, city_id, agent_id,
-         image_path, image_alt, banner_path, banner_alt)
+      `INSERT INTO eventos
+        (codigo, nombre, descripcion, teatro, fecha_inicio, fecha_fin, capacidad_total,
+         precio_base, observaciones, estado, codigo_pais, codigo_departamento, id_ciudad, id_agente,
+         ruta_imagen, texto_imagen, ruta_banner, texto_banner)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
-       RETURNING id, code, name, status, image_path, image_alt, banner_path, banner_alt, created_at`,
+       RETURNING id, codigo AS "code", nombre AS "name", estado AS "status", ruta_imagen AS "image_path", texto_imagen AS "image_alt", ruta_banner AS "banner_path", texto_banner AS "banner_alt", fecha_creacion AS "created_at"`,
       [code, name, description, venue, startsAt.toISOString(), endsAt.toISOString(),
         totalCapacity, basePrice, observations, status, countryCode, departmentCode, cityId,
         req.agent.id, imagePath, imageAlt, bannerPath, bannerAlt]
@@ -339,9 +339,9 @@ router.put('/:code', requireAgent, async (req, res, next) => {
        consulta con agregados. Las butacas ocupadas se piden aparte, ya
        con la fila del evento bloqueada. */
     const actual = await client.query(
-      `SELECT id, status, starts_at, image_path, image_alt, banner_path, banner_alt
-         FROM events
-        WHERE code = $1 AND agent_id = $2
+      `SELECT id, estado AS "status", fecha_inicio AS "starts_at", ruta_imagen AS "image_path", texto_imagen AS "image_alt", ruta_banner AS "banner_path", texto_banner AS "banner_alt"
+         FROM eventos
+        WHERE codigo = $1 AND id_agente = $2
           FOR UPDATE`,
       [code, req.agent.id]
     );
@@ -352,9 +352,9 @@ router.put('/:code', requireAgent, async (req, res, next) => {
     const evento = actual.rows[0];
 
     const ocupadas = await client.query(
-      `SELECT COALESCE(SUM(quantity), 0)::int AS reservadas
-         FROM reservations
-        WHERE event_id = $1 AND status IN ('Reservada', 'Confirmada', 'Usada')`,
+      `SELECT COALESCE(SUM(cantidad), 0)::int AS reservadas
+         FROM reservas
+        WHERE id_evento = $1 AND estado IN ('Reservada', 'Confirmada', 'Usada')`,
       [evento.id]
     );
     evento.reserved_seats = ocupadas.rows[0].reservadas;
@@ -380,9 +380,9 @@ router.put('/:code', requireAgent, async (req, res, next) => {
 
     const ubicacion = await client.query(
       `SELECT 1
-         FROM cities c
-         JOIN departments d ON d.code = c.department_code AND d.country_code = c.country_code
-        WHERE c.id = $1 AND d.code = $2 AND d.country_code = $3`,
+         FROM ciudades c
+         JOIN departamentos d ON d.codigo = c.codigo_departamento AND d.codigo_pais = c.codigo_pais
+        WHERE c.id = $1 AND d.codigo = $2 AND d.codigo_pais = $3`,
       [cityId, departmentCode, countryCode]
     );
     if (!ubicacion.rowCount) {
@@ -424,14 +424,14 @@ router.put('/:code', requireAgent, async (req, res, next) => {
     }
 
     const result = await client.query(
-      `UPDATE events
-          SET name = $1, description = $2, venue = $3,
-              starts_at = $4, ends_at = $5,
-              total_capacity = $6, base_price = $7, observations = $8,
-              country_code = $9, department_code = $10, city_id = $11,
-              image_path = $12, image_alt = $13, banner_path = $14, banner_alt = $15
+      `UPDATE eventos
+          SET nombre = $1, descripcion = $2, teatro = $3,
+              fecha_inicio = $4, fecha_fin = $5,
+              capacidad_total = $6, precio_base = $7, observaciones = $8,
+              codigo_pais = $9, codigo_departamento = $10, id_ciudad = $11,
+              ruta_imagen = $12, texto_imagen = $13, ruta_banner = $14, texto_banner = $15
         WHERE id = $16
-      RETURNING code, name, status, image_path, image_alt, banner_path, banner_alt`,
+      RETURNING codigo AS "code", nombre AS "name", estado AS "status", ruta_imagen AS "image_path", texto_imagen AS "image_alt", ruta_banner AS "banner_path", texto_banner AS "banner_alt"`,
       [name, description, venue, startsAt.toISOString(), endsAt.toISOString(),
         totalCapacity, basePrice, observations, countryCode, departmentCode, cityId,
         imagePath, imageAlt, bannerPath, bannerAlt, evento.id]
@@ -474,7 +474,7 @@ router.delete('/:code', requireAgent, async (req, res, next) => {
   try {
     await client.query('BEGIN');
     const actual = await client.query(
-      'SELECT id, name, image_path, banner_path FROM events WHERE code = $1 AND agent_id = $2 FOR UPDATE',
+      'SELECT id, nombre AS "name", ruta_imagen AS "image_path", ruta_banner AS "banner_path" FROM eventos WHERE codigo = $1 AND id_agente = $2 FOR UPDATE',
       [code, req.agent.id]
     );
     if (!actual.rowCount) {
@@ -485,8 +485,8 @@ router.delete('/:code', requireAgent, async (req, res, next) => {
 
     const vivas = await client.query(
       `SELECT COUNT(*)::int AS total
-         FROM reservations
-        WHERE event_id = $1 AND status IN ('Reservada', 'Confirmada', 'Usada')`,
+         FROM reservas
+        WHERE id_evento = $1 AND estado IN ('Reservada', 'Confirmada', 'Usada')`,
       [evento.id]
     );
     if (vivas.rows[0].total > 0) {
@@ -496,8 +496,8 @@ router.delete('/:code', requireAgent, async (req, res, next) => {
       });
     }
 
-    await client.query('DELETE FROM reservations WHERE event_id = $1', [evento.id]);
-    await client.query('DELETE FROM events WHERE id = $1', [evento.id]);
+    await client.query('DELETE FROM reservas WHERE id_evento = $1', [evento.id]);
+    await client.query('DELETE FROM eventos WHERE id = $1', [evento.id]);
     await client.query('COMMIT');
 
     borrarAfiche(evento.image_path);
@@ -522,7 +522,7 @@ router.put('/:code/image', requireAgent, async (req, res, next) => {
 
   try {
     const actual = await pool.query(
-      'SELECT id, name, image_path FROM events WHERE code = $1 AND agent_id = $2',
+      'SELECT id, nombre AS "name", ruta_imagen AS "image_path" FROM eventos WHERE codigo = $1 AND id_agente = $2',
       [code, req.agent.id]
     );
     if (!actual.rowCount) return res.status(404).json({ error: 'No encontramos ese evento entre los tuyos.' });
@@ -530,7 +530,7 @@ router.put('/:code/image', requireAgent, async (req, res, next) => {
 
     /* Sin datos = quitar el afiche. */
     if (!body.data) {
-      await pool.query('UPDATE events SET image_path = NULL, image_alt = NULL WHERE id = $1', [actual.rows[0].id]);
+      await pool.query('UPDATE eventos SET ruta_imagen = NULL, texto_imagen = NULL WHERE id = $1', [actual.rows[0].id]);
       borrarAfiche(anterior);
       return res.json({ message: 'Afiche eliminado.', event: { code, image_path: null, image_alt: null } });
     }
@@ -546,7 +546,7 @@ router.put('/:code/image', requireAgent, async (req, res, next) => {
     const alt = normalizarAlt(body.alt, actual.rows[0].name);
 
     const result = await pool.query(
-      'UPDATE events SET image_path = $1, image_alt = $2 WHERE id = $3 RETURNING code, image_path, image_alt',
+      'UPDATE eventos SET ruta_imagen = $1, texto_imagen = $2 WHERE id = $3 RETURNING codigo AS "code", ruta_imagen AS "image_path", texto_imagen AS "image_alt"',
       [guardado.rutaPublica, alt, actual.rows[0].id]
     );
     /* Recién cuando la base confirma se borra el afiche viejo. */
@@ -575,7 +575,7 @@ router.patch('/:code/status', requireAgent, async (req, res, next) => {
   try {
     await client.query('BEGIN');
     const actual = await client.query(
-      'SELECT id, status FROM events WHERE code = $1 AND agent_id = $2 FOR UPDATE',
+      'SELECT id, estado AS "status" FROM eventos WHERE codigo = $1 AND id_agente = $2 FOR UPDATE',
       [code, req.agent.id]
     );
     if (!actual.rowCount) {
@@ -596,12 +596,12 @@ router.patch('/:code/status', requireAgent, async (req, res, next) => {
        comparar el parámetro contra un literal obligaba a PostgreSQL a
        deducir dos tipos distintos para el mismo parámetro. */
     const result = await client.query(
-      `UPDATE events
-          SET status = $1,
-              cancellation_reason = $2,
-              status_updated_at = NOW()
+      `UPDATE eventos
+          SET estado = $1,
+              motivo_cancelacion = $2,
+              fecha_cambio_estado = NOW()
         WHERE id = $3
-      RETURNING code, status, cancellation_reason, status_updated_at`,
+      RETURNING codigo AS "code", estado AS "status", motivo_cancelacion AS "cancellation_reason", fecha_cambio_estado AS "status_updated_at"`,
       [status, status === 'Cancelado' ? motivo : null, actual.rows[0].id]
     );
 
@@ -610,9 +610,9 @@ router.patch('/:code/status', requireAgent, async (req, res, next) => {
     let reservasCanceladas = 0;
     if (status === 'Cancelado') {
       const cascada = await client.query(
-        `UPDATE reservations
-            SET status = 'Cancelada', cancellation_reason = $1
-          WHERE event_id = $2 AND status IN ('Reservada', 'Confirmada')`,
+        `UPDATE reservas
+            SET estado = 'Cancelada', motivo_cancelacion = $1
+          WHERE id_evento = $2 AND estado IN ('Reservada', 'Confirmada')`,
         [`Evento cancelado: ${motivo}`.slice(0, 500), actual.rows[0].id]
       );
       reservasCanceladas = cascada.rowCount;
@@ -646,30 +646,30 @@ router.get('/mine/reservations', requireAgent, async (req, res, next) => {
   const estadosValidos = (await estadosDelSistema()).reservasValidos;
 
   try {
-    const filtro = estadosValidos.has(estado) ? 'AND r.status = $2' : '';
+    const filtro = estadosValidos.has(estado) ? 'AND r.estado = $2' : '';
     const result = await pool.query(
-      `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.observations,
-              r.created_at, r.status_updated_at, r.cancellation_reason,
-              e.code AS event_code, e.name AS event_name, e.starts_at,
-              ci.name AS event_city,
-              c.full_name AS client_name, c.email AS client_email, c.phone AS client_phone
-         FROM reservations r
-         JOIN events e  ON e.id = r.event_id AND e.agent_id = $1
-         JOIN cities ci ON ci.id = e.city_id
-         JOIN clients c ON c.id = r.client_id
+      `SELECT r.codigo AS "code", r.cantidad AS "quantity", r.precio_unitario AS "unit_price", r.valor_total AS "total_amount", r.estado AS "status", r.observaciones AS "observations",
+              r.fecha_creacion AS "created_at", r.fecha_cambio_estado AS "status_updated_at", r.motivo_cancelacion AS "cancellation_reason",
+              e.codigo AS codigo_evento, e.nombre AS event_nombre, e.fecha_inicio AS "starts_at",
+              ci.nombre AS event_city,
+              c.nombre_completo AS client_nombre, c.correo AS client_correo, c.telefono AS client_telefono
+         FROM reservas r
+         JOIN eventos e  ON e.id = r.id_evento AND e.id_agente = $1
+         JOIN ciudades ci ON ci.id = e.id_ciudad
+         JOIN clientes c ON c.id = r.id_cliente
         WHERE TRUE ${filtro}
-        ORDER BY r.created_at DESC`,
+        ORDER BY r.fecha_creacion DESC`,
       estadosValidos.has(estado) ? [req.agent.id, estado] : [req.agent.id]
     );
 
     /* Los totales se calculan sobre todas las reservas del agente, no sobre
        las filtradas: alimentan las pestañas y las tarjetas de resumen. */
     const totales = await pool.query(
-      `SELECT r.status, COUNT(*)::int AS total,
-              COALESCE(SUM(r.total_amount), 0)::float AS monto
-         FROM reservations r
-         JOIN events e ON e.id = r.event_id AND e.agent_id = $1
-        GROUP BY r.status`,
+      `SELECT r.estado AS "status", COUNT(*)::int AS total,
+              COALESCE(SUM(r.valor_total), 0)::float AS monto
+         FROM reservas r
+         JOIN eventos e ON e.id = r.id_evento AND e.id_agente = $1
+        GROUP BY r.estado`,
       [req.agent.id]
     );
     const counts = { Reservada: 0, Confirmada: 0, Cancelada: 0, Usada: 0 };
@@ -692,7 +692,7 @@ router.get('/:code/reservations', requireAgent, async (req, res, next) => {
        Antes devolvía 200 con una lista vacía, que se confunde con «este
        evento no tiene reservas todavía». */
     const propio = await pool.query(
-      'SELECT 1 FROM events WHERE code = $1 AND agent_id = $2',
+      'SELECT 1 FROM eventos WHERE codigo = $1 AND id_agente = $2',
       [code, req.agent.id]
     );
     if (!propio.rowCount) {
@@ -700,13 +700,13 @@ router.get('/:code/reservations', requireAgent, async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `SELECT r.code, r.quantity, r.unit_price, r.total_amount, r.status, r.created_at, r.observations,
-              c.full_name AS client_name, c.email AS client_email, c.phone AS client_phone
-       FROM reservations r
-       JOIN events e ON e.id = r.event_id
-       JOIN clients c ON c.id = r.client_id
-       WHERE e.code = $1 AND e.agent_id = $2
-       ORDER BY r.created_at DESC`,
+      `SELECT r.codigo AS "code", r.cantidad AS "quantity", r.precio_unitario AS "unit_price", r.valor_total AS "total_amount", r.estado AS "status", r.fecha_creacion AS "created_at", r.observaciones AS "observations",
+              c.nombre_completo AS client_nombre, c.correo AS client_correo, c.telefono AS client_telefono
+       FROM reservas r
+       JOIN eventos e ON e.id = r.id_evento
+       JOIN clientes c ON c.id = r.id_cliente
+       WHERE e.codigo = $1 AND e.id_agente = $2
+       ORDER BY r.fecha_creacion DESC`,
       [code, req.agent.id]
     );
     return res.json(result.rows);

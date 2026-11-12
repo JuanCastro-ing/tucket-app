@@ -66,7 +66,7 @@ const EVENTOS = [
 ];
 
 async function seed() {
-  const agente = await pool.query('SELECT id, full_name FROM agents WHERE active = TRUE ORDER BY id LIMIT 1');
+  const agente = await pool.query('SELECT id, nombre_completo AS "full_name" FROM agentes WHERE activo = TRUE ORDER BY id LIMIT 1');
   if (!agente.rowCount) {
     throw new Error('No hay agentes en la base. Crea uno primero con: npm run agent:create');
   }
@@ -79,7 +79,7 @@ async function seed() {
     await client.query('BEGIN');
     for (const evento of EVENTOS) {
       const ciudad = await client.query(
-        'SELECT id, country_code, department_code, name FROM cities WHERE dane_code = $1',
+        'SELECT id, codigo_pais AS "country_code", codigo_departamento AS "department_code", nombre AS "name" FROM ciudades WHERE codigo_dane = $1',
         [evento.dane]
       );
       if (!ciudad.rowCount) {
@@ -92,17 +92,17 @@ async function seed() {
       const imageAlt = `Afiche del evento ${evento.name}`;
 
       const resultado = await client.query(
-        `INSERT INTO events
-          (code, name, description, venue, starts_at, ends_at, total_capacity, base_price,
-           observations, status, country_code, department_code, city_id, agent_id,
-           image_path, image_alt)
+        `INSERT INTO eventos
+          (codigo, nombre, descripcion, teatro, fecha_inicio, fecha_fin, capacidad_total, precio_base,
+           observaciones, estado, codigo_pais, codigo_departamento, id_ciudad, id_agente,
+           ruta_imagen, texto_imagen)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
-         ON CONFLICT (code) DO UPDATE SET
-           name = EXCLUDED.name, description = EXCLUDED.description, venue = EXCLUDED.venue,
-           starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at,
-           total_capacity = EXCLUDED.total_capacity, base_price = EXCLUDED.base_price,
-           observations = EXCLUDED.observations,
-           image_path = EXCLUDED.image_path, image_alt = EXCLUDED.image_alt
+         ON CONFLICT (codigo) DO UPDATE SET
+           nombre = EXCLUDED.nombre, descripcion = EXCLUDED.descripcion, teatro = EXCLUDED.teatro,
+           fecha_inicio = EXCLUDED.fecha_inicio, fecha_fin = EXCLUDED.fecha_fin,
+           capacidad_total = EXCLUDED.capacidad_total, precio_base = EXCLUDED.precio_base,
+           observaciones = EXCLUDED.observaciones,
+           ruta_imagen = EXCLUDED.ruta_imagen, texto_imagen = EXCLUDED.texto_imagen
          RETURNING (xmax = 0) AS insertado`,
         [evento.code, evento.name, evento.description, evento.venue, evento.startsAt, evento.endsAt,
           evento.capacity, evento.price, evento.observations, evento.status,

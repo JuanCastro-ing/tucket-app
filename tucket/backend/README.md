@@ -108,16 +108,16 @@ backend/
 ## 5. Modelo relacional
 
 ```
-countries(code PK, name)
-departments(code PK, country_code FK, name)
-cities(id PK, dane_code, country_code FK, department_code FK, name)
-agents(id PK, full_name, email, password_hash, phone, phone_alt, address, country_code FK, department_code FK, city_id FK, active, created_at, updated_at)
-admins(id PK, full_name, email, password_hash, active, created_at, updated_at)
-agent_requests(id PK, full_name, document_number, email, phone, organization, nit, justification, status, review_notes, reviewed_by FK, reviewed_at, agent_id FK, created_at)
-clients(id PK, document_type, document_number, full_name, email, password_hash, phone, phone_alt, address, country_code FK, department_code FK, city_id FK, accepted_terms, active, created_at, updated_at)
-events(id PK, code, name, description, venue, starts_at, ends_at, total_capacity, base_price, observations, image_path, image_alt, status, cancellation_reason, status_updated_at, country_code FK, department_code FK, city_id FK, agent_id FK, created_at)
-reservations(id PK, code, client_id FK, event_id FK, quantity, unit_price, total_amount, status, cancellation_reason, created_at, status_updated_at)
-tickets(id PK, reservation_id FK, serial, holder_name, seat_label, used_at, created_at)
+paises(codigo PK, nombre)
+departamentos(codigo PK, codigo_pais FK, nombre)
+ciudades(id PK, codigo_dane, codigo_pais FK, codigo_departamento FK, nombre)
+agentes(id PK, nombre_completo, correo, clave_hash, telefono, telefono_alterno, direccion, codigo_pais FK, codigo_departamento FK, id_ciudad FK, activo, fecha_creacion, fecha_actualizacion)
+administradores(id PK, nombre_completo, correo, clave_hash, activo, fecha_creacion, fecha_actualizacion)
+solicitudes_agente(id PK, nombre_completo, numero_documento, correo, telefono, organizacion, nit, justificacion, estado, notas_revision, revisado_por FK, fecha_revision, id_agente FK, fecha_creacion)
+clientes(id PK, tipo_documento, numero_documento, nombre_completo, correo, clave_hash, telefono, telefono_alterno, direccion, codigo_pais FK, codigo_departamento FK, id_ciudad FK, acepto_terminos, activo, fecha_creacion, fecha_actualizacion)
+eventos(id PK, codigo, nombre, descripcion, teatro, fecha_inicio, fecha_fin, capacidad_total, precio_base, observaciones, ruta_imagen, texto_imagen, estado, motivo_cancelacion, fecha_cambio_estado, codigo_pais FK, codigo_departamento FK, id_ciudad FK, id_agente FK, fecha_creacion)
+reservas(id PK, codigo, id_cliente FK, id_evento FK, cantidad, precio_unitario, valor_total, estado, motivo_cancelacion, fecha_creacion, fecha_cambio_estado)
+boletas(id PK, id_reserva FK, serial, nombre_titular, silla, fecha_uso, fecha_creacion)
 ```
 
 Vista `event_availability(event_id, event_code, total_capacity, reserved_seats, available_seats)`.
@@ -153,7 +153,7 @@ Reglas que vive la base, no solo la API:
 | `GET /api/events/next-code` | agente | Vista previa del próximo código, para el formulario |
 | `POST /api/events` | agente | Crear evento (el código lo asigna el servidor) |
 | `PUT /api/events/:code` | agente | Editar un evento propio |
-| `DELETE /api/events/:code` | agente | Eliminar un evento propio sin reservas activas |
+| `DELETE /api/events/:codigo` | agente | Eliminar un evento propio sin reservas activas |
 | `PUT /api/events/:code/image` | agente | Cambiar o quitar el afiche |
 | `PATCH /api/events/:code/status` | agente | Ciclo de vida del evento |
 | `GET /api/events/mine/reservations` | agente | Reservas de todos mis eventos |

@@ -78,7 +78,7 @@ async function main() {
     console.log(`  ${esquema.tablas.length} tablas · ${esquema.departamentos} departamentos · ${esquema.municipios} municipios`);
 
     titulo('3 · Cuenta de agente');
-    const agentes = await pool.query('SELECT count(*)::int AS total FROM agents WHERE active = TRUE');
+    const agentes = await pool.query('SELECT count(*)::int AS total FROM agentes WHERE activo = TRUE');
     if (agentes.rows[0].total > 0) {
       console.log(`  Ya existen ${agentes.rows[0].total} agente(s). No se crea ninguno.`);
     } else {
@@ -101,7 +101,7 @@ async function main() {
           throw new Error('Nombre, correo válido y contraseña de al menos 10 caracteres son obligatorios.');
         }
         await pool.query(
-          'INSERT INTO agents (full_name, email, password_hash) VALUES ($1, $2, $3)',
+          'INSERT INTO agentes (nombre_completo, correo, clave_hash) VALUES ($1, $2, $3)',
           [fullName, email, await bcrypt.hash(password, 12)]
         );
         console.log(`  Agente ${email} creado.`);
