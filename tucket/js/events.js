@@ -204,7 +204,22 @@ function initExploreEvents(){
       incluirTodos: true, textoTodos: 'Todos los estados', excluir: ['Cancelado']
     });
   });
+  /* El reloj y la cartelera se pintan de una, sin esperar al refresco.
+
+     Antes solo se pedían los eventos cuando no había ninguno en memoria.
+     El problema es que la portada ya los pide para su carrusel, así que
+     al entrar a Eventos desde el inicio la lista ya estaba cargada, no
+     se pedía de nuevo y tampoco se dibujaba: la pantalla se quedaba en
+     «Cargando eventos…» hasta que corriera el temporizador de los 15
+     segundos. Si ya están en memoria, se dibujan ahora mismo.
+
+     Si no hay nada en memoria y ya se está pidiendo, no se dibuja: se
+     deja el «Cargando eventos…» puesto, porque dibujar la lista vacía
+     mostraría «no se encontraron eventos» por un instante y enseguida
+     aparecerían. De eso se encarga la propia petición al terminar. */
+  updateEventClock();
   if(!publicEvents.length && !publicEventsLoading) loadPublicEvents();
+  else if(publicEvents.length) renderExploreEvents();
   if(!publicEventsTimer){
     publicEventsTimer=setInterval(function(){updateEventClock();renderExploreEvents();},15000);
     setInterval(loadPublicEvents,120000);
