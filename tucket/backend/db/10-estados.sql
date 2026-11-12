@@ -137,7 +137,12 @@ ALTER TABLE agent_requests ADD CONSTRAINT agent_requests_status_fkey
 -- se filtra por ellas constantemente (la cartelera, el panel del agente).
 CREATE INDEX IF NOT EXISTS events_status_idx ON events(status);
 CREATE INDEX IF NOT EXISTS reservations_status_idx ON reservations(status);
-CREATE INDEX IF NOT EXISTS agent_requests_status_idx ON agent_requests(status);
+
+-- agent_requests no lleva uno aquí: el módulo 08 ya creó
+-- agent_requests_status_idx sobre (status, created_at DESC), que sirve
+-- para lo mismo y además ordena la bandeja. Repetirlo con solo (status)
+-- no creaba nada —IF NOT EXISTS lo saltaba— pero dejaba dos sentencias
+-- con el mismo nombre y distinta definición, que confunde al leerlas.
 
 -- ============================================================
 -- La disponibilidad y el control de sobreventa pasan a leer el catálogo

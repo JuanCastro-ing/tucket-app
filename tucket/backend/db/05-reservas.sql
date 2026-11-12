@@ -3,7 +3,7 @@
 
 -- Consecutivo del código visible de la reserva (RES-00842, RES-00843, …).
 -- Arranca en 842 para continuar la numeración que ya mostraba la maqueta.
-CREATE SEQUENCE IF NOT EXISTS reservation_code_seq START WITH 842;
+CREATE SEQUENCE IF NOT EXISTS reservation_code_seq START WITH 1;
 
 CREATE TABLE IF NOT EXISTS reservations (
   id BIGSERIAL PRIMARY KEY,

@@ -40,8 +40,14 @@ tbody tr:hover{ background:#FBF9F3; }
 
 .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
 .stat-grid > *{ min-width:0; }
+/* El reporte general del administrador son cinco conteos, no cuatro: con
+   la rejilla de cuatro el quinto quedaba solo en una segunda fila. */
+.stat-grid-5{ grid-template-columns:repeat(5,1fr); }
 @media (max-width:920px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:1180px){ .stat-grid-5{ grid-template-columns:repeat(3,1fr); } }
+@media (max-width:920px){ .stat-grid-5{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:520px){ .stat-grid{ grid-template-columns:1fr; } }
+@media (max-width:520px){ .stat-grid-5{ grid-template-columns:1fr; } }
 .stat-card{
   background:var(--navy); color:var(--paper); border-radius:6px;
   padding:20px 20px 18px; position:relative; overflow:hidden;

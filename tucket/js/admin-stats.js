@@ -247,6 +247,9 @@ function admPintar(datos){
   poner('adm-agentes', admNumero(c.agentes));
   poner('adm-admins', admNumero(c.administradores));
   poner('adm-eventos', admNumero(c.eventos));
+  /* El quinto conteo del reporte general. La API ya lo traía; faltaba
+     mostrarlo. */
+  poner('adm-reservas-total', admNumero(c.reservas));
   poner('adm-clientes-mes', c.clientes_mes ? '+' + c.clientes_mes + ' este mes' : 'Ninguno este mes');
 
   var titulo = document.getElementById('adm-ingresos-titulo');
