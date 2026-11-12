@@ -111,6 +111,8 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
         SELECT a.full_name AS agente,
                a.email,
                a.created_at AS desde,
+               a.commission_rate::float AS comision,
+               a.experience_years::int   AS experiencia,
                COUNT(DISTINCT e.id)::int AS eventos,
                COUNT(DISTINCT e.id) FILTER (
                  WHERE e.status IN (SELECT code FROM event_statuses WHERE allows_reservation)
@@ -125,7 +127,8 @@ router.get('/stats', requireAdmin, async (req, res, next) => {
           LEFT JOIN events e       ON e.agent_id = a.id
           LEFT JOIN reservations r ON r.event_id = e.id
          WHERE a.active
-         GROUP BY a.id, a.full_name, a.email, a.created_at
+         GROUP BY a.id, a.full_name, a.email, a.created_at,
+                  a.commission_rate, a.experience_years
          ORDER BY eventos DESC, ingresos DESC, a.full_name`),
 
       /* ---- Eventos por ciudad ---- */

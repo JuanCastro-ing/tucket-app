@@ -134,6 +134,62 @@
         filaDoc.hidden = true;
       }
     }
+
+    pintarDatosDelRol(perfil);
+  }
+
+  /* Muestra un dato del resumen solo si la cuenta lo tiene. Recibe el id de
+     la fila y el id del valor para no repetir el mismo bloque cinco veces. */
+  function fila(idFila, idValor, texto){
+    var nodo = el(idFila);
+    if(!nodo) return;
+    if(texto === null || texto === undefined || texto === ''){
+      nodo.hidden = true;
+      return;
+    }
+    el(idValor).textContent = texto;
+    nodo.hidden = false;
+  }
+
+  /* Los datos propios de cada rol que pide el enunciado. Van en el resumen,
+     que es de solo lectura: la comisión de un agente y el salario de un
+     administrador los fija quien crea la cuenta, no su dueño. La única
+     excepción es la publicidad del cliente, que sí es una preferencia suya
+     y por eso va en el formulario. */
+  function pintarDatosDelRol(perfil){
+    var esCliente = perfil.role === 'cliente';
+    var esAgente  = perfil.role === 'agente';
+    var esAdmin   = perfil.role === 'administrador';
+
+    fila('profile-points-row', 'profile-points',
+      esCliente ? pesosSinDecimal(perfil.points || 0) + ' puntos' : null);
+
+    fila('profile-commission-row', 'profile-commission',
+      esAgente ? Number(perfil.commissionRate || 0).toFixed(2) + ' %' : null);
+
+    fila('profile-experience-row', 'profile-experience',
+      esAgente ? anios(perfil.experienceYears) : null);
+
+    fila('profile-salary-row', 'profile-salary',
+      esAdmin && perfil.salary ? '$ ' + pesosSinDecimal(perfil.salary) : null);
+
+    fila('profile-schedule-row', 'profile-schedule',
+      esAdmin ? (perfil.workSchedule || null) : null);
+
+    var campoPub = el('profile-ads-field');
+    if(campoPub){
+      campoPub.hidden = !esCliente;
+      if(esCliente) el('profile-ads').checked = perfil.showsAds !== false;
+    }
+  }
+
+  function pesosSinDecimal(valor){
+    return Number(valor || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 });
+  }
+
+  function anios(valor){
+    var n = Number(valor || 0);
+    return n === 1 ? '1 año' : n + ' años';
   }
 
   async function pintarUbicacion(perfil){
@@ -157,7 +213,11 @@
       phone: '+57 300 000 0000', phoneAlt: '', address: 'Calle 5 # 23-10',
       countryCode: '', departmentCode: '', cityId: null,
       role: currentRole === 'agente' ? 'agente' : 'cliente',
-      createdAt: new Date().toISOString(), updatedAt: null
+      createdAt: new Date().toISOString(), updatedAt: null,
+      /* Datos propios del rol, para que la vista de muestra también los
+         enseñe cuando se recorre sin backend. */
+      points: 120, showsAds: true,
+      commissionRate: 7.5, experienceYears: 6
     };
   }
 
@@ -227,7 +287,7 @@
       return false;
     }
 
-    return guardarPayload({
+    var datos = {
       fullName: el('profile-name').value.trim(),
       phone: telefono.value.trim(),
       phoneAlt: alterno.value.trim(),
@@ -235,7 +295,16 @@
       countryCode: pais || null,
       departmentCode: departamento || null,
       cityId: ciudad ? Number(ciudad) : null
-    });
+    };
+
+    /* La preferencia de publicidad solo la manda el cliente; el servidor
+       ignora el campo para los demás roles, pero no hay por qué enviarlo. */
+    var casilla = el('profile-ads');
+    if(casilla && perfilActual && perfilActual.role === 'cliente'){
+      datos.showsAds = casilla.checked;
+    }
+
+    return guardarPayload(datos);
   }
 
   /* El envío está aparte de la validación porque hay dos formas de llegar

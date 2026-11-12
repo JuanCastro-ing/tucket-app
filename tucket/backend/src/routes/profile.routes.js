@@ -29,6 +29,19 @@ function tablaDe(req) {
   return TABLAS[req.user.role] || null;
 }
 
+/* Cada rol guarda, además de lo común, los datos propios que pide el
+   enunciado: puntos y publicidad el cliente, comisión y experiencia el
+   agente, salario y horario el administrador. Se listan aquí para que la
+   consulta de cada tabla los traiga y el perfil pueda mostrarlos. */
+const CAMPOS_DEL_ROL = {
+  clients: `u.document_type AS "documentType", u.document_number AS "documentNumber",
+            u.points, u.shows_ads AS "showsAds"`,
+  agents: `u.document_type AS "documentType", u.document_number AS "documentNumber",
+           u.commission_rate AS "commissionRate", u.experience_years AS "experienceYears"`,
+  admins: `u.document_type AS "documentType", u.document_number AS "documentNumber",
+           u.salary, u.work_schedule AS "workSchedule"`
+};
+
 function consultaPerfil(tabla) {
   /* La tabla admins no tiene las columnas de contacto ni de ubicación, así
      que su consulta se escribe aparte en vez de inventarlas con NULL en el
@@ -36,7 +49,8 @@ function consultaPerfil(tabla) {
   if (tabla === 'admins') {
     return `
       SELECT u.id, u.full_name AS "fullName", u.email,
-             u.created_at AS "createdAt", u.updated_at AS "updatedAt"
+             u.created_at AS "createdAt", u.updated_at AS "updatedAt",
+             ${CAMPOS_DEL_ROL.admins}
         FROM admins u
        WHERE u.id = $1 AND u.active = TRUE`;
   }
@@ -46,7 +60,8 @@ function consultaPerfil(tabla) {
            u.country_code AS "countryCode", u.department_code AS "departmentCode",
            u.city_id AS "cityId",
            co.name AS country, d.name AS department, ci.name AS city,
-           u.created_at AS "createdAt", u.updated_at AS "updatedAt"
+           u.created_at AS "createdAt", u.updated_at AS "updatedAt",
+           ${CAMPOS_DEL_ROL[tabla]}
       FROM ${tabla} u
       LEFT JOIN cities ci      ON ci.id = u.city_id
       LEFT JOIN departments d  ON d.code = u.department_code
@@ -63,17 +78,10 @@ router.get('/', requireSession, async (req, res, next) => {
     const result = await pool.query(consultaPerfil(tabla), [req.user.id]);
     if (!result.rowCount) return res.status(401).json({ error: 'La cuenta ya no está activa.' });
 
-    /* El documento solo lo tienen los clientes; se envía para mostrarlo
-       como dato de solo lectura. */
-    const perfil = { ...result.rows[0], role: req.user.role };
-    if (req.user.role === 'cliente') {
-      const doc = await pool.query(
-        'SELECT document_type AS "documentType", document_number AS "documentNumber" FROM clients WHERE id = $1',
-        [req.user.id]
-      );
-      Object.assign(perfil, doc.rows[0] || {});
-    }
-    return res.json(perfil);
+    /* El documento y los datos propios del rol ya vienen en la consulta.
+       Se envían para mostrarlos como dato de solo lectura, salvo la
+       preferencia de publicidad, que el cliente sí puede cambiar. */
+    return res.json({ ...result.rows[0], role: req.user.role });
   } catch (error) { return next(error); }
 });
 
@@ -136,6 +144,13 @@ router.put('/', requireSession, async (req, res, next) => {
     return res.status(400).json({ error: 'Selecciona país, departamento y ciudad, o deja la ubicación vacía.' });
   }
 
+  /* De los datos propios del rol, el único que el dueño de la cuenta puede
+     cambiar es la preferencia de publicidad del cliente. La comisión del
+     agente y el salario del administrador los fija quien crea la cuenta:
+     nadie se asigna a sí mismo su propia comisión ni su propio sueldo. */
+  const cambiaPublicidad = req.user.role === 'cliente';
+  const verPublicidad = body.showsAds !== false;
+
   try {
     if (hayUbicacion) {
       const ubicacion = await pool.query(
@@ -159,13 +174,15 @@ router.put('/', requireSession, async (req, res, next) => {
               country_code = $5,
               department_code = $6,
               city_id = $7
+              ${cambiaPublicidad ? ', shows_ads = $9' : ''}
         WHERE id = $8 AND active = TRUE
       RETURNING id`,
       [fullName, phone, phoneAlt || null, address || null,
         hayUbicacion ? countryCode : null,
         hayUbicacion ? departmentCode : null,
         hayUbicacion ? cityId : null,
-        req.user.id]
+        req.user.id,
+        ...(cambiaPublicidad ? [verPublicidad] : [])]
     );
     if (!actualizado.rowCount) return res.status(401).json({ error: 'La cuenta ya no está activa.' });
 

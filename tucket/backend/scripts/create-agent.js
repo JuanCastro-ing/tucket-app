@@ -14,6 +14,27 @@ async function createAgent() {
     if (!fullName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 10) {
       throw new Error('Nombre, correo válido y contraseña de al menos 10 caracteres son obligatorios.');
     }
+
+    /* Documento, comisión y experiencia: los datos del agente que pide el
+       enunciado. Se preguntan aquí porque es quien administra la
+       plataforma el que los fija, no el agente sobre sí mismo. */
+    const documentNumber = (await rl.question('Número de identificación (vacío para omitir): ')).trim();
+    const documentType = documentNumber
+      ? ((await rl.question('Tipo de documento [CC/PAS] (CC): ')).trim().toUpperCase() || 'CC')
+      : null;
+    if (documentType && !['CC', 'PAS'].includes(documentType)) {
+      throw new Error('El tipo de documento debe ser CC o PAS.');
+    }
+
+    const comision = Number((await rl.question('Comisión en porcentaje (0): ')).trim() || '0');
+    if (!Number.isFinite(comision) || comision < 0 || comision > 100) {
+      throw new Error('La comisión debe ser un número entre 0 y 100.');
+    }
+
+    const experiencia = Number((await rl.question('Años de experiencia (0): ')).trim() || '0');
+    if (!Number.isInteger(experiencia) || experiencia < 0 || experiencia > 70) {
+      throw new Error('La experiencia debe ser un número entero de años entre 0 y 70.');
+    }
     const passwordHash = await bcrypt.hash(password, 12);
     /* El correo debe estar libre en las tres tablas: si ya existe en
        otra, la cuenta nueva nacería inaccesible. */
@@ -24,10 +45,15 @@ async function createAgent() {
     }
 
     await pool.query(
-      'INSERT INTO agents (full_name, email, password_hash) VALUES ($1, $2, $3)',
-      [fullName, email, passwordHash]
+      `INSERT INTO agents (full_name, email, password_hash,
+                           document_type, document_number,
+                           commission_rate, experience_years)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [fullName, email, passwordHash,
+        documentType, documentNumber || null, comision, experiencia]
     );
-    console.log(`Agente ${email} creado. Ya puede iniciar sesión en TUCKET.`);
+    console.log(`Agente ${email} creado con ${comision}% de comisión y ${experiencia} años de experiencia.`);
+    console.log('Ya puede iniciar sesión en TUCKET.');
   } finally {
     rl.close();
     await pool.end();

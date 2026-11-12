@@ -57,6 +57,29 @@
               <dt>ÚLTIMA ACTUALIZACIÓN</dt>
               <dd id="profile-updated">—</dd>
             </div>
+
+            <!-- Datos propios de cada rol. El script muestra solo los que
+                 corresponden a la cuenta que inició sesión. -->
+            <div class="pf" id="profile-points-row" hidden>
+              <dt>PUNTOS ACUMULADOS</dt>
+              <dd id="profile-points">—</dd>
+            </div>
+            <div class="pf" id="profile-commission-row" hidden>
+              <dt>COMISIÓN</dt>
+              <dd id="profile-commission">—</dd>
+            </div>
+            <div class="pf" id="profile-experience-row" hidden>
+              <dt>EXPERIENCIA</dt>
+              <dd id="profile-experience">—</dd>
+            </div>
+            <div class="pf" id="profile-salary-row" hidden>
+              <dt>SALARIO</dt>
+              <dd id="profile-salary">—</dd>
+            </div>
+            <div class="pf" id="profile-schedule-row" hidden>
+              <dt>HORARIO</dt>
+              <dd id="profile-schedule">—</dd>
+            </div>
           </dl>
           <p class="profile-note">
             El correo y la identificación no se editan desde aquí porque identifican tu cuenta.
@@ -119,6 +142,17 @@
                 <option value="">Selecciona primero un departamento</option>
               </select>
               <p class="field-help">La ubicación es opcional, pero si la indicas deben ir los tres datos.</p>
+            </div>
+
+            <!-- Preferencia de publicidad. Solo la ve el cliente: es el
+                 único dato propio del rol que el dueño de la cuenta puede
+                 cambiar por sí mismo. -->
+            <div class="field" id="profile-ads-field" hidden>
+              <label class="check-row" for="profile-ads">
+                <input id="profile-ads" name="showsAds" type="checkbox" checked>
+                <span>Quiero ver recomendaciones y publicidad de eventos en mi panel</span>
+              </label>
+              <p class="field-help">Si lo desactivas seguimos mostrándote tus reservas, pero sin sugerencias de otros eventos.</p>
             </div>
 
             <div class="profile-actions">

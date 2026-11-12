@@ -278,12 +278,14 @@ function admPintar(datos){
   /* Los agentes sin actividad también salen, en cero: que falte una fila
      es indistinguible de que el agente no exista, y es justo lo que el
      administrador necesita poder ver. */
-  admTabla('adm-agentes-tabla', datos.agents || [], 7, 'Todavía no hay agentes registrados.', function(f){
+  admTabla('adm-agentes-tabla', datos.agents || [], 9, 'Todavía no hay agentes registrados.', function(f){
     var tr = document.createElement('tr');
     if(!f.eventos) tr.className = 'fila-sin-actividad';
     tr.append(admCelda(f.agente, 'cell-strong'),
               admCelda(f.email),
               admCelda(admFecha(f.desde)),
+              admCelda(Number(f.comision || 0).toFixed(2) + ' %'),
+              admCelda(Number(f.experiencia || 0) + ' a'),
               admCelda(admNumero(f.eventos)),
               admCelda(admNumero(f.en_venta)),
               admCelda(admNumero(f.entradas)),
