@@ -30,6 +30,20 @@ var profundidadDeRuta = 0;
 
 /* ---------- Leer y escribir la URL ---------- */
 
+/* Las rutas de TUCKET siempre llevan barra: '#/events', '#/profile'.
+   Un '#' seguido de un nombre a secas —'#agentes', '#ayuda-faq',
+   '#main-content'— no es una ruta sino un ancla dentro de la página: el
+   menú lateral del panel, los índices de la ayuda y el enlace de saltar al
+   contenido. El navegador los resuelve solo, bajando hasta esa sección.
+
+   Hay que distinguirlos. Si el enrutador trata un ancla como ruta, busca
+   una vista llamada 'agentes', no la encuentra y devuelve al inicio: el
+   menú del panel dejaba de funcionar por completo. */
+function esRutaDeTucket(){
+  var hash = location.hash || '';
+  return hash === '' || hash.indexOf('#/') === 0;
+}
+
 /* '#/event-detail/EVT-00012' → { vista:'event-detail', parametro:'EVT-00012' } */
 function rutaDesdeHash(){
   var crudo = (location.hash || '').replace(/^#\/?/, '');
@@ -91,6 +105,10 @@ function abrirDetallePorCodigo(code){
 }
 
 function aplicarRutaActual(){
+  /* Un ancla dentro de la página no cambia de vista: la deja quieta y el
+     navegador baja hasta la sección. */
+  if(!esRutaDeTucket()) return;
+
   var ruta = rutaDesdeHash();
   var pedida = ruta.vista + (ruta.parametro ? '/' + ruta.parametro : '');
   if(pedida === rutaEnPantalla()) return;          // ya se está viendo
@@ -108,7 +126,42 @@ function aplicarRutaActual(){
    sesión ya se comprobó. El orden importa: si se aplicara la ruta antes
    de saber si hay sesión, una vista privada rebotaría al login aunque la
    cuenta siguiera abierta. */
+/* Las anclas se atienden aquí y no se dejan al navegador.
+
+   Dejarlas pasar tiene dos efectos malos. El primero es que la URL pierde
+   la ruta: '#/admin-dashboard' se convierte en '#agentes', y al recargar
+   ya no se sabe en qué vista estaba. El segundo es que cada clic agrega
+   una entrada al historial, así que la flecha atrás recorre las secciones
+   del menú en vez de volver a la vista anterior.
+
+   Bajar hasta la sección con scrollIntoView da el mismo resultado visible
+   sin tocar ni la URL ni el historial. */
+function atenderAnclas(){
+  document.addEventListener('click', function(evento){
+    var enlace = evento.target.closest ? evento.target.closest('a[href^="#"]') : null;
+    if(!enlace) return;
+
+    var destino = enlace.getAttribute('href');
+    /* '#' a secas son los botones que ya usan onclick, y '#/...' son rutas
+       de verdad: ninguno de los dos se toca. */
+    if(!destino || destino === '#' || destino.indexOf('#/') === 0) return;
+
+    var seccion = document.getElementById(destino.slice(1));
+    if(!seccion) return;
+
+    evento.preventDefault();
+    seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    /* Quien llegue con el teclado debe quedar parado en la sección, no
+       seguir en el enlace del menú. */
+    if(!seccion.hasAttribute('tabindex')) seccion.setAttribute('tabindex', '-1');
+    seccion.focus({ preventScroll: true });
+  });
+}
+
 function arrancarRutas(){
+  atenderAnclas();
+
   window.addEventListener('popstate', function(evento){
     profundidadDeRuta = (evento.state && evento.state.tucket) || 0;
     aplicarRutaActual();
@@ -119,7 +172,10 @@ function arrancarRutas(){
      que no se pisa con popstate. */
   window.addEventListener('hashchange', aplicarRutaActual);
 
-  if(location.hash){
+  /* Al abrir la página con un ancla en la URL no hay ruta que aplicar,
+     pero tampoco conviene dejar el ancla puesta: la primera navegación la
+     reemplazaría igual y mientras tanto el historial queda sin estado. */
+  if(location.hash && esRutaDeTucket()){
     history.replaceState({ tucket: 0 }, '', location.hash);
     aplicarRutaActual();
   }else{
